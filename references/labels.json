@@ -1,0 +1,67 @@
+[
+  {
+    "name": "マナハーブ",
+    "kind": "material",
+    "path": "references/labels/00.png"
+  },
+  {
+    "name": "光を失った金属の破片",
+    "kind": "material",
+    "path": "references/labels/01.png"
+  },
+  {
+    "name": "歪曲の粉",
+    "kind": "material",
+    "path": "references/labels/02.png"
+  },
+  {
+    "name": "リファインドボヘミアンフラワーバンド(女性用)",
+    "kind": "excluded",
+    "path": "references/labels/03.png"
+  },
+  {
+    "name": "ケルティックロイヤルクロスボウ",
+    "kind": "excluded",
+    "path": "references/labels/04.png"
+  },
+  {
+    "name": "ケルティックウォーリアハンマー",
+    "kind": "excluded",
+    "path": "references/labels/05.png"
+  },
+  {
+    "name": "スピリットジェム(1000)",
+    "kind": "excluded",
+    "path": "references/labels/06.png"
+  },
+  {
+    "name": "リファインドラングヒリスチェーサーアーマー(男性用)",
+    "kind": "excluded",
+    "path": "references/labels/07.png"
+  },
+  {
+    "name": "スピリットジェム(500)",
+    "kind": "excluded",
+    "path": "references/labels/08.png"
+  },
+  {
+    "name": "封印の黒い金属",
+    "kind": "material",
+    "path": "references/labels/09.png"
+  },
+  {
+    "name": "炎の糸・金貨",
+    "kind": "excluded",
+    "path": "references/labels/10.png"
+  },
+  {
+    "name": "悪夢の番人の遺物",
+    "kind": "material",
+    "path": "references/labels/11.png"
+  },
+  {
+    "name": "片手斧",
+    "kind": "excluded",
+    "path": "references/labels/12.png"
+  }
+]
