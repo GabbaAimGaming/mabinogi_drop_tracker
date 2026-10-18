@@ -32,3 +32,4 @@ Windows 64bit / Python 3.12。
 配布ZIPのdata・個人設定の混入を確認してください。既存LICENSEと第三者ライセンスを維持します。
 更新は利用者のdata・除外設定を上書きしません。
 ソース反映だけでは利用者へ配信されません。Release公開は配布ZIPと更新JSONを検証してから行います。
+`claude_workspace/`（Claude用の開発場所）はリリースに含めません。混入していると`tools/package_release.py`が停止します。詳細は`claude_workspace/RELEASE_RULES.md`を参照してください。

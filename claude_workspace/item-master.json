@@ -1,0 +1,6482 @@
+{
+  "schema_version": 1,
+  "dictionary_version": "2026-10-18.1",
+  "language": "ja-JP",
+  "scope": [
+    "アルビ HD",
+    "キア HD",
+    "ルンダ HD",
+    "夢幻ラビ 通常",
+    "夢幻ラビ 誘惑",
+    "旧版の関連製作素材",
+    "全面戦争 エリート",
+    "以夷制夷 エリート",
+    "スナイパー参戦 エリート",
+    "影の世界のチャンピオン エリート",
+    "遭遇戦 エリート"
+  ],
+  "complete": false,
+  "purpose": "正式名照合用マスター。報酬許可リスト・除外設定・ドロップ率表ではない。",
+  "normalization": {
+    "unicode": "NFKC",
+    "remove_whitespace": true,
+    "numeric_quantity_suffix": "末尾の数字のみの括弧を照合時だけ分離。正式名は変更しない。",
+    "preserve_suffixes": [
+      "男性用",
+      "女性用",
+      "エンチャント"
+    ]
+  },
+  "safety": {
+    "auto_add_unknown": false,
+    "fuzzy_match_action": "review",
+    "dictionary_membership_does_not_confirm_loot": true,
+    "category_does_not_define_exclusion": true
+  },
+  "sources": {
+    "rewards_wiki": {
+      "title": "改変ダンジョン報酬一覧",
+      "url": "https://wikiwiki.jp/mabinogi/エリア情報/ダンジョン/改変ダンジョン報酬一覧",
+      "type": "community_wiki"
+    },
+    "rabbie_wiki": {
+      "title": "夢幻のラビ",
+      "url": "https://wikiwiki.jp/mabinogi/エリア情報/ダンジョン/特殊/夢幻のラビ",
+      "type": "community_wiki"
+    },
+    "celtic_materials": {
+      "title": "ケルティック製作素材",
+      "url": "https://wikiwiki.jp/mabinogi/アイテム/ケルティック製作素材",
+      "type": "community_wiki"
+    },
+    "northern_materials": {
+      "title": "ノーザン＆ギガンティック製作素材",
+      "url": "https://wikiwiki.jp/mabinogi/アイテム/ノーザン＆ギガンティック製作素材",
+      "type": "community_wiki"
+    },
+    "finishing_materials": {
+      "title": "紡織・裁縫 素材 仕上げ",
+      "url": "https://wikiwiki.jp/mabinogi/紡織・裁縫/素材/仕上げ",
+      "type": "community_wiki"
+    },
+    "new_rise_1": {
+      "title": "2025年11月19日 NEW RISE 1次",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=10521",
+      "type": "official"
+    },
+    "new_rise_2": {
+      "title": "2025年12月17日 NEW RISE 2次",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=10573",
+      "type": "official"
+    },
+    "february_update": {
+      "title": "2026年2月25日 アップデート",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=10687",
+      "type": "official"
+    },
+    "user_screenshots": {
+      "title": "利用者提供のアルビHD報酬PNGと品名切り抜き",
+      "type": "user_observation",
+      "note": "この会話で読める表示だけ採用。画像・個人パスは配布しない。"
+    },
+    "memo_hd": {
+      "title": "memo_hd",
+      "url": "https://mabitem.memo.wiki/d/%a5%cf%a1%bc%a5%c9%a5%e2%a1%bc%a5%c9%a5%c0%a5%f3%a5%b8%a5%e7%a5%f3",
+      "type": "community_wiki"
+    },
+    "memo_rabbie": {
+      "title": "memo_rabbie",
+      "url": "https://mabitem.memo.wiki/d/%cc%b4%b8%b8%a4%ce%a5%e9%a5%d3%a5%c0%a5%f3%a5%b8%a5%e7%a5%f3",
+      "type": "community_wiki"
+    },
+    "wing_feb": {
+      "title": "wing_feb",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=10687",
+      "type": "official"
+    },
+    "wing_mar": {
+      "title": "wing_mar",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=10728",
+      "type": "official"
+    },
+    "pet_official": {
+      "title": "ペットハンドラー実装・封印カードの種類と等級",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=7779",
+      "type": "official"
+    },
+    "pet_names": {
+      "title": "ペット成長カード 個別名",
+      "url": "https://wikiwiki.jp/mabinogi/スキル/生活/フィンシンク/ペット成長カード",
+      "type": "community_wiki"
+    },
+    "astrologer_es": {
+      "title": "占星術師1st 新規スクロール",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=9990",
+      "type": "official"
+    },
+    "meteor_user": {
+      "title": "利用者提供：専用エンチャントスクロール・メテオロイドの地面表示",
+      "type": "user_screenshot",
+      "file": "codex-clipboard-814accf9-7f45-4d9f-8786-5e9b70ceae25.png"
+    },
+    "reward_es_types": {
+      "title": "改変ダンジョン報酬一覧（☆は専用ES）",
+      "url": "https://wikiwiki.jp/mabinogi/エリア情報/ダンジョン/改変ダンジョン報酬一覧",
+      "type": "community_wiki"
+    },
+    "es_ae33b010": {
+      "title": "エンチャント個別表・入手アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/%E3%82%A8%E3%83%B3%E3%83%81%E3%83%A3%E3%83%B3%E3%83%88/prefix%28%E6%8E%A5%E9%A0%AD%29/%E6%95%B0",
+      "type": "community_wiki"
+    },
+    "es_51528e6f": {
+      "title": "エンチャント個別表・入手アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/%E3%82%A8%E3%83%B3%E3%83%81%E3%83%A3%E3%83%B3%E3%83%88/suffix%28%E6%8E%A5%E5%B0%BE%29/%E6%95%B0",
+      "type": "community_wiki"
+    },
+    "es_cf77b0d0": {
+      "title": "エンチャント個別表・入手アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/%E3%82%A8%E3%83%B3%E3%83%81%E3%83%A3%E3%83%B3%E3%83%88/suffix%28%E6%8E%A5%E5%B0%BE%29/%E8%8B%B1",
+      "type": "community_wiki"
+    },
+    "es_037d88e4": {
+      "title": "エンチャント個別表・入手アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/%E3%82%A8%E3%83%B3%E3%83%81%E3%83%A3%E3%83%B3%E3%83%88/prefix%28%E6%8E%A5%E9%A0%AD%29/%E8%8B%B1",
+      "type": "community_wiki"
+    },
+    "shadow_elite": {
+      "title": "影ミッション エリート",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/エリート",
+      "type": "community_report"
+    },
+    "shadow_war": {
+      "title": "全面戦争",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/全面戦争",
+      "type": "community_report"
+    },
+    "shadow_sniper": {
+      "title": "スナイパー参戦",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/スナイパー参戦",
+      "type": "community_report"
+    },
+    "shadow_champion": {
+      "title": "影の世界のチャンピオン",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/影の世界のチャンピオン",
+      "type": "community_report"
+    },
+    "shadow_prefix": {
+      "title": "接頭ES 個別アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/エンチャント/prefix(接頭)/数",
+      "type": "community_report"
+    },
+    "shadow_suffix": {
+      "title": "接尾ES 個別アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/エンチャント/suffix(接尾)/数",
+      "type": "community_report"
+    },
+    "astrologer_official": {
+      "title": "占星術師 1st 更新",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=9990",
+      "type": "official"
+    },
+    "champion_report": {
+      "title": "影ミッション主要報酬報告",
+      "url": "https://note.com/kiri_chan_/n/n45a4e7701b01",
+      "type": "community_report"
+    }
+  },
+  "items": [
+    {
+      "id": "item-6c43627e8ec6",
+      "name": "6段階赤い改造石",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e99844719352",
+      "name": "6段階青い改造石",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b62ae2ab1ce9",
+      "name": "O表示板",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-ff0b1c4affca",
+      "name": "X表示板",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e37c7a5e83c0",
+      "name": "[リファインドヘビーガントレット/スネークブレイス]図面の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-5256e5c97d14",
+      "name": "[リファインドヘビーグリーブ/ブーツ]図面の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-51b762765fd0",
+      "name": "[リファインドライトアーマー]図面の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-82757265b1cc",
+      "name": "[リファインドライトガントレット]図面の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-df3d5ccc3dfa",
+      "name": "[リファインドライトグリーブ/ブーツ]図面の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-4cb5c64abd5d",
+      "name": "[リファインド服 - アーマー]型紙の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-10f4c4f6df9c",
+      "name": "[リファインド服 - グローブ]型紙の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0f0ece6a4c48",
+      "name": "[リファインド服 - 帽子]型紙の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-5a38ddd7f9ec",
+      "name": "[リファインド服 - 靴]型紙の欠片",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-c6ebe2a720e0",
+      "name": "しっぽ帽子",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-83986c1736cd",
+      "name": "アルバン騎士団の訓練石",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-fb5da0090342",
+      "name": "アースクエイクシリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-0aab5796c8ab",
+      "name": "イエローグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-ed8ac3cadec2",
+      "name": "イエロートレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-af324db9d7ed",
+      "name": "イエローベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1f38853dbe1d",
+      "name": "イシリアルシルクウィングの破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-de704bd1a8c9",
+      "name": "イシリアルハーフウィングの破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-72ed65076fb5",
+      "name": "イバラの鉱石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4459c10bd478",
+      "name": "エルブンショートボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_sniper"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
+      "id": "item-a2274e5e4488",
+      "name": "エンチャントスクロール・どっしりした",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e76cb673a0d3",
+      "name": "エンチャントスクロール・アークリッチ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-33196244c5da",
+      "name": "エンチャントスクロール・アーチャー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f",
+        "es_cf77b0d0"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-366245b1007a",
+      "name": "エンチャントスクロール・ウォーリア",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-517fa738d350",
+      "name": "エンチャントスクロール・エルフの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-34e41b8ce960",
+      "name": "エンチャントスクロール・オートマチック",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-14c51adc50d6",
+      "name": "エンチャントスクロール・カモフラージュ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-295de05f88f9",
+      "name": "エンチャントスクロール・グール",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-bf9343f6432d",
+      "name": "エンチャントスクロール・シュロ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-bd1537a2b14b",
+      "name": "エンチャントスクロール・スケルトン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "user_screenshots",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-85a807f00210",
+      "name": "エンチャントスクロール・ダークホース",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-f14f49f239b5",
+      "name": "エンチャントスクロール・デッドリー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-eb6e4cbbced7",
+      "name": "エンチャントスクロール・デミリッチ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-62af3147c63c",
+      "name": "エンチャントスクロール・ヒーラー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-c35a7113be45",
+      "name": "エンチャントスクロール・フォックスハンター",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-2a389f286732",
+      "name": "エンチャントスクロール・フクロウ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-cbab17b189b4",
+      "name": "エンチャントスクロール・ユニオン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3bf3aab1d19f",
+      "name": "エンチャントスクロール・ライオンハンター",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-cabdba169c23",
+      "name": "エンチャントスクロール・ライフ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-5888f3ee138f",
+      "name": "エンチャントスクロール・リアクティブ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8366c7c0802d",
+      "name": "エンチャントスクロール・リプル",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-4d596d9b8232",
+      "name": "エンチャントスクロール・レイヴン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-c13fc7a07891",
+      "name": "エンチャントスクロール・ワイバーン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-16685a695c79",
+      "name": "エンチャントスクロール・上昇する",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-91fa4cb58543",
+      "name": "エンチャントスクロール・不便の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-977f7bfa86e4",
+      "name": "エンチャントスクロール・不可思議な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-6f13c20e7575",
+      "name": "エンチャントスクロール・公演",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7d3d6f1e2429",
+      "name": "エンチャントスクロール・劇的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-cf179da56b8f",
+      "name": "エンチャントスクロール・力強い",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9efc62c9aebd",
+      "name": "エンチャントスクロール・原理の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3c12023c9588",
+      "name": "エンチャントスクロール・古代の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-eb92d744f64b",
+      "name": "エンチャントスクロール・堂々とした",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7ff2a7a74717",
+      "name": "エンチャントスクロール・増幅の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-e9c0f8af1065",
+      "name": "エンチャントスクロール・夜明けの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f",
+        "es_cf77b0d0"
+      ],
+      "notes": [
+        "キア上級HDの入手行は通常。専用は別経路のポテンシャル報酬なので追加しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-6410be8950a7",
+      "name": "エンチャントスクロール・大地の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-193da5798ab6",
+      "name": "エンチャントスクロール・奇妙な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-6cc0bf3b7689",
+      "name": "エンチャントスクロール・妄想の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-26c65126fa6e",
+      "name": "エンチャントスクロール・小さな",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c49af19e2b6d",
+      "name": "エンチャントスクロール・巨大な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-747748bf8eed",
+      "name": "エンチャントスクロール・平和な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-aca7b9c5a557",
+      "name": "エンチャントスクロール・意地悪な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b778833a1d53",
+      "name": "エンチャントスクロール・支障の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "キア HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-43938ac37175",
+      "name": "エンチャントスクロール・暴力的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7ee80d7a0bca",
+      "name": "エンチャントスクロール・格式ある",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-f86233e4410b",
+      "name": "エンチャントスクロール・死の矢",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-b25a633e548a",
+      "name": "エンチャントスクロール・気まぐれな",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-60b690ac5d85",
+      "name": "エンチャントスクロール・氷の破片",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-afad5406f647",
+      "name": "エンチャントスクロール・洗練された",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3bc7ab9ee2ac",
+      "name": "エンチャントスクロール・満月",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war",
+        "shadow_sniper"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート",
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
+      "id": "item-476fd220526c",
+      "name": "エンチャントスクロール・狙撃の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-33ed64ae0583",
+      "name": "エンチャントスクロール・痩せた",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-461dc87c81fe",
+      "name": "エンチャントスクロール・発掘者",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-bfcf9854195b",
+      "name": "エンチャントスクロール・相性",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-8dae3cddc868",
+      "name": "エンチャントスクロール・破壊の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b13ae3ec203d",
+      "name": "エンチャントスクロール・磨かれた",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-d7c0fd0f8f7d",
+      "name": "エンチャントスクロール・緑の傷",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c3d6809c45ce",
+      "name": "エンチャントスクロール・義侠的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "ルンダ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-8dfa1bbe44c6",
+      "name": "エンチャントスクロール・聡明な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-af867424e622",
+      "name": "エンチャントスクロール・船長の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-05d06e0f0e9c",
+      "name": "エンチャントスクロール・記憶",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1e408b0d62fe",
+      "name": "エンチャントスクロール・賢い",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e6bbd72d8887",
+      "name": "エンチャントスクロール・軽い",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-5607c06bd952",
+      "name": "エンチャントスクロール・進む",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "astrologer_es"
+      ],
+      "notes": [
+        "公式告知のアイテム名で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-72c56539d830",
+      "name": "エンチャントスクロール・野蛮人",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_cf77b0d0"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-fb88c63e9f30",
+      "name": "エンチャントスクロール・長持ちする",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3e79a5835e6f",
+      "name": "エンチャントスクロール・防御の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7d584847d621",
+      "name": "エンチャントスクロール・隙のない",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots",
+        "memo_hd"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-1762cd84629e",
+      "name": "エンチャントスクロール・隠れ家",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b82c86367511",
+      "name": "エンチャントスクロール・騎士の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-59c064b4bb4e",
+      "name": "エンチャントスクロール・驚くべき",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b43cb356ce66",
+      "name": "エンチャントスクロール・黎明",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-258a4e681d15",
+      "name": "エンチャントスクロール・黒い霧",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-813db20507fc",
+      "name": "カラフルグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-83665415dd7f",
+      "name": "カラフルトレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-fede18b639df",
+      "name": "カラフルベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-57eadc2f699c",
+      "name": "ガミュウコウモリのドレス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-ca9d41eb93cb",
+      "name": "キアボスラッシュダンジョン通行証",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-6f53b40f09ed",
+      "name": "キルティンググローブ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-d2197d603d6a",
+      "name": "クロムバス一般追加入場券",
+      "category": "pass",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-5bb14bf06fbd",
+      "name": "グラディウス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-83781d47abcd",
+      "name": "グレンベルナ一般追加入場券",
+      "category": "pass",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-aac67dd9bded",
+      "name": "グレートモール",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-428fe042fc13",
+      "name": "ケルティックガーディアンスタッフ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-18ab575bfdf0",
+      "name": "ケルティッククロスボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-a677258b89c6",
+      "name": "ケルティックトライボルトワンド",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-bbf6e88f2e87",
+      "name": "ケルティックナイトブレイド",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-bdc404f29514",
+      "name": "ケルティックバトルアックス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-64c2da6ddda5",
+      "name": "コリンプレートアーマー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b2e526658f3b",
+      "name": "コリンプレートガントレット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-09332eeb2ad8",
+      "name": "コリンプレートブーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-02eda40575a4",
+      "name": "コレスエンゼルウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-27bfd3f75f69",
+      "name": "コレスオリエンタルロングブーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-2b1ba043b026",
+      "name": "コンボカード",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3a6f3dcfec7c",
+      "name": "コンポジットボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9b073f1453f2",
+      "name": "ゴールドハーブ",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c46115682200",
+      "name": "サキュバスクイーンの翼",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d9bc029509ee",
+      "name": "サキュバスクイーングローブ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7d86b3c5857e",
+      "name": "サキュバスクイーンハーフカバーボディスーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-329d57157edf",
+      "name": "サキュバスクイーンフルカバーボディスーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-97551c53fae7",
+      "name": "サキュバスクイーンブーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b7dfa44c5ab5",
+      "name": "サキュバスクイーンミニマルボディスーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-cb9f0da1ccd3",
+      "name": "サンライトハーブ",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-901749276e68",
+      "name": "シュプリームアビスドラゴンボーンウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-ab7465e33970",
+      "name": "ショートソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-1eee9505abd7",
+      "name": "ショートボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-105ab00617eb",
+      "name": "シリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-62d1d5592965",
+      "name": "スタッディドブレスレット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-2911cf42e457",
+      "name": "スパイクドナックル",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-26840fc4d3c5",
+      "name": "スパイニーターバンシェルアーマー(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-003cf39a36be",
+      "name": "スパイニーターバンシェルアーマー(男性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-206f7ef6385b",
+      "name": "スパイニーターバンシェルブーツ(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-900b9ec31b7e",
+      "name": "スパイニーターバンシェルブーツ(男性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3bcde476d0a3",
+      "name": "スピリットジェム",
+      "category": "spirit_gem",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": [
+        "表示末尾の数量(100)/(500)/(1000)は名前照合時に分離する。"
+      ]
+    },
+    {
+      "id": "item-93da2bd20f87",
+      "name": "スペシャルアーバンテックウェアアサルトウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-80d197610fa2",
+      "name": "スペシャルインペリアルナイト制式マント(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-508d18a418f1",
+      "name": "スペシャルインペリアルナイト戦闘マント(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b0409d8f2b5b",
+      "name": "スペシャルオーシャンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a6bb43fd7fee",
+      "name": "スペシャルグラッシートリミングウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-04401edbcf51",
+      "name": "スペシャルシークレットガーデンウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-c760de12ea39",
+      "name": "スペシャルジェリーフィッシュウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1e131e9348e2",
+      "name": "スペシャルソルベウェディングウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-782b73acf2ae",
+      "name": "スペシャルトルバドゥールロマンスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d48a60a2c7a2",
+      "name": "スペシャルドイリーバトルメイドウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3a95fe6301e4",
+      "name": "スペシャルドリームウッドフラッターウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d09b920a7ba3",
+      "name": "スペシャルハイドランジアブルーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-68b7267dcdfd",
+      "name": "スペシャルパールオイスターリュック(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7e726f1de4dc",
+      "name": "スペシャルフォレストマフラーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b22874842ba7",
+      "name": "スペシャルフォレストリーフマフラーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-181cbd6fc83f",
+      "name": "スペシャルフローリストウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-27be99954bdd",
+      "name": "スペシャルフローレンス舞踏会の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7660f7d30e63",
+      "name": "スペシャルブルーゼンエンゼルウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-aee5aaa0447e",
+      "name": "スペシャルブルーゼンガラスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-71228d91d59a",
+      "name": "スペシャルブレスドオーナメントウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-c296784df532",
+      "name": "スペシャルブレスドオーナメントキュートウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1215e51fcfa2",
+      "name": "スペシャルマジカルバトルメイドウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3dfd8d5bab5f",
+      "name": "スペシャルムーンオブダークネスチャーミングウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-71d749709d67",
+      "name": "スペシャルムーンオブダークネスピュアーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7bc6dbd23f91",
+      "name": "スペシャルラブサムデコレーションカバン(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-ee7f85cf2c01",
+      "name": "スペシャルルナフェアリーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-812bbdda6e4a",
+      "name": "スペシャル夜の誓いマント(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-437c29a76cf7",
+      "name": "スペシャル夜の誓いリュック(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3032c0a13fcd",
+      "name": "スペシャル夜叉の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1a2fdb735988",
+      "name": "スペシャル深海の人魚の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-055a4c0ddb7a",
+      "name": "スペシャル阿修羅の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-831662708f54",
+      "name": "スペシャル龍の守護者の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1f36680868ab",
+      "name": "ダークネスセイントガーディアンスプレッドソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-6ab7da075844",
+      "name": "ダークネスセイントガーディアンソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-784096b16284",
+      "name": "ティカの木ヒーリングワンド(戦利品)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8318eca794dc",
+      "name": "トゥハンドソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4239d76ce139",
+      "name": "ドラゴンの鱗の欠片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-29f321d90350",
+      "name": "ナオのピンクコート",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e027efb9a203",
+      "name": "ナオの黒いコート",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9939814ee923",
+      "name": "ハロウィントリンケットマント(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-eaa6e25b733f",
+      "name": "ハロウィンベーシックマント(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-aa26263e73fe",
+      "name": "ハンマー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-282ecb0c0daf",
+      "name": "バイオレット抽出液",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war",
+        "shadow_sniper",
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート",
+        "スナイパー参戦 エリート",
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-eb912f9ba69d",
+      "name": "バトルショートソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "shadow_war"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-034db86a44ae",
+      "name": "バーナムプレートアーマー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8e3402abe69f",
+      "name": "バーナムプレートガントレット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8ae650f5d2c1",
+      "name": "バーナムプレートブーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b9bef48fbccf",
+      "name": "バーナムプレートヘルメット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e4f206d34422",
+      "name": "ビペンニス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-a40c4bbb5cd8",
+      "name": "ビンテージしっぽ帽子",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-cceac47263c9",
+      "name": "ビンテージキュアレスゴーグル付きキャスケット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-6f1fd5b6b9ff",
+      "name": "ビンテージコレスオリエンタルロングブーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-fbcb85368867",
+      "name": "ビンテージダスティンシルバーナイトヘルム",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-510bc9573532",
+      "name": "ビンテージドラゴンフェリックスヘルム",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8be3423b9e46",
+      "name": "ビンテージ剣士学校の制服(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e052d9b4e997",
+      "name": "ビンテージ星つき魔道士の帽子",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-31c791596333",
+      "name": "ピンクグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0a0c1031b712",
+      "name": "ピンクトレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d1a8f3a92a97",
+      "name": "ピンクベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0dae2dc254f4",
+      "name": "ファンシーフローラルウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e935a5af1a6c",
+      "name": "フルートショートソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-8f5383e1b0ad",
+      "name": "ブラッディセイントガーディアンスプレッドソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-838682e74f56",
+      "name": "ブラッディセイントガーディアンソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-9e2d194c635e",
+      "name": "ブリリアンスセイントガーディアンスプレッドソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-34c87f57da05",
+      "name": "ブリリアンスセイントガーディアンソードウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1acb25bcc7aa",
+      "name": "ブリーレフダンジョン通行証",
+      "category": "pass",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_2",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-dd8b16e2629e",
+      "name": "ブルーグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-9acaa012a29f",
+      "name": "ブルートレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-70d165604b68",
+      "name": "ブルーベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-12242d542de1",
+      "name": "ブロードソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-d47138b711a2",
+      "name": "ヘボナグローブ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3014bcfac01b",
+      "name": "ヘボナサークレット",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-1a4526cc84bf",
+      "name": "ヘボナシューズ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c9417765f6aa",
+      "name": "ヘボナローブ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4f3efa4b4e77",
+      "name": "ベースハーブ",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-0692c43716ce",
+      "name": "ペイトランウェア",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-41bcc5769f5c",
+      "name": "ペイトラングローブ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-85964f811d5f",
+      "name": "ペイトランシューズ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-403a35f24a1e",
+      "name": "ペルシウスアークトゥルスオーブ",
+      "category": "equipment",
+      "aliases": [
+        "ベルシウスアークトゥルスオーブ"
+      ],
+      "source_ids": [
+        "astrologer_official",
+        "new_rise_2"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。",
+        "公式の占星術師装備名。夢幻ラビのペルシウス武器補完。オーブは提供された地面表示でも確認。"
+      ],
+      "reward_locations": []
+    },
+    {
+      "id": "item-40109b6bf680",
+      "name": "ペルシウスペレグリンサイズ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "astrologer_official",
+        "new_rise_2"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。",
+        "公式の占星術師装備名。夢幻ラビのペルシウス武器補完。オーブは提供された地面表示でも確認。"
+      ],
+      "reward_locations": []
+    },
+    {
+      "id": "item-d464af2b9d51",
+      "name": "ボルケーノシリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-d15c3542ca52",
+      "name": "ポポシャツとズボン",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-a6987db5644e",
+      "name": "マナハーブ",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-64b90221d6cc",
+      "name": "メイス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c1637b90beff",
+      "name": "モノクロームグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-f36d5ff00b8c",
+      "name": "モノクロームトレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-8d345af04feb",
+      "name": "モノクロームベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-2a3b152f3b2f",
+      "name": "ライトニングワンド",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-eedfdb67f1a6",
+      "name": "リファインドクレシダシューズ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-4684f70a4078",
+      "name": "リファインドヘビーアーマー図面の欠片",
+      "category": "pattern_fragment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-03f01cc2fc76",
+      "name": "リファインドラングヒリスチェーサーブーツ(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-4d59cec01ba8",
+      "name": "リュート",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4919c33dd0e6",
+      "name": "ルミナスラヴィッシュフェザーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-28ab7d60a4a4",
+      "name": "ルンダボスラッシュダンジョン通行証",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-08e215dba42c",
+      "name": "レザーロングボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-393ce649e780",
+      "name": "レッドグランデサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-11b2c4d1ec32",
+      "name": "レッドトレンタサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-196d0c322b27",
+      "name": "レッドベンティサテンリボンウィング",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-c2b195c0b87c",
+      "name": "ロングソード",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-130e56865109",
+      "name": "不吉な運命の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rabbie_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-039f6abc6aa8",
+      "name": "不完全なラビダンジョン通行証",
+      "category": "pass",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-a1f3098ef4ea",
+      "name": "不完全な封印のエンブレム",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3bc1019e3f59",
+      "name": "亀裂が生じた黒い金属",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b3ee878138cb",
+      "name": "光る丈夫な紐",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-9f210f37678e",
+      "name": "光る玉",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_1",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-1a89708145dd",
+      "name": "光を失った金属の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-3611ca793ff1",
+      "name": "光彩のソラリスオーナメントウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-28ea7cf380c4",
+      "name": "光輝のソラリスオーナメントウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-565c433ab72e",
+      "name": "再生の粉",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-8d4bda48c915",
+      "name": "冷酷さの証",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1618b9d077b5",
+      "name": "凝縮された混沌のルーン",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-5787b8144254",
+      "name": "切られた封印の鎖",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-2b2d312a3209",
+      "name": "剣士のグローブ(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-45de53edfba4",
+      "name": "剣士のグローブ(男性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-437a806e59e0",
+      "name": "勇猛な戦士の宝石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-f31e0dd98167",
+      "name": "午前のソラリスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7a9e180215af",
+      "name": "午後のソラリスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d1cb95ccd81d",
+      "name": "古代獣の皮",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-95f60ee2b419",
+      "name": "図面 - ハイランダークレイモア",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7f4fab73ea2d",
+      "name": "図面 - ファルカタ",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-ebc01440341e",
+      "name": "図面 - ボルケーノシリンダー",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9f95bda1ffd9",
+      "name": "図面 - リファインドダスティンシルバーナイトヘルム",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e39b4d52ed8c",
+      "name": "図面 - 太陽と月の剣",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b41712f5a01d",
+      "name": "図面(テムズプレートヘルメット)",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-b73a2e768c2f",
+      "name": "増幅された錬金術の結晶",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-860a8286b937",
+      "name": "壊れたエンブレム",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-f564d1120958",
+      "name": "壊れた巨大なエンブレム",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-c05fee4b8c44",
+      "name": "壊れた輪状構造体",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-4bff55f29ac3",
+      "name": "変形された輪状構造体",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e1045b2b74bb",
+      "name": "大きな金貨入れ",
+      "category": "currency_container",
+      "aliases": [],
+      "source_ids": [
+        "rabbie_wiki"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-4686446c9c6c",
+      "name": "大罪の天使の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-049133efab97",
+      "name": "大罪の茨の翼(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-32da968b2b45",
+      "name": "太い木の棒",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b1ce02fd9458",
+      "name": "太陽石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0111c4818df0",
+      "name": "守護の黙示録",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d7dc576ee7d9",
+      "name": "封印されたペット成長カード",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-32681581c9a6",
+      "name": "封印されたペット成長カード[ALL-上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-2358be362e1e",
+      "name": "封印されたペット成長カード[ALL-下級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-9b8fad13aa16",
+      "name": "封印されたペット成長カード[ALL-中級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-62d43abda266",
+      "name": "封印されたペット成長カード[カバン-上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-38b2a37345d7",
+      "name": "封印されたペット成長カード[カバン-下級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-9b97305d1a68",
+      "name": "封印されたペット成長カード[カバン-中級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-980992977207",
+      "name": "封印されたペット成長カード[カバン-最上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-f5f1182ec036",
+      "name": "封印されたペット成長カード[ペットポイント-上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-e0529f9c8fcc",
+      "name": "封印されたペット成長カード[ペットポイント-下級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-f9329faefa83",
+      "name": "封印されたペット成長カード[ペットポイント-中級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-041537bbda78",
+      "name": "封印されたペット成長カード[ペットポイント-最上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-236608c31332",
+      "name": "封印されたペット成長カード[召喚時間-上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-b18bc4941cf2",
+      "name": "封印されたペット成長カード[召喚時間-下級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-ffe7e8b617af",
+      "name": "封印されたペット成長カード[召喚時間-中級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-2317d74b8a03",
+      "name": "封印されたペット成長カード[召喚時間-最上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-20a2da1b2287",
+      "name": "封印されたペット成長カード[累積レベル-上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-8baec630805b",
+      "name": "封印されたペット成長カード[累積レベル-下級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-13e7bb8c468d",
+      "name": "封印されたペット成長カード[累積レベル-中級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-f3a118841283",
+      "name": "封印されたペット成長カード[累積レベル-最上級]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "pet_official",
+        "pet_names"
+      ],
+      "notes": [
+        "種類・等級を区別する正式名。封印解除後のカードとは別品。",
+        "カバンの容量差は地面品名に含まれないため、架空の容量付き名は作らない。",
+        "個別のダンジョン・等級別出現範囲を保証する一覧ではありません。"
+      ]
+    },
+    {
+      "id": "item-c6461a828041",
+      "name": "封印の黒い金属",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-a3d2d5425dcb",
+      "name": "専用エンチャントスクロール・アエロ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-40d293300f3f",
+      "name": "専用エンチャントスクロール・アレゴリー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "ルンダ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-703091bc9956",
+      "name": "専用エンチャントスクロール・イカロス",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-2a864b9628f3",
+      "name": "専用エンチャントスクロール・エルフの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-870ff1e7ca20",
+      "name": "専用エンチャントスクロール・エレメンタリスト",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-a7a70300f076",
+      "name": "専用エンチャントスクロール・オニバス",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9e9d61578f1a",
+      "name": "専用エンチャントスクロール・オフィサー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-a06f699fc9f3",
+      "name": "専用エンチャントスクロール・オフィサーの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9feaff5cdc06",
+      "name": "専用エンチャントスクロール・オーキュペテー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-118cac65784d",
+      "name": "専用エンチャントスクロール・カラスの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3276483459a6",
+      "name": "専用エンチャントスクロール・カーテンコール",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "champion_report"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "影の世界のチャンピオン エリート"
+      ]
+    },
+    {
+      "id": "item-eae3f377a204",
+      "name": "専用エンチャントスクロール・グロッキー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-997542e5f36f",
+      "name": "専用エンチャントスクロール・ケライノ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3cd981f72e0c",
+      "name": "専用エンチャントスクロール・コウノトリの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-64b259c22f61",
+      "name": "専用エンチャントスクロール・ジーニアス",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e3a1e50cf1c2",
+      "name": "専用エンチャントスクロール・スズメの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-fb29380010b0",
+      "name": "専用エンチャントスクロール・スパーリング",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "キア HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-341606c9bba5",
+      "name": "専用エンチャントスクロール・セレネ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1c39a6e3e337",
+      "name": "専用エンチャントスクロール・ソリスト",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-48165091d897",
+      "name": "専用エンチャントスクロール・チャンピオン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-15c7b7abd95f",
+      "name": "専用エンチャントスクロール・ツバメの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-91bfb26f20bd",
+      "name": "専用エンチャントスクロール・ディアーナ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0d16e818473d",
+      "name": "専用エンチャントスクロール・トゥルナイ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-21e58fdddada",
+      "name": "専用エンチャントスクロール・ネクロマンサー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-133ef31ca0ce",
+      "name": "専用エンチャントスクロール・ノッキング",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-01848cb10776",
+      "name": "専用エンチャントスクロール・バーレスク",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-ac018ffa8bf2",
+      "name": "専用エンチャントスクロール・ホワイトホース",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-4cc5bb8886e6",
+      "name": "専用エンチャントスクロール・マナコンジャラー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-55f0b29ebe27",
+      "name": "専用エンチャントスクロール・マナソーサラー",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c03cf898cb7b",
+      "name": "専用エンチャントスクロール・メテオロイド",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "meteor_user"
+      ],
+      "notes": [
+        "利用者の品名画像で専用を確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-add4c9dbe136",
+      "name": "専用エンチャントスクロール・レジスタンス",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a0974ed1975d",
+      "name": "専用エンチャントスクロール・レプリカ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-c755889ef077",
+      "name": "専用エンチャントスクロール・丸い",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_037d88e4"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e16395785d66",
+      "name": "専用エンチャントスクロール・予知の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "キア HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-182775a4172c",
+      "name": "専用エンチャントスクロール・傍白",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "以夷制夷 エリート"
+      ]
+    },
+    {
+      "id": "item-91ddc6eb8061",
+      "name": "専用エンチャントスクロール・傲慢な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b5fa41fc32a9",
+      "name": "専用エンチャントスクロール・再会",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-d831e6e48c8c",
+      "name": "専用エンチャントスクロール・冠羽",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-079197149f35",
+      "name": "専用エンチャントスクロール・凍りついた",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-95b80fe54926",
+      "name": "専用エンチャントスクロール・分解の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3546f74ef0fd",
+      "name": "専用エンチャントスクロール・刺す",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-dc4dc4e896c9",
+      "name": "専用エンチャントスクロール・地道な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "ルンダ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-89d7626830dc",
+      "name": "専用エンチャントスクロール・夜想曲",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-079a63b72d1f",
+      "name": "専用エンチャントスクロール・大変な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-79b80bd5e097",
+      "name": "専用エンチャントスクロール・学究的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "reward_es_types"
+      ],
+      "notes": [
+        "改変報酬表のキア上級HD欄と☆記号の説明で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-86c814103739",
+      "name": "専用エンチャントスクロール・容易ではない",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-331814563c4c",
+      "name": "専用エンチャントスクロール・将軍",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ]
+    },
+    {
+      "id": "item-51835f89bb70",
+      "name": "専用エンチャントスクロール・尊い",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4b320c0473ce",
+      "name": "専用エンチャントスクロール・尾羽",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "wing_feb"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-4d2a8897dd76",
+      "name": "専用エンチャントスクロール・巧みな",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-20c5e0bd34d7",
+      "name": "専用エンチャントスクロール・幻影",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "user_screenshots",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "キア HD"
+      ]
+    },
+    {
+      "id": "item-4f51d94c73db",
+      "name": "専用エンチャントスクロール・待ち伏せ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-474ca22e3670",
+      "name": "専用エンチャントスクロール・微かな",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-93f12869e3c0",
+      "name": "専用エンチャントスクロール・戻した",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-9b823c6200c8",
+      "name": "専用エンチャントスクロール・指組み",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-ac37cae3cfc0",
+      "name": "専用エンチャントスクロール・挑戦者",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-65ec51231902",
+      "name": "専用エンチャントスクロール・操る",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-ddfe312745cc",
+      "name": "専用エンチャントスクロール・放浪者",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-3aa550d11af5",
+      "name": "専用エンチャントスクロール・昏睡状態",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-6b9a0ec40502",
+      "name": "専用エンチャントスクロール・楽園",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4f5b2e98f3ab",
+      "name": "専用エンチャントスクロール・概念の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-59f6f8071c21",
+      "name": "専用エンチャントスクロール・求道者の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-c225347a5fbd",
+      "name": "専用エンチャントスクロール・潔白な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD"
+      ]
+    },
+    {
+      "id": "item-bef6ac549c05",
+      "name": "専用エンチャントスクロール・火炎",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_cf77b0d0"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-1094815d00c5",
+      "name": "専用エンチャントスクロール・災難",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-14497aa92556",
+      "name": "専用エンチャントスクロール・無関心な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "ルンダ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-35adfe9f6158",
+      "name": "専用エンチャントスクロール・熟練者",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-4ea33868f441",
+      "name": "専用エンチャントスクロール・独白",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
+      "id": "item-7619c063153d",
+      "name": "専用エンチャントスクロール・白日夢",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ]
+    },
+    {
+      "id": "item-1b17c7b7c0c9",
+      "name": "専用エンチャントスクロール・白日夢の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD",
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a43bcbc5ea67",
+      "name": "専用エンチャントスクロール・真夜中の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-88a5831801d7",
+      "name": "専用エンチャントスクロール・矛盾的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e0eeefaba182",
+      "name": "専用エンチャントスクロール・精神的な",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-29d7e8e49292",
+      "name": "専用エンチャントスクロール・絶対者",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-09f367586d5b",
+      "name": "専用エンチャントスクロール・蒸留された",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "以夷制夷 エリート"
+      ]
+    },
+    {
+      "id": "item-d7a5027427ff",
+      "name": "専用エンチャントスクロール・蒸発された",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
+      "id": "item-27bd14416753",
+      "name": "専用エンチャントスクロール・記憶喪失",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-d12c6ff23a5c",
+      "name": "専用エンチャントスクロール・調和",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-e69f4bed1097",
+      "name": "専用エンチャントスクロール・走る",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-fe59675832e8",
+      "name": "専用エンチャントスクロール・軌道",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "astrologer_es"
+      ],
+      "notes": [
+        "公式告知のアイテム名で確認。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-46b6c005e8d8",
+      "name": "専用エンチャントスクロール・鋼鉄の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "影の世界のチャンピオン エリート"
+      ]
+    },
+    {
+      "id": "item-5b02ce7a76cc",
+      "name": "専用エンチャントスクロール・鋼鉄針",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": [
+        "エンチャント名と種類を出典で確認。地面表示形式は利用者PNGの通常/専用スクロールから構成。各品の表示画像は未確認。"
+      ],
+      "reward_locations": [
+        "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-68271759699d",
+      "name": "専用エンチャントスクロール・鍵",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_ae33b010"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-a82f1052163f",
+      "name": "専用エンチャントスクロール・黒檀",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "es_51528e6f"
+      ],
+      "notes": [
+        "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
+        "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-f11542988f9f",
+      "name": "崩壊した魔力のエキス",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "new_rise_1",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-369092bac32a",
+      "name": "巨大な鎧の欠片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-c8a603897446",
+      "name": "建築用石材",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-6f4075725f84",
+      "name": "忘れられた魔法使いの宝石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-b0907a6b60be",
+      "name": "悪夢の番人の遺物",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b3d80eb2ce47",
+      "name": "意志が込められたルーンストーン",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-6fa97d85b821",
+      "name": "採集用ナイフ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-5392cd6136a5",
+      "name": "探検隊調査受注券- [アルビハードトレーニング]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-19e5bab87ba8",
+      "name": "探検隊調査受注券- [キアゴーレムブレイカー]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-53589af30ea8",
+      "name": "探検隊調査受注券- [ルンダとは違う]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-aba57c0e2344",
+      "name": "探検隊調査受注券- [夢幻の…どこですって？]",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-ac7ae815d4de",
+      "name": "断固たる刃の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1b34af493d7d",
+      "name": "星つき魔道士の帽子",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-3f0e3e889e8c",
+      "name": "木の棒",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-b44d8967cc2a",
+      "name": "栄光のソラリスオーナメントウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a705d68608ee",
+      "name": "棍棒",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-0d4d13138630",
+      "name": "業火のサークルウィングの破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3373d8e0dfee",
+      "name": "極光の結晶",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-999d116b4cb1",
+      "name": "正午のソラリスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-cd6880dd2ac2",
+      "name": "歪曲の粉",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-dcbad82bfb8e",
+      "name": "波模様の鉱石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-8f60c0c046d8",
+      "name": "浄化された使徒のエキス",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3dcfb32641a0",
+      "name": "浄化された白い粉",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-71b8f2d185de",
+      "name": "浄化された魔法使いの宝石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-92b9fdbfcc13",
+      "name": "混沌のルーン",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-b28d46909f84",
+      "name": "満月石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-631941cfe57c",
+      "name": "炎の糸",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_2",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [
+        "名前マスターへの登録は集計対象への指定を意味しない。利用者指定の除外品。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-41fcffa199ca",
+      "name": "燦爛たるブラックローズアンダーウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d86f114de8e1",
+      "name": "燦爛たるロイヤルティーカップウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-1d8fff153013",
+      "name": "片手斧",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-9f42c41debe8",
+      "name": "特殊加工された黒檀",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-e1cd1a5b7964",
+      "name": "玲瓏たるソラリスオーナメントウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7207ced0c861",
+      "name": "玲瓏たる羽根",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "wing_mar"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-961fc2ad6384",
+      "name": "生地用麺棒",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-7748eb427198",
+      "name": "目覚めた力の精髄",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "new_rise_2",
+        "february_update",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3b2d473e07a2",
+      "name": "真昼のソラリスウィング(エンチャント)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a5918b021b29",
+      "name": "短剣",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd",
+        "shadow_war"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-1a7b8824978b",
+      "name": "石茎の鉱石",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_hd"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-95a2bdf73dce",
+      "name": "破壊された封印の鎖",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7a9adc547939",
+      "name": "硬い怪獣の角",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-3e22531b5765",
+      "name": "粉々になった黒い金属",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-28f94993cf99",
+      "name": "精製された触媒",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-15ba8e8983d6",
+      "name": "絶対零度冷却剤",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-f31f5db4e88f",
+      "name": "腐敗した使徒の皮",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "february_update",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-21b3f93763f3",
+      "name": "見習い錬金術師のスーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-ed36bc6e0a6d",
+      "name": "覚醒した力の欠片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-7311abc795d6",
+      "name": "覚醒した力の結晶",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-0b5112a643d4",
+      "name": "調和のサークルウィングの破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-69612a400e8a",
+      "name": "謎の羽根",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-fa90c665c8e5",
+      "name": "赤い改造石",
+      "category": "upgrade_stone",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-434d1f539c33",
+      "name": "転移のカタリスト",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "new_rise_2",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-89540dec8108",
+      "name": "輝く結晶の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e8bafc9506e5",
+      "name": "金貨",
+      "category": "currency",
+      "aliases": [],
+      "source_ids": [
+        "user_screenshots",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-870cde40caa4",
+      "name": "鋭く砕けた怪物の核",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-609a6e516939",
+      "name": "錆びた封印の鎖",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-b6488c6672b6",
+      "name": "鍛えられた武器の欠片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "celtic_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-bd2e892ae406",
+      "name": "闇が宿る刃の欠片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "shadow_elite"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
+      "id": "item-b5d584391a36",
+      "name": "闇に染まる刃の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "celtic_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-7b537e56a94c",
+      "name": "闘魂の金属の破片",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "northern_materials",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-8cf30410f5a0",
+      "name": "青い改造石",
+      "category": "upgrade_stone",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-2d848c683c30",
+      "name": "魔力のエキス",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-e821454e2f0e",
+      "name": "魔力の黄金の糸",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "finishing_materials",
+        "memo_hd",
+        "memo_rabbie"
+      ],
+      "notes": [],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-d056681984c5",
+      "name": "魔法の粉",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "rewards_wiki",
+        "memo_hd"
+      ],
+      "notes": []
+    },
+    {
+      "id": "item-52a6615b2a55",
+      "name": "黄昏の剣",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "memo_rabbie"
+      ],
+      "notes": [
+        "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "夢幻ラビ 通常",
+        "夢幻ラビ 誘惑"
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "enchant_name": "巧みな",
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "reason": "正式な通常/専用スクロール表示が未確認。マスターの照合対象に含めない。"
+    },
+    {
+      "enchant_name": "微かな",
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "reason": "正式な通常/専用スクロール表示が未確認。マスターの照合対象に含めない。"
+    },
+    {
+      "enchant_name": "熟練者",
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "reason": "正式な通常/専用スクロール表示が未確認。マスターの照合対象に含めない。"
+    },
+    {
+      "enchant_name": "楽園",
+      "source_ids": [
+        "new_rise_2"
+      ],
+      "reason": "正式な通常/専用スクロール表示が未確認。マスターの照合対象に含めない。"
+    }
+  ]
+}
