@@ -15,7 +15,7 @@ from urllib.parse import urlsplit, parse_qs, urlencode
 from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
 from zipfile import ZipFile
 
-VERSION = '0.18.2'
+VERSION = '0.18.3'
 APP_ID = 'KarenDrop'
 MAX_DOWNLOAD = 512 * 1024 * 1024
 TOP_FILES = {'KarenDrop.exe', 'item-master.json', 'requirements.txt', 'README_EXE.txt',
@@ -83,7 +83,7 @@ def download(url, target, limit, progress=lambda done, total: None):
     started = time.monotonic()
     try:
         for attempt in range(3):
-            with opener.open(Request(url, headers={'User-Agent': 'KarenDropUpdater/0.18.2', 'Cache-Control': 'no-cache'}), timeout=30) as response:
+            with opener.open(Request(url, headers={'User-Agent': 'KarenDropUpdater/0.18.3', 'Cache-Control': 'no-cache'}), timeout=30) as response:
                 if not _allowed_url(response.geturl()): raise ValueError('ダウンロード先が不正です。')
                 content_type = response.headers.get('Content-Type', '').lower()
                 if 'text/html' in content_type:

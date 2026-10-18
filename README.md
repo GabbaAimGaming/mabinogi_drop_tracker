@@ -1,10 +1,10 @@
-# KarenDrop v0.18.2
+# KarenDrop v0.18.3
 
 マビノギの画面に表示されたドロップ品名を読み取り、周回ごとの記録・確認・集計を行うWindowsツールです。
 
 ## ダウンロード
 
-[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v0.18.2-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
+[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v0.18.3-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
 Pythonの導入は不要です。Source code ZIPは開発者向けです。
 
 操作は [README_EXE.txt](README_EXE.txt)、更新・復旧は [更新方法.txt](更新方法.txt)、制限と回避方法は [現在の問題点と対処方法.txt](現在の問題点と対処方法.txt) を参照してください。

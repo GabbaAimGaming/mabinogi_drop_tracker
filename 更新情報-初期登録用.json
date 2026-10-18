@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "app_id": "KarenDrop",
-  "version": "0.18.1",
-  "release_notes": "更新確認機能を追加しました。現在はv0.18.1が最新版です。",
+  "version": "0.18.3",
+  "release_notes": "表示倍率によって拡大された品名の読み取りを改善しました。",
   "package": null
 }

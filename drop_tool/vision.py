@@ -102,6 +102,9 @@ class Vision:
             x0, y0 = (round(image.width * CENTER[0]), round(image.height * CENTER[1]))
             x1, y1 = (round(image.width * CENTER[2]), round(image.height * CENTER[3]))
             region = image.crop((x0, y0, x1, y1))
+        from .label_scale import normalized
+        original_region = region
+        region, recognition_scale = normalized(region)
         a = np.asarray(region).astype(float)
         m = text_pixels(region).astype('uint8') * 255
         m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((1, 13), 'uint8'))
@@ -140,12 +143,25 @@ class Vision:
         for y, x, im in sorted(boxes):
             left = x
             for piece in split_labels(im):
+                normalized_width = piece.width
                 if im.info.get('recovered_plate') or np.mean(np.asarray(piece).max(2) < 90) >= .20:
                     # 画面上の位置（検出範囲内の座標）。ALT表示中の複数フレームで同じ行を
                     # 対応付けるために使う。品名の判定には使わない。
                     piece.info['pos'] = (int(y), int(left), piece.width)
+                    if recognition_scale != 1:
+                        sx = original_region.width / region.width
+                        sy = original_region.height / region.height
+                        # 解析だけ縮小し、証拠・学習画像と位置は元キャプチャの画素に戻す。
+                        rect = (round(max(0, left-2)*sx), round(max(0, y-2)*sy),
+                                round(min(region.width, left-2+piece.width)*sx),
+                                round(min(region.height, y-2+piece.height)*sy))
+                        source_piece = original_region.crop(rect)
+                        source_piece.info['pos'] = (round(y*sy), round(left*sx), source_piece.width)
+                        source_piece.info['recognition_image'] = piece
+                        source_piece.info['recognition_scale'] = recognition_scale
+                        piece = source_piece
                     pieces.append(piece)
-                left += piece.width
+                left += normalized_width
         return pieces
 
     def recognize_template(self, image, mask=None):
@@ -191,7 +207,7 @@ class Vision:
         ocr_error = ''
         if unknown:
             try:
-                suggestions = self.ocr_suggestions([im for _, im, _ in unknown])
+                suggestions = self.ocr_suggestions([im.info.get('recognition_image', im) for _, im, _ in unknown])
             except (OSError, RuntimeError, ValueError) as exc:
                 suggestions = [''] * len(unknown)
                 ocr_error = str(exc)

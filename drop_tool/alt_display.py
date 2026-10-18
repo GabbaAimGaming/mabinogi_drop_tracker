@@ -96,6 +96,8 @@ def quick_check(region):
     select()と同じ「暗い板」「縦の積み重なり」をゆるい条件で見る。Trueの時だけ
     本解析を行う。名札だけの画面では本解析を省けるため、待機中の負荷が下がる。
     """
+    from .label_scale import normalized
+    region, _ = normalized(region)
     a = np.asarray(region.convert('RGB'))[::2, ::2].astype(np.int16)
     if a.size == 0:
         return False
