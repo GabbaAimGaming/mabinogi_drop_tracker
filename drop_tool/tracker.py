@@ -9,11 +9,15 @@ import unicodedata
 import copy
 from .config import ROOT
 
+SHADOW_MISSIONS = ('全面戦争', '以夷制夷', 'スナイパー参戦', '影の世界のチャンピオン', '遭遇戦')
+
 def normalize(text):
     """全半角と空白の差をなくし、OCR名・除外名・学習名を比較できる形にする。"""
     return ''.join(unicodedata.normalize('NFKC', text).split())
 
 def default_near(dungeon, difficulty):
+    if dungeon in SHADOW_MISSIONS:
+        return '不使用'
     return '使用' if dungeon == 'アルビ' and difficulty == 'HD' else '未指定'
 
 class Store:
@@ -268,11 +272,33 @@ def consensus(readings):
         return readings[-1]
     rows = []
     for index, result in enumerate(readings):
-        for label in result['labels']:
-            row = next((r for r in rows if _same_row(r['pos'], label['pos'])), None)
-            if row is None:
+        # 同名の板は小さな移動を許す。無関係な隣接行まで許容幅を広げない。
+        # フレーム単位の一対一対応で、同じ品が複数落ちても票を混ぜない。
+        pairs = []
+        for li, label in enumerate(result['labels']):
+            y, x, w = label['pos']
+            for ri, row in enumerate(rows):
+                ry, rx, rw = row['pos']
+                same_name = (bool(normalize(label['name'])) and label['name'] != '読取不明'
+                             and normalize(row['labels'][-1][1]['name']) == normalize(label['name']))
+                overlap = max(0, min(x + w, rx + rw) - max(x, rx))
+                moved = (same_name and abs(y - ry) <= 12
+                         and overlap >= min(w, rw) * .65
+                         and min(w, rw) >= max(w, rw) * .7)
+                if _same_row(row['pos'], label['pos']) or moved:
+                    pairs.append((not same_name, abs(y - ry), abs(x - rx), li, ri))
+        assigned, used = {}, set()
+        for _, _, _, li, ri in sorted(pairs):
+            if li not in assigned and ri not in used:
+                assigned[li] = ri
+                used.add(ri)
+        for li, label in enumerate(result['labels']):
+            if li not in assigned:
                 row = {'pos': label['pos'], 'labels': [], 'frames': set()}
                 rows.append(row)
+            else:
+                row = rows[assigned[li]]
+                row['pos'] = label['pos']
             row['labels'].append((index, label))
             row['frames'].add(index)
     total = len(readings)

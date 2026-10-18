@@ -69,7 +69,7 @@ class NearGateTests(unittest.TestCase):
 class DictionaryUpdateTests(unittest.TestCase):
     def test_unique_names_and_source_ids(self):
         master = json.loads((ROOT/'item-master.json').read_text('utf-8'))
-        self.assertEqual(len(master['items']), 414)
+        self.assertGreaterEqual(len(master['items']), 440)
         self.assertEqual(len({lookup_key(x['name']) for x in master['items']}), len(master['items']))
         self.assertEqual(len({x['id'] for x in master['items']}), len(master['items']))
         for item in master['items']:

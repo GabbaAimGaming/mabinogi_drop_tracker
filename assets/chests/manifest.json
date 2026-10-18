@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "experimental": true,
   "templates": [
     {
@@ -121,6 +121,126 @@
       "id": "green-before",
       "file": "green-before.npz",
       "features": 74
+    },
+    {
+      "id": "blue-open-v11-03",
+      "file": "blue-open-v11-03.npz",
+      "features": 80
+    },
+    {
+      "id": "blue-open-v11-03-small",
+      "file": "blue-open-v11-03-small.npz",
+      "features": 41
+    },
+    {
+      "id": "blue-open-v11-04",
+      "file": "blue-open-v11-04.npz",
+      "features": 87
+    },
+    {
+      "id": "blue-open-v11-04-small",
+      "file": "blue-open-v11-04-small.npz",
+      "features": 61
+    },
+    {
+      "id": "blue-open-v11-05",
+      "file": "blue-open-v11-05.npz",
+      "features": 85
+    },
+    {
+      "id": "blue-open-v11-05-small",
+      "file": "blue-open-v11-05-small.npz",
+      "features": 61
+    },
+    {
+      "id": "blue-open-v11-06",
+      "file": "blue-open-v11-06.npz",
+      "features": 81
+    },
+    {
+      "id": "blue-open-v11-06-small",
+      "file": "blue-open-v11-06-small.npz",
+      "features": 40
+    },
+    {
+      "id": "blue-open-v11-08",
+      "file": "blue-open-v11-08.npz",
+      "features": 67
+    },
+    {
+      "id": "blue-open-v11-08-small",
+      "file": "blue-open-v11-08-small.npz",
+      "features": 38
+    },
+    {
+      "id": "blue-open-v11-12",
+      "file": "blue-open-v11-12.npz",
+      "features": 53
+    },
+    {
+      "id": "blue-open-v11-12-small",
+      "file": "blue-open-v11-12-small.npz",
+      "features": 34
+    },
+    {
+      "id": "blue-open-v11-02",
+      "file": "blue-open-v11-02.npz",
+      "features": 53
+    },
+    {
+      "id": "blue-open-v11-02-small",
+      "file": "blue-open-v11-02-small.npz",
+      "features": 31
+    },
+    {
+      "id": "blue-open-v11-09",
+      "file": "blue-open-v11-09.npz",
+      "features": 55
+    },
+    {
+      "id": "blue-open-v11-09-small",
+      "file": "blue-open-v11-09-small.npz",
+      "features": 54
+    },
+    {
+      "id": "blue-open-v11-10",
+      "file": "blue-open-v11-10.npz",
+      "features": 98
+    },
+    {
+      "id": "blue-open-v11-10-small",
+      "file": "blue-open-v11-10-small.npz",
+      "features": 48
+    },
+    {
+      "id": "blue-open-v11-11",
+      "file": "blue-open-v11-11.npz",
+      "features": 57
+    },
+    {
+      "id": "blue-open-v11-11-small",
+      "file": "blue-open-v11-11-small.npz",
+      "features": 37
+    },
+    {
+      "id": "blue-open-v11-17",
+      "file": "blue-open-v11-17.npz",
+      "features": 60
+    },
+    {
+      "id": "blue-open-v11-17-small",
+      "file": "blue-open-v11-17-small.npz",
+      "features": 37
+    },
+    {
+      "id": "blue-open-v11-20",
+      "file": "blue-open-v11-20.npz",
+      "features": 97
+    },
+    {
+      "id": "blue-open-v11-20-small",
+      "file": "blue-open-v11-20-small.npz",
+      "features": 62
     }
   ]
 }

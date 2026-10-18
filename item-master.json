@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "dictionary_version": "2026-10-15.2",
+  "dictionary_version": "2026-10-18.1",
   "language": "ja-JP",
   "scope": [
     "アルビ HD",
@@ -8,7 +8,12 @@
     "ルンダ HD",
     "夢幻ラビ 通常",
     "夢幻ラビ 誘惑",
-    "旧版の関連製作素材"
+    "旧版の関連製作素材",
+    "全面戦争 エリート",
+    "以夷制夷 エリート",
+    "スナイパー参戦 エリート",
+    "影の世界のチャンピオン エリート",
+    "遭遇戦 エリート"
   ],
   "complete": false,
   "purpose": "正式名照合用マスター。報酬許可リスト・除外設定・ドロップ率表ではない。",
@@ -138,6 +143,46 @@
       "title": "エンチャント個別表・入手アイテム欄",
       "url": "https://wikiwiki.jp/mabinogi/%E3%82%A8%E3%83%B3%E3%83%81%E3%83%A3%E3%83%B3%E3%83%88/prefix%28%E6%8E%A5%E9%A0%AD%29/%E8%8B%B1",
       "type": "community_wiki"
+    },
+    "shadow_elite": {
+      "title": "影ミッション エリート",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/エリート",
+      "type": "community_report"
+    },
+    "shadow_war": {
+      "title": "全面戦争",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/全面戦争",
+      "type": "community_report"
+    },
+    "shadow_sniper": {
+      "title": "スナイパー参戦",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/スナイパー参戦",
+      "type": "community_report"
+    },
+    "shadow_champion": {
+      "title": "影の世界のチャンピオン",
+      "url": "https://wikiwiki.jp/mabinogi/クエスト/影ミッション/影の世界のチャンピオン",
+      "type": "community_report"
+    },
+    "shadow_prefix": {
+      "title": "接頭ES 個別アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/エンチャント/prefix(接頭)/数",
+      "type": "community_report"
+    },
+    "shadow_suffix": {
+      "title": "接尾ES 個別アイテム欄",
+      "url": "https://wikiwiki.jp/mabinogi/エンチャント/suffix(接尾)/数",
+      "type": "community_report"
+    },
+    "astrologer_official": {
+      "title": "占星術師 1st 更新",
+      "url": "https://mabinogi.nexon.co.jp/notice/updateBoardContent.asp?ix=9990",
+      "type": "official"
+    },
+    "champion_report": {
+      "title": "影ミッション主要報酬報告",
+      "url": "https://note.com/kiri_chan_/n/n45a4e7701b01",
+      "type": "community_report"
     }
   },
   "items": [
@@ -363,6 +408,21 @@
       ]
     },
     {
+      "id": "item-fb5da0090342",
+      "name": "アースクエイクシリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
       "id": "item-0aab5796c8ab",
       "name": "イエローグランデサテンリボンウィング",
       "category": "equipment",
@@ -450,6 +510,21 @@
       ]
     },
     {
+      "id": "item-4459c10bd478",
+      "name": "エルブンショートボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_sniper"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
       "id": "item-a2274e5e4488",
       "name": "エンチャントスクロール・どっしりした",
       "category": "enchant_scroll",
@@ -504,6 +579,21 @@
       "notes": [
         "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
         "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-517fa738d350",
+      "name": "エンチャントスクロール・エルフの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -766,6 +856,21 @@
       ],
       "reward_locations": [
         "アルビ HD"
+      ]
+    },
+    {
+      "id": "item-c13fc7a07891",
+      "name": "エンチャントスクロール・ワイバーン",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -1134,6 +1239,23 @@
       ]
     },
     {
+      "id": "item-3bc7ab9ee2ac",
+      "name": "エンチャントスクロール・満月",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war",
+        "shadow_sniper"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート",
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
       "id": "item-476fd220526c",
       "name": "エンチャントスクロール・狙撃の",
       "category": "enchant_scroll",
@@ -1170,6 +1292,21 @@
       "notes": [
         "入手アイテム欄のスクロール種別を確認。別経路の種別を対象ダンジョンへ断定しない。",
         "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-bfcf9854195b",
+      "name": "エンチャントスクロール・相性",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
       ]
     },
     {
@@ -1483,6 +1620,21 @@
       ],
       "reward_locations": [
         "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-57eadc2f699c",
+      "name": "ガミュウコウモリのドレス",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -1844,6 +1996,21 @@
       ],
       "notes": [
         "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-105ab00617eb",
+      "name": "シリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -2544,15 +2711,38 @@
       ]
     },
     {
+      "id": "item-282ecb0c0daf",
+      "name": "バイオレット抽出液",
+      "category": "material",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war",
+        "shadow_sniper",
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート",
+        "スナイパー参戦 エリート",
+        "遭遇戦 エリート"
+      ]
+    },
+    {
       "id": "item-eb912f9ba69d",
       "name": "バトルショートソード",
       "category": "equipment",
       "aliases": [],
       "source_ids": [
-        "memo_hd"
+        "memo_hd",
+        "shadow_war"
       ],
       "notes": [
         "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
       ]
     },
     {
@@ -2998,6 +3188,53 @@
       ]
     },
     {
+      "id": "item-403a35f24a1e",
+      "name": "ペルシウスアークトゥルスオーブ",
+      "category": "equipment",
+      "aliases": [
+        "ベルシウスアークトゥルスオーブ"
+      ],
+      "source_ids": [
+        "astrologer_official",
+        "new_rise_2"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。",
+        "公式の占星術師装備名。夢幻ラビのペルシウス武器補完。オーブは提供された地面表示でも確認。"
+      ],
+      "reward_locations": []
+    },
+    {
+      "id": "item-40109b6bf680",
+      "name": "ペルシウスペレグリンサイズ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "astrologer_official",
+        "new_rise_2"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。",
+        "公式の占星術師装備名。夢幻ラビのペルシウス武器補完。オーブは提供された地面表示でも確認。"
+      ],
+      "reward_locations": []
+    },
+    {
+      "id": "item-d464af2b9d51",
+      "name": "ボルケーノシリンダー",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
       "id": "item-d15c3542ca52",
       "name": "ポポシャツとズボン",
       "category": "equipment",
@@ -3159,6 +3396,21 @@
       ]
     },
     {
+      "id": "item-08e215dba42c",
+      "name": "レザーロングボウ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
       "id": "item-393ce649e780",
       "name": "レッドグランデサテンリボンウィング",
       "category": "equipment",
@@ -3304,9 +3556,13 @@
       "aliases": [],
       "source_ids": [
         "celtic_materials",
-        "memo_hd"
+        "memo_hd",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-3611ca793ff1",
@@ -3392,6 +3648,36 @@
         "memo_hd"
       ],
       "notes": []
+    },
+    {
+      "id": "item-2b2d312a3209",
+      "name": "剣士のグローブ(女性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
+      "id": "item-45de53edfba4",
+      "name": "剣士のグローブ(男性用)",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
     },
     {
       "id": "item-437a806e59e0",
@@ -3510,6 +3796,21 @@
       ]
     },
     {
+      "id": "item-b41712f5a01d",
+      "name": "図面(テムズプレートヘルメット)",
+      "category": "other",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
+    },
+    {
       "id": "item-b73a2e768c2f",
       "name": "増幅された錬金術の結晶",
       "category": "material",
@@ -3533,9 +3834,13 @@
       "aliases": [],
       "source_ids": [
         "celtic_materials",
-        "memo_hd"
+        "memo_hd",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-f564d1120958",
@@ -3555,9 +3860,13 @@
       "aliases": [],
       "source_ids": [
         "celtic_materials",
-        "memo_hd"
+        "memo_hd",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-4bff55f29ac3",
@@ -3962,9 +4271,13 @@
       "aliases": [],
       "source_ids": [
         "celtic_materials",
-        "memo_hd"
+        "memo_hd",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-a3d2d5425dcb",
@@ -4015,6 +4328,21 @@
       ],
       "reward_locations": [
         "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-2a864b9628f3",
+      "name": "専用エンチャントスクロール・エルフの",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -4102,6 +4430,21 @@
       ],
       "reward_locations": [
         "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-3276483459a6",
+      "name": "専用エンチャントスクロール・カーテンコール",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "champion_report"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "影の世界のチャンピオン エリート"
       ]
     },
     {
@@ -4427,6 +4770,21 @@
       ]
     },
     {
+      "id": "item-a0974ed1975d",
+      "name": "専用エンチャントスクロール・レプリカ",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
       "id": "item-c755889ef077",
       "name": "専用エンチャントスクロール・丸い",
       "category": "enchant_scroll",
@@ -4456,6 +4814,21 @@
         "キア HD",
         "夢幻ラビ 通常",
         "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-182775a4172c",
+      "name": "専用エンチャントスクロール・傍白",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "以夷制夷 エリート"
       ]
     },
     {
@@ -4925,6 +5298,21 @@
       ]
     },
     {
+      "id": "item-4ea33868f441",
+      "name": "専用エンチャントスクロール・独白",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
       "id": "item-7619c063153d",
       "name": "専用エンチャントスクロール・白日夢",
       "category": "enchant_scroll",
@@ -5019,6 +5407,36 @@
       ]
     },
     {
+      "id": "item-09f367586d5b",
+      "name": "専用エンチャントスクロール・蒸留された",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "以夷制夷 エリート"
+      ]
+    },
+    {
+      "id": "item-d7a5027427ff",
+      "name": "専用エンチャントスクロール・蒸発された",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_prefix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "スナイパー参戦 エリート"
+      ]
+    },
+    {
       "id": "item-27bd14416753",
       "name": "専用エンチャントスクロール・記憶喪失",
       "category": "enchant_scroll",
@@ -5068,6 +5486,21 @@
       "notes": [
         "公式告知のアイテム名で確認。",
         "自動集計許可ではありません。"
+      ]
+    },
+    {
+      "id": "item-46b6c005e8d8",
+      "name": "専用エンチャントスクロール・鋼鉄の",
+      "category": "enchant_scroll",
+      "aliases": [],
+      "source_ids": [
+        "shadow_suffix"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "影の世界のチャンピオン エリート"
       ]
     },
     {
@@ -5131,9 +5564,13 @@
       "aliases": [],
       "source_ids": [
         "celtic_materials",
-        "memo_hd"
+        "memo_hd",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-c8a603897446",
@@ -5181,9 +5618,13 @@
       "category": "material",
       "aliases": [],
       "source_ids": [
-        "celtic_materials"
+        "celtic_materials",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-6fa97d85b821",
@@ -5303,6 +5744,21 @@
       ],
       "reward_locations": [
         "夢幻ラビ 誘惑"
+      ]
+    },
+    {
+      "id": "item-a705d68608ee",
+      "name": "棍棒",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_elite"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "遭遇戦 エリート"
       ]
     },
     {
@@ -5602,10 +6058,14 @@
       "category": "equipment",
       "aliases": [],
       "source_ids": [
-        "memo_hd"
+        "memo_hd",
+        "shadow_war"
       ],
       "notes": [
         "報酬一覧の掲載名。個別の地面表示は未確認。自動集計許可ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
       ]
     },
     {
@@ -5706,6 +6166,21 @@
       ]
     },
     {
+      "id": "item-21b3f93763f3",
+      "name": "見習い錬金術師のスーツ",
+      "category": "equipment",
+      "aliases": [],
+      "source_ids": [
+        "shadow_war"
+      ],
+      "notes": [
+        "正式名照合用。辞書登録だけでは自動集計しません。報酬一覧の網羅・現行の排出保証ではありません。"
+      ],
+      "reward_locations": [
+        "全面戦争 エリート"
+      ]
+    },
+    {
       "id": "item-ed36bc6e0a6d",
       "name": "覚醒した力の欠片",
       "category": "material",
@@ -5773,9 +6248,13 @@
       "category": "upgrade_stone",
       "aliases": [],
       "source_ids": [
-        "rewards_wiki"
+        "rewards_wiki",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-434d1f539c33",
@@ -5869,9 +6348,13 @@
       "category": "material",
       "aliases": [],
       "source_ids": [
-        "celtic_materials"
+        "celtic_materials",
+        "shadow_elite"
       ],
-      "notes": []
+      "notes": [],
+      "reward_locations": [
+        "遭遇戦 エリート"
+      ]
     },
     {
       "id": "item-b5d584391a36",

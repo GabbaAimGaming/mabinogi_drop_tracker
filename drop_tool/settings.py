@@ -10,8 +10,6 @@ DEFAULTS = {
     # 品名画像（data/evidence）の自動削除
     'evidence_auto_delete': True,
     'evidence_keep_runs': 3,
-    # 選んだウィンドウだけを Windows Graphics Capture で撮影する
-    'window_share': False,
     # 箱の探索は常に全体。full / center は品名の解析範囲を選ぶ。
     'scan_mode': 'full',
     'auto_reward': True,
@@ -22,7 +20,7 @@ DEFAULTS = {
 def _valid(key, value):
     if key == 'update_url':
         return isinstance(value, str) and len(value) <= 2048
-    if key in ('evidence_auto_delete', 'window_share', 'auto_reward'):
+    if key in ('evidence_auto_delete', 'auto_reward'):
         return isinstance(value, bool)
     if key == 'evidence_keep_runs':
         return type(value) is int and KEEP_RANGE[0] <= value <= KEEP_RANGE[1]
@@ -62,6 +60,7 @@ def save(folder, **changes):
             current = {}
     except (OSError, ValueError):
         current = {}
+    current.pop("window_share", None)  # 廃止した撮影設定だけを移行時に除去
     current.update(changes)
     temporary = path.with_suffix('.tmp')
     temporary.write_text(json.dumps(current, ensure_ascii=False, indent=2), 'utf-8')

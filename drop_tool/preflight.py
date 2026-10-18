@@ -46,17 +46,11 @@ def check_tk():
     root.destroy()
 
 
-# 無くても読取は動く（前面撮影へ戻る）ため、起動を止めない依存。
-OPTIONAL = {'windows-capture'}
-
-
 def check_libraries():
     for line in (ROOT / 'requirements.txt').read_text().splitlines():
         if not line.strip() or line.startswith('#'):
             continue
         name, expected = line.split('==')
-        if name in OPTIONAL:
-            continue
         actual = importlib.metadata.version(name)
         if actual != expected:
             raise ValueError(f'{name}：必要 {expected} / 現在 {actual}')
@@ -74,19 +68,6 @@ def check_writable():
             pass
 
 
-def check_window_share():
-    """画面共有（Windows Graphics Capture）のライブラリを読み込めるか。"""
-    for line in (ROOT / 'requirements.txt').read_text().splitlines():
-        if line.startswith('windows-capture=='):
-            expected = line.split('==')[1].strip()
-            actual = importlib.metadata.version('windows-capture')
-            if actual != expected:
-                raise ValueError(f'windows-capture：必要 {expected} / 現在 {actual}')
-    import windows_capture  # noqa: F401
-    if not hasattr(windows_capture, 'WindowsCapture'):
-        raise ValueError('windows_capture が別のファイルを指しています：' + str(windows_capture.__file__))
-
-
 def check_ocr():
     from .ocr_engine import probe
     probe()
@@ -99,9 +80,8 @@ def inspect():
         ('画面機能（Tk）', check_tk, True),
         ('画像ライブラリ', check_libraries, True),
         ('同梱日本語OCR（CPU）', check_ocr, False),
-        ('画面共有（Windows Graphics Capture）', check_window_share, False),
     ]
-    lines = ['ドロップ記録 v1.0 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.1 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:
