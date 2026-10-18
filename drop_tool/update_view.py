@@ -127,7 +127,7 @@ class UpdateView:
                 elif kind == 'progress': self.status.set(value)
                 elif kind == 'prepared':
                     updater.launch(value, self.work, ROOT)
-                    self.app.stop_share(); self.app.root.destroy()
+                    self.app.root.destroy()
                     return
                 elif kind == 'published':
                     self.checking = False; self.button.configure(state='normal')

@@ -1,13 +1,10 @@
 """設定タブ。撮影方法・読取方式・保存データの世代管理をまとめる。"""
 import tkinter as tk
 from tkinter import ttk, messagebox
-from PIL import ImageTk
 from .retention import evidence_usage
 from .settings import KEEP_RANGE
-from .window_share import ShareUnavailable
 
 NOTE = '#88666C'
-PREVIEW_SIZE = (320, 180)
 
 
 class SettingsViews:
@@ -17,15 +14,12 @@ class SettingsViews:
         self.app = app
         self.frame = ttk.Frame(app.notebook, padding=8)
         app.notebook.add(self.frame, text='設定')
-        self.preview_photo = None
         from .update_view import UpdateView
         self.updates = UpdateView(app, self.frame)
-        self._build_share()
         self._build_scan()
         self._build_evidence()
         self.refresh_usage()
         app.notebook.bind('<<NotebookTabChanged>>', self._fit, add='+')
-        self.app.root.after(1000, self._refresh_preview)
 
     def _fit(self, event=None):
         """設定タブは縦に長いので、表示中だけ全体スクロールの高さを広げる。"""
@@ -38,46 +32,6 @@ class SettingsViews:
             page.set_minimum_height(max(730, needed))
         else:
             page.set_minimum_height(730)
-
-    # ---- 画面共有 ----
-    def _build_share(self):
-        box = ttk.LabelFrame(self.frame, text='画面共有（選んだウィンドウだけを撮影）', padding=10)
-        box.pack(fill='x', anchor='n')
-        top = ttk.Frame(box)
-        top.pack(fill='x')
-        left = ttk.Frame(top)
-        left.pack(side='left', fill='both', expand=True)
-        ttk.Checkbutton(left, text='画面共有をONにする（撮影するゲーム欄で選んだウィンドウを共有）',
-                        variable=self.app.share_enabled, command=self.app.toggle_share).pack(anchor='w')
-        ttk.Label(left, textvariable=self.app.share_state, wraplength=560).pack(anchor='w', pady=(6, 0))
-        ttk.Label(left, wraplength=560, foreground=NOTE, text=(
-            'Windowsの画面キャプチャ機能で、選んだウィンドウの映像だけを受け取ります。'
-            '他のウィンドウが重なっていても、ゲームが背面にあっても読めます（最小化中は不可）。'
-            '共有中はOSがウィンドウに枠を表示します。キー入力の取得やゲームへの操作は行いません。'
-            '使えない環境では、これまでどおり前面のゲーム画面を撮影します。'
-        )).pack(anchor='w', pady=(6, 0))
-        self.preview = ttk.Label(top, text='共有中の映像はここに表示されます', width=40, anchor='center')
-        self.preview.pack(side='right', padx=(10, 0))
-
-    def _refresh_preview(self):
-        """共有中かつ設定タブ表示中だけ縮小プレビューを更新する。"""
-        try:
-            share = self.app.share
-            visible = self.app.notebook.select() == str(self.frame)
-            if share is not None and share.running and visible:
-                try:
-                    image = share.frame()
-                    image.thumbnail(PREVIEW_SIZE)
-                    self.preview_photo = ImageTk.PhotoImage(image)
-                    self.preview.configure(image=self.preview_photo, text='')
-                except ShareUnavailable as exc:
-                    self.preview_photo = None
-                    self.preview.configure(image='', text=str(exc))
-            elif share is None and self.preview_photo is not None:
-                self.preview_photo = None
-                self.preview.configure(image='', text='共有中の映像はここに表示されます')
-        finally:
-            self.app.root.after(1000, self._refresh_preview)
 
     # ---- 読取方式 ----
     def _build_scan(self):

@@ -49,10 +49,6 @@ def windows():
 def active(hwnd):
     return bool(hwnd and user32.IsWindow(hwnd) and (not user32.IsIconic(hwnd)) and (user32.GetForegroundWindow() == hwnd))
 
-def visible(hwnd):
-    """画面共有では前面でなくても撮影できる。閉じた・最小化したウィンドウは除く。"""
-    return bool(hwnd and user32.IsWindow(hwnd) and not user32.IsIconic(hwnd))
-
 def capture(hwnd, region=None):
     """手前にある選択ゲームのクライアント領域だけを取得する。
 

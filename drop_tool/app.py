@@ -10,11 +10,10 @@ from .notification import CompletionSound
 from .exporting import export_statistics
 from .image_display import pixel_preview
 from .label_images import ocr_image
-from .tracker import ROOT, Store, StableReading, default_near
+from .tracker import ROOT, Store, StableReading, default_near, SHADOW_MISSIONS
 from .vision import Vision, CENTER
 from .alt_display import quick_check
 from . import alt_capture
-from .window_share import WindowShare, ShareUnavailable
 from . import windows_capture as capture
 from . import settings as user_settings
 from .reward_gate import RewardGate
@@ -37,7 +36,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.0')
+        root.title('カレンとドロップ記録 v1.1')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -52,10 +51,6 @@ class App:
         self.near_detector = None
         self.samples = SampleReports(self.store.folder)
         self.scan_trace = []
-        # 画面共有：選んだウィンドウの映像だけを受け取る。OFFや失敗時は従来の画面撮影。
-        self.share = None
-        self.share_enabled = tk.BooleanVar(value=self.settings['window_share'])
-        self.share_state = tk.StringVar(value='画面共有：OFF')
         self.scan_mode = tk.StringVar(value=self.settings['scan_mode'])
         self.stable = StableReading()
         root.report_callback_exception = self.callback_error
@@ -104,15 +99,14 @@ class App:
         return removed
 
     def close(self):
-        """共有セッションを止めてから終了する。"""
+        """更新準備中は待機し、それ以外は終了する。"""
         updates = getattr(getattr(self, 'settings_views', None), 'updates', None)
         if updates and updates.installing:
             messagebox.showinfo('更新中', '更新準備が終わるまでお待ちください。')
             return
-        self.stop_share()
         self.root.destroy()
 
-    # ---- 画面共有（ウィンドウ指定キャプチャ） ----
+    # ---- 設定と前面撮影 ----
 
     def save_setting(self, **changes):
         try:
@@ -122,63 +116,12 @@ class App:
             messagebox.showerror('設定を保存できません', str(exc))
             return False
 
-    def toggle_share(self):
-        """UIのスイッチ。設定を保存し、選択中のウィンドウで共有を開始・停止する。"""
-        if not self.save_setting(window_share=bool(self.share_enabled.get())):
-            self.share_enabled.set(self.settings['window_share'])
-            return
-        self.update_share()
-
-    def stop_share(self, message='画面共有：OFF'):
-        share, self.share = self.share, None
-        if share is not None:
-            share.stop()
-        self.share_state.set(message)
-
-    def update_share(self):
-        """設定・選択ウィンドウに合わせて共有を張り直す。失敗しても従来撮影で続行する。"""
-        enabled = bool(self.settings.get('window_share'))
-        if self.share is not None and (not enabled or self.share.hwnd != self.hwnd or not self.share.running):
-            self.stop_share()
-        if not enabled:
-            self.share_state.set('画面共有：OFF（前面のゲーム画面を撮影）')
-            return
-        if not self.hwnd:
-            self.share_state.set('画面共有：ON（共有するウィンドウを選んでください）')
-            return
-        if self.share is not None:
-            return
-        name = next((n for h, n in self.windows if h == self.hwnd), '')
-        try:
-            self.share = WindowShare(self.hwnd, name).start()
-            self.share_state.set(f'画面共有：ON（{name or self.hwnd}を共有中）')
-        except ShareUnavailable as exc:
-            self.share = None
-            self.share_state.set('画面共有：利用不可。前面撮影で続行します（' + str(exc) + '）')
-            self.log_error(str(exc) + '\n')
-        self.epoch += 1
-        self.stable.reset()
-        self.reset_reward()
-
-    def sharing(self, hwnd):
-        share = getattr(self, 'share', None)
-        return share is not None and share.hwnd == hwnd and share.running
-
     def ready(self, hwnd):
-        """撮影してよい状態か。共有中は背面でも可、従来撮影はゲームが前面の時だけ。"""
-        if self.sharing(hwnd):
-            return capture.visible(hwnd)
+        """選択ゲームが前面にあり、最小化されていない場合だけ撮影する。"""
         return capture.active(hwnd)
 
     def grab(self, hwnd, region=None):
-        """ワーカーから呼ぶ撮影。共有映像を優先し、得られなければ前面撮影へ戻す。"""
-        share = getattr(self, 'share', None)
-        if share is not None and share.hwnd == hwnd and share.running:
-            try:
-                return share.frame(region)
-            except ShareUnavailable as exc:
-                if not capture.active(hwnd):
-                    raise ValueError(str(exc)) from exc
+        """前面のゲーム画面を撮影する。"""
         return capture.capture(hwnd, region) if region is not None else capture.capture(hwnd)
 
     def center_scan(self):
@@ -206,6 +149,8 @@ class App:
             messagebox.showerror('音の設定を保存できません', str(exc))
 
     def context_changed(self, event=None):
+        if self.dungeon.get() != self.last_context[0] and self.dungeon.get() in SHADOW_MISSIONS:
+            self.difficulty.set('エリート')
         context = (self.dungeon.get(), self.difficulty.get())
         if context != self.last_context:
             self.near.set(default_near(*context))
@@ -230,7 +175,6 @@ class App:
             self.window.set('')
             self.hwnd = None
             self.status.set('マビノギの起動を待っています。別のタイトルの場合は一覧から選んでください。')
-        self.update_share()
 
     def auto_window(self):
         try:
@@ -246,7 +190,6 @@ class App:
             self.epoch += 1
             self.stable.reset()
             self.reset_reward()
-            self.update_share()
     
     def new_run(self):
         """利用者の入場操作で周回を作る。報酬が同じでも別の周回として扱う。"""
@@ -299,8 +242,7 @@ class App:
             elif self.store.find(self.active_id)['status'] != 'waiting':
                 state = '監視：取得済み。履歴で確認してください。'
             elif not self.ready(self.hwnd):
-                state = ('監視：共有中のウィンドウが最小化されています。' if self.sharing(self.hwnd)
-                         else '監視：ゲームが手前になるのを待っています。')
+                state = '監視：ゲームが手前になるのを待っています。'
                 self.stable.reset()
                 self.reset_reward()
             elif not getattr(self, 'settings', {}).get('auto_reward', True):
@@ -311,9 +253,6 @@ class App:
             else:
                 state = '監視：画面の品名表示を探しています（ALTキー検出不要）。'
                 self.submit('live')
-            share = getattr(self, 'share', None)
-            if share is not None and share.closed:
-                self.stop_share('画面共有：共有中のウィンドウが閉じられました。前面撮影で続行します。')
             self.set_diagnostic(state)
         except Exception as exc:
             self.stable.reset()

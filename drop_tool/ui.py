@@ -18,9 +18,7 @@ def build_widgets(self):
     self.window = ttk.Combobox(bar, state='readonly', width=62)
     self.window.pack(side='left', fill='x', expand=True)
     ttk.Button(bar, text='一覧更新', command=self.refresh_windows).pack(side='left', padx=5)
-    # 選んだウィンドウだけを映す。詳細と映像の確認は「設定」タブ。
-    ttk.Checkbutton(bar, text='画面共有', variable=self.share_enabled,
-                    command=self.toggle_share).pack(side='left')
+    # 選択ゲームが前面のときだけ撮影する。
     self.window.bind('<<ComboboxSelected>>', self.choose_window)
     identity = ttk.Frame(pane)
     identity.pack(fill='x', pady=(6, 0))
@@ -31,10 +29,10 @@ def build_widgets(self):
     ttk.Button(identity, text='名前を保存', command=self.save_player_name).pack(side='left', padx=5)
     bar = ttk.Frame(pane)
     bar.pack(fill='x', pady=8)
-    self.dungeon = ttk.Combobox(bar, values=['アルビ', 'キア', 'ラビ', '夢幻ラビ', 'マス', 'フィアード', 'バリ', 'ルンダ', 'ペッカ'], width=15)
+    self.dungeon = ttk.Combobox(bar, values=['アルビ', 'キア', 'ラビ', '夢幻ラビ', 'マス', 'フィアード', 'バリ', 'ルンダ', 'ペッカ', '全面戦争', '以夷制夷', 'スナイパー参戦', '影の世界のチャンピオン', '遭遇戦'], width=24, height=6)
     self.dungeon.set('アルビ')
     self.dungeon.pack(side='left')
-    self.difficulty = ttk.Combobox(bar, values=['通常', '初級', '中級', '上級', 'HD', '誘惑', '音楽'], width=12)
+    self.difficulty = ttk.Combobox(bar, values=['通常', '初級', '中級', '上級', 'HD', '誘惑', '音楽', 'エリート'], width=12, height=6)
     self.difficulty.set('HD')
     self.difficulty.pack(side='left', padx=4)
     ttk.Label(bar, text='ネアル：').pack(side='left')

@@ -1,4 +1,4 @@
-# 開発案内 v1.0
+# 開発案内 v1.1
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`
@@ -17,7 +17,7 @@ Windows 64bit / Python 3.12。
 `python tools/run_tests.py`
 
 提供者の全画面画像は公開していないため、非公開画像に依存するモジュールはスキップを明示します。
-元の配布前検証環境ではこれらを含めて試験しています（v1.0は224件成功）。
+元の配布前検証環境ではこれらを含めて試験しています。
 提供画像を扱う場合もtests/fixturesとtools/benchmarks/videoはGit管理外のままにします。
 既存の記録・設定を使用せず一時フォルダーで検証してください。
 
@@ -25,7 +25,7 @@ Windows 64bit / Python 3.12。
 
 `python tools/build_exe.py dist`
 
-`python tools/package_release.py dist/KarenDrop KarenDrop-v1.0-windows.zip`
+`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1-windows.zip`
 
 `dist/KarenDrop/KarenDrop.exe --self-test result.json`
 

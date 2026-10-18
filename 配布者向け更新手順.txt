@@ -1,24 +1,11 @@
-﻿KarenDrop v1.0 公開手順（まだ公開していません）
+KarenDrop v1.1 公開手順
 
-1. GitHubのReleaseタグv1.0を作成し、次の3ファイルを添付します。
-   KarenDrop-v1.0-windows.zip / update-info.json / recovery-guide.txt
-   正式リリースとして最新に指定します。Draft/Prereleaseのままでは通常更新へ配信しません。
-2. 公開URLからJSON・ZIP・手順を取得し、ZIPの容量とSHA256を確認します。
-3. 旧版2つ（v0.18.3・v0.18.2）の全体ZIPもそれぞれのReleaseに置きます。
-   旧版をLatestにしないでください。旧版の削除は不要です。
-4. 同じv1.0全体ZIPをGoogleドライブにもアップロードし、「リンクを知っている全員」が閲覧できるようにします。
-5. 同梱ツールtools/make_legacy_feed.pyへZIP・ドライブ共有URL・出力先を渡し、旧版向けJSONを作成します。
-   またはVer1.0の設定「配布者用：更新情報JSONを作成」でZIPとドライブURLを選択します。
-6. 元の固定JSONを「版を管理 → 新版をアップロード」で差し替えます。ファイルを削除・作り直さないでください。
-   固定URL: https://drive.google.com/file/d/1dcxGWJkqxCZ9ViOkcnQUI-mWNCZd7niN/view?usp=sharing
-7. 旧版の「更新を確認」からVer1.0へ移行できることを公開後に確認します。
+1. 毎回、反映・公開の直前にGitHubのmain、他ブランチ、タグ、Release添付を前回確認時と比較する。
+2. 他の管理者の変更があれば上書きせず、取り込み・競合解決・再検証を行う。判断が必要なら公開前に相談する。
+3. 検証したソースをPRで反映し、検証したコミットへ新しい版のタグを付ける。既存タグやRelease添付は差し替えない。
+4. 新Releaseへ全体ZIP、update-info.json、recovery-guide.txtを添付し、ハッシュ・版番号を確認してLatestとして公開。
+5. 公開後に匿名アクセスで固定更新情報からZIPを取得し、全ファイル検証と更新適用を確認する。
 
-旧版の更新処理はGoogleドライブ専用です。旧版向けJSONへGitHubのZIP URLを書いても更新できません。
-GitHub用update-info.jsonを旧版向けドライブJSONへそのまま流用しないでください。
-移行後は既知の固定ドライブURLだけをGitHubへ自動で読み替えます。独自URLは維持します。
-
-以降の新版: 新しいタグvX.Yに全体ZIP、update-info.json、recovery-guide.txtを添付し、正式最新版として公開します。
-ZIP URLは版固有のURLを使い、同じタグのZIPだけを差し替えないでください。
-update-info.jsonは配布ZIPの容量・SHA256・版と一致するものを生成します。
-ソース変更だけのPushでは利用者の更新は発生しません。
-公開前にタグ・添付名・公開設定・本体バージョン・ハッシュを確認してください。
+v1.0以降はGitHubの固定更新情報を参照する。
+旧v0.18系向けDrive固定JSONはv1.0への橋渡しを維持する。v1.1用GitHubリンクへ直接差し替えない。
+提供サンプル・data・認証情報・開発作業フォルダーはソースにも配布ZIPにも入れない。
