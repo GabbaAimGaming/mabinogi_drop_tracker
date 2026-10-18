@@ -101,7 +101,7 @@ def inspect():
         ('同梱日本語OCR（CPU）', check_ocr, False),
         ('画面共有（Windows Graphics Capture）', check_window_share, False),
     ]
-    lines = ['ドロップ記録 v0.18.3 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.0 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:

@@ -37,7 +37,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v0.18.3')
+        root.title('カレンとドロップ記録 v1.0')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme

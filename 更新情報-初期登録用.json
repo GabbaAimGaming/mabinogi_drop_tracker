@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "app_id": "KarenDrop",
-  "version": "0.18.3",
+  "version": "1.0",
   "release_notes": "表示倍率によって拡大された品名の読み取りを改善しました。",
   "package": null
 }

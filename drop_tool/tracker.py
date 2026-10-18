@@ -73,7 +73,11 @@ class Store:
             raise ValueError('ダンジョン・難易度・ネアル使用/不使用を指定してください。')
         run = {'id': uuid.uuid4().hex, 'dungeon': dungeon.strip(), 'difficulty': difficulty.strip(), 'near': near, 'created': datetime.now().astimezone().isoformat(timespec='seconds'), 'status': 'waiting', 'rows': []}
         self.data['runs'].append(run)
-        self.save()
+        try:
+            self.save()
+        except Exception:
+            self.data['runs'].remove(run)
+            raise
         return run
 
     def find(self, run_id):

@@ -36,6 +36,7 @@ def run_app(guard=None):
                     raise ValueError('ネアル確認画面の検出資産を確認できません。')
                 report = dict(ocr=ocr_name, ok=True, title=root.title(), root=str(ROOT),
                               update_button=app.settings_views.updates.button.cget('text'),
+                              update_source=app.settings_views.updates.url.get(),
                               near_dialog=True,
                               chest_templates=len(detector.templates),
                               frozen=bool(getattr(sys, 'frozen', False)),

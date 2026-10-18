@@ -1,4 +1,4 @@
-"""公開Googleドライブの更新情報と配布ZIPを検証・展開する。利用者データは対象外。"""
+"""公開GitHub・Googleドライブの更新情報と配布ZIPを検証・展開する。利用者データは対象外。"""
 import hashlib
 import http.cookiejar
 from html.parser import HTMLParser
@@ -15,8 +15,39 @@ from urllib.parse import urlsplit, parse_qs, urlencode
 from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
 from zipfile import ZipFile
 
-VERSION = '0.18.3'
+VERSION = '1.0'
 APP_ID = 'KarenDrop'
+REPOSITORY = 'GabbaAimGaming/mabinogi_drop_tracker'
+RELEASES_URL = 'https://github.com/' + REPOSITORY + '/releases'
+DEFAULT_SOURCE = RELEASES_URL + '/latest/download/update-info.json'
+RECOVERY_URL = RELEASES_URL + '/latest/download/recovery-guide.txt'
+LEGACY_FEED_ID = '1dcxGWJkqxCZ9ViOkcnQUI-mWNCZd7niN'
+
+
+def effective_source(url):
+    # Only the shipped legacy feed migrates. Preserve custom publishers' URLs.
+    if not url or not url.strip():
+        return DEFAULT_SOURCE
+    try:
+        if parse_qs(urlsplit(drive_url(url)).query).get('id') == [LEGACY_FEED_ID]:
+            return DEFAULT_SOURCE
+    except ValueError:
+        pass
+    return url.strip()
+
+
+def download_url(url):
+    if not isinstance(url, str):
+        raise ValueError('更新先のURLが不正です。')
+    url = url.strip()
+    p = urlsplit(url)
+    if (p.scheme == 'https' and p.hostname == 'github.com' and not p.username
+            and p.port in (None, 443) and not p.query and not p.fragment
+            and re.fullmatch('/' + re.escape(REPOSITORY) +
+                             r'/releases/(?:latest/download|download/v[0-9]+(?:\.[0-9]+){1,3})/[A-Za-z0-9_.-]+', p.path)):
+        return url
+    return drive_url(url)
+
 MAX_DOWNLOAD = 512 * 1024 * 1024
 TOP_FILES = {'KarenDrop.exe', 'item-master.json', 'requirements.txt', 'README_EXE.txt',
              '更新内容.txt', '更新方法.txt', '現在の問題点と対処方法.txt', '検証記録.txt', 'update_helper.ps1'}
@@ -51,7 +82,9 @@ def drive_url(url):
 
 def _allowed_url(url):
     p = urlsplit(url)
-    return p.scheme == 'https' and p.hostname in ('drive.google.com', 'drive.usercontent.google.com') and not p.username and p.port in (None, 443)
+    return (p.scheme == 'https' and not p.username and p.port in (None, 443) and
+            (p.hostname in ('drive.google.com', 'drive.usercontent.google.com', 'release-assets.githubusercontent.com')
+             or (p.hostname == 'github.com' and p.path.startswith('/' + REPOSITORY + '/releases/'))))
 
 
 class DriveRedirect(HTTPRedirectHandler):
@@ -77,16 +110,18 @@ class ConfirmForm(HTMLParser):
 
 
 def download(url, target, limit, progress=lambda done, total: None):
-    url = drive_url(url)
+    url = download_url(url)
     opener = build_opener(DriveRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
     target = Path(target)
     started = time.monotonic()
     try:
         for attempt in range(3):
-            with opener.open(Request(url, headers={'User-Agent': 'KarenDropUpdater/0.18.3', 'Cache-Control': 'no-cache'}), timeout=30) as response:
+            with opener.open(Request(url, headers={'User-Agent': 'KarenDropUpdater/1.0', 'Cache-Control': 'no-cache'}), timeout=30) as response:
                 if not _allowed_url(response.geturl()): raise ValueError('ダウンロード先が不正です。')
                 content_type = response.headers.get('Content-Type', '').lower()
                 if 'text/html' in content_type:
+                    if urlsplit(url).hostname not in ('drive.google.com', 'drive.usercontent.google.com'):
+                        raise ValueError('GitHubから更新ファイルを取得できません。公開状況を確認してください。')
                     page = response.read(1_000_001)
                     if len(page) > 1_000_000: raise ValueError('ダウンロード確認画面が大きすぎます。')
                     form = ConfirmForm(); form.feed(page.decode('utf-8', 'replace'))
@@ -121,7 +156,7 @@ def validate_info(info):
             raise ValueError('新版のZIPがまだ更新情報に登録されていません。配布者へ確認してください。')
         return info
     if not isinstance(package, dict): raise ValueError('更新情報のZIP指定が不正です。')
-    drive_url(package.get('url', ''))
+    download_url(package.get('url', ''))
     if not re.fullmatch('[a-f0-9]{64}', package.get('sha256', '')) or type(package.get('size')) is not int or not 1 <= package['size'] <= MAX_DOWNLOAD:
         raise ValueError('更新情報のハッシュ値または容量が不正です。')
     if not isinstance(info.get('release_notes', ''), str) or len(info.get('release_notes', '')) > 8000:
@@ -132,7 +167,15 @@ def validate_info(info):
 def check(url, work):
     work = Path(work); work.mkdir(parents=True, exist_ok=True)
     file = work / 'update-info.json'
-    download(url, file, 64 * 1024)
+    from urllib.error import HTTPError
+    try:
+        download(effective_source(url), file, 64 * 1024)
+    except HTTPError as exc:
+        if exc.code == 404:
+            raise ValueError('更新情報がまだ公開されていないか、見つかりません。配布ページを確認してください。') from exc
+        if exc.code in (403, 429):
+            raise ValueError('配布先のアクセス制限により確認できません。時間をおいて再度お試しください。') from exc
+        raise
     return validate_info(json.loads(file.read_text('utf-8-sig')))
 
 
@@ -238,7 +281,7 @@ def launch(plan, work, root):
 
 
 def make_info(package, url):
-    drive_url(url)
+    download_url(url)
     with ZipFile(package) as archive:
         manifest = json.loads(archive.read('KarenDrop/release-manifest.json').decode('utf-8-sig'))
         for item in manifest['files']:
