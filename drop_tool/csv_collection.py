@@ -112,13 +112,8 @@ class CsvCollection:
 
     def _save(self, groups):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        if self.path.exists():
-            raw = self.path.read_bytes()
-            folder = self.path.parent / 'backups'
-            folder.mkdir(exist_ok=True)
-            backup = folder / ('csv-' + hashlib.sha256(raw).hexdigest()[:16] + '.json')
-            if not backup.exists():
-                backup.write_bytes(raw)
+        from .retention import backup_json
+        backup_json(self.path, self.path.parent / 'backups', prefix='csv-', keep=10)
         temporary = self.path.with_suffix('.tmp')
         temporary.write_text(json.dumps(dict(version=1, groups=groups), ensure_ascii=False, indent=2), 'utf-8')
         temporary.replace(self.path)

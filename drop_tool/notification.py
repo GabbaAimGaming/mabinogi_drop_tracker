@@ -3,6 +3,10 @@ import json
 import winsound
 from .config import ROOT
 
+# captured：ALT表示の撮影が終わった（ALTを離してよい）。complete：解析して周回に保存した。
+SOUNDS = {'start': 'capture-complete.wav', 'captured': 'capture-complete.wav', 'complete': 'read-complete.wav', 'error': 'read-error.wav'}
+
+
 class CompletionSound:
     def __init__(self, folder):
         self.path = folder / 'notification.json'
@@ -18,12 +22,13 @@ class CompletionSound:
         temporary.replace(self.path)
         self.enabled = bool(enabled)
 
-    def play(self, preview=False):
+    def play(self, preview=False, kind='complete'):
+        """読取音を鳴らす。ON/OFFは撮影完了音・解析完了音で共通。"""
         if not (self.enabled or preview):
             return
         try:
             # 非同期再生。OS既定の警告音にはフォールバックしない。
-            winsound.PlaySound(str(ROOT / 'assets' / 'read-complete.wav'),
+            winsound.PlaySound(str(ROOT / 'assets' / SOUNDS[kind]),
                 winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_NODEFAULT)
         except (RuntimeError, OSError):
             pass

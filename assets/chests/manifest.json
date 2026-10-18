@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "experimental": true,
+  "templates": [
+    {
+      "id": "closed-01",
+      "file": "closed-01.npz",
+      "features": 80
+    },
+    {
+      "id": "closed-02",
+      "file": "closed-02.npz",
+      "features": 106
+    },
+    {
+      "id": "closed-03",
+      "file": "closed-03.npz",
+      "features": 278
+    },
+    {
+      "id": "closed-04",
+      "file": "closed-04.npz",
+      "features": 602
+    },
+    {
+      "id": "closed-05",
+      "file": "closed-05.npz",
+      "features": 416
+    },
+    {
+      "id": "closed-06",
+      "file": "closed-06.npz",
+      "features": 37
+    },
+    {
+      "id": "closed-07",
+      "file": "closed-07.npz",
+      "features": 40
+    },
+    {
+      "id": "closed-08",
+      "file": "closed-08.npz",
+      "features": 51
+    },
+    {
+      "id": "closed-11",
+      "file": "closed-11.npz",
+      "features": 56
+    },
+    {
+      "id": "closed-12",
+      "file": "closed-12.npz",
+      "features": 60
+    },
+    {
+      "id": "closed-13",
+      "file": "closed-13.npz",
+      "features": 122
+    },
+    {
+      "id": "open-01",
+      "file": "open-01.npz",
+      "features": 62
+    },
+    {
+      "id": "open-02",
+      "file": "open-02.npz",
+      "features": 120
+    },
+    {
+      "id": "open-03",
+      "file": "open-03.npz",
+      "features": 134
+    },
+    {
+      "id": "open-04",
+      "file": "open-04.npz",
+      "features": 76
+    },
+    {
+      "id": "open-05",
+      "file": "open-05.npz",
+      "features": 73
+    },
+    {
+      "id": "open-06",
+      "file": "open-06.npz",
+      "features": 52
+    },
+    {
+      "id": "open-07",
+      "file": "open-07.npz",
+      "features": 38
+    },
+    {
+      "id": "open-08",
+      "file": "open-08.npz",
+      "features": 36
+    },
+    {
+      "id": "albi-a",
+      "file": "albi-a.npz",
+      "features": 35
+    },
+    {
+      "id": "albi-b",
+      "file": "albi-b.npz",
+      "features": 32
+    },
+    {
+      "id": "albi-c",
+      "file": "albi-c.npz",
+      "features": 40
+    },
+    {
+      "id": "blue",
+      "file": "blue.npz",
+      "features": 51
+    },
+    {
+      "id": "green-before",
+      "file": "green-before.npz",
+      "features": 74
+    }
+  ]
+}

@@ -49,8 +49,15 @@ def windows():
 def active(hwnd):
     return bool(hwnd and user32.IsWindow(hwnd) and (not user32.IsIconic(hwnd)) and (user32.GetForegroundWindow() == hwnd))
 
-def capture(hwnd):
-    """手前にある選択ゲームのクライアント領域だけを取得する。"""
+def visible(hwnd):
+    """画面共有では前面でなくても撮影できる。閉じた・最小化したウィンドウは除く。"""
+    return bool(hwnd and user32.IsWindow(hwnd) and not user32.IsIconic(hwnd))
+
+def capture(hwnd, region=None):
+    """手前にある選択ゲームのクライアント領域だけを取得する。
+
+    regionは(x0, y0, x1, y1)の0～1の比率。中央スキャンで撮影範囲を絞る。
+    """
     if not active(hwnd):
         raise ValueError('選択したゲーム画面を手前にしてください。')
     rect = wintypes.RECT()
@@ -60,4 +67,8 @@ def capture(hwnd):
     if rect.right < 50 or rect.bottom < 50:
         raise ValueError('ゲーム画面が小さすぎます。')
     box = (origin.x, origin.y, origin.x + rect.right, origin.y + rect.bottom)
+    if region is not None:
+        x0, y0, x1, y1 = region
+        box = (origin.x + round(rect.right * x0), origin.y + round(rect.bottom * y0),
+               origin.x + round(rect.right * x1), origin.y + round(rect.bottom * y1))
     return ImageGrab.grab(bbox=box, all_screens=True).convert('RGB')

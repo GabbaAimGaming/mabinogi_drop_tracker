@@ -1,0 +1,10 @@
+{
+  "name": "PP-OCRv6 small / RapidOCR ONNX",
+  "file": "japanese-rec.onnx",
+  "sha256": "6f327246b50388f3c176ae304bd95767ea6dc0c9ae92153ef8cbe210b3c14884",
+  "url": "https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.10.0/onnx/PP-OCRv6/rec/PP-OCRv6_rec_small.onnx",
+  "license": "Apache-2.0",
+  "runtime": "ONNX Runtime CPU",
+  "intra_op_threads": 2,
+  "batch_size": 6
+}
