@@ -1,75 +1,109 @@
-"""Windows OCRとの通信。品名検出や保存からプロセス実行を分離する。"""
+"""同梱モデルで品名を読む。通信・PowerShell・GPUは使わない。
+
+入力仕様はPaddleOCR/RapidOCRに従う。モデルの出典とハッシュは
+models/manifest.json、ライセンスはlicenses/に保存する。
+"""
+from functools import lru_cache
+import hashlib
 import json
-from pathlib import Path
-import shutil
-import subprocess
-import tempfile
+import math
+import threading
+import cv2
+import numpy as np
+from PIL import Image
 from .config import ROOT
 
 
-def invoke(arguments):
-    executable = shutil.which('powershell.exe')
-    if executable is None:
-        raise RuntimeError('Windows PowerShell（powershell.exe）が見つかりません。')
-    try:
-        proc = subprocess.run(
-            [executable, '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
-             '-File', str(ROOT / 'ocr_ja.ps1'), *arguments],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), timeout=35)
-    except subprocess.TimeoutExpired as exc:
-        raise RuntimeError('Windows OCRが35秒以内に応答しませんでした。') from exc
-    if proc.returncode:
-        detail = proc.stderr.decode('utf-8-sig', errors='replace').strip()
-        raise RuntimeError('Windows OCR：' + (detail[:1200] or '処理に失敗しました。'))
-    try:
-        return json.loads(proc.stdout.decode('utf-8-sig'))
-    except (UnicodeError, ValueError) as exc:
-        raise RuntimeError('Windows OCRから有効な結果を受け取れませんでした。') from exc
+def check_model(root=ROOT):
+    """モデルの取り違えや展開漏れを検出する。ダウンロードはしない。"""
+    manifest = json.loads((root / 'models/manifest.json').read_text('utf-8'))
+    model = root / 'models/japanese-rec.onnx'
+    if not model.is_file():
+        raise RuntimeError('OCRモデルがありません。modelsフォルダーを含めて展開してください。')
+    if hashlib.sha256(model.read_bytes()).hexdigest() != manifest.get('sha256'):
+        raise RuntimeError('OCRモデルが破損しているか、対応する版と異なります。配布ZIPから展開し直してください。')
+    return model
 
 
-def probe():
-    """言語エンジンの生成を確認。実スクリーンショットの認識成功は保証しない。"""
-    return invoke(['-Probe'])
+def prepare_image(image):
+    """二値化せず濃淡・色を残して3倍拡大。元の保存画像には触れない。"""
+    if image.width < 1 or image.height < 1 or image.width > 2000 or image.height > 400:
+        raise ValueError('OCR用の品名画像の大きさを確認してください。')
+    rgb = image.convert('RGB').resize((image.width * 3, image.height * 3), Image.Resampling.LANCZOS)
+    # モデルが学習したBGR順に合わせる。表示・証拠PNGはRGBのまま。
+    return np.asarray(rgb)[:, :, ::-1].copy()
 
 
-def make_atlas(images):
-    """切り抜きが隣の行へはみ出さない高さで並べる。最大10件ずつ呼ぶ。"""
-    from PIL import Image
-    row_height = max(100, max(im.height for im in images) * 3 + 20)
-    width = max(im.width for im in images) * 3 + 20
-    if width > 2000 or row_height * len(images) > 2000:
-        raise ValueError('OCR用の画像が大きすぎます。品名の切り抜きを確認してください。')
-    atlas = Image.new('RGB', (width, row_height * len(images)), 'black')
-    for index, im in enumerate(images):
-        # 二値化で細い画線を落とさず、撮影時の色と濃淡をOCRへ渡す。
-        enlarged = im.convert('RGB').resize((im.width * 3, im.height * 3), Image.Resampling.LANCZOS)
-        atlas.paste(enlarged, (10, index * row_height + 10))
-    return atlas, row_height
+class JapaneseRecognizer:
+    """モデルを一度読み込み、近い幅の品名を最大6件ずつ認識する。"""
+    def __init__(self, model_path=None):
+        import onnxruntime as ort
+        model_path = model_path or check_model()
+        options = ort.SessionOptions()
+        # ゲームと同時に動かすためCPU全コアを占有しない。
+        options.intra_op_num_threads = 2
+        options.inter_op_num_threads = 1
+        options.enable_cpu_mem_arena = False
+        options.log_severity_level = 3
+        try:
+            self.session = ort.InferenceSession(str(model_path), options, providers=['CPUExecutionProvider'])
+            self.input_name = self.session.get_inputs()[0].name
+            alphabet = self.session.get_modelmeta().custom_metadata_map['character'].splitlines()
+            self.characters = [''] + alphabet + [' ']
+        except Exception as exc:
+            raise RuntimeError('同梱OCRを起動できません：' + str(exc)) from exc
+        self.lock = threading.Lock()
+
+    def recognize(self, images):
+        """元の行順を保持する。確信度は正解保証ではなく診断用。"""
+        arrays = [prepare_image(image) for image in images]
+        indices = sorted(range(len(arrays)), key=lambda i: arrays[i].shape[1] / arrays[i].shape[0])
+        result = [('', 0.0)] * len(images)
+        with self.lock:
+            for start in range(0, len(indices), 6):
+                batch = indices[start:start + 6]
+                width = max(320, max(int(48 * arrays[i].shape[1] / arrays[i].shape[0]) for i in batch))
+                if width > 2400:
+                    raise ValueError('品名画像が横に長すぎます。複数行が結合されていないか確認してください。')
+                blob = np.zeros((len(batch), 3, 48, width), dtype=np.float32)
+                for j, i in enumerate(batch):
+                    image = arrays[i]
+                    w = min(width, math.ceil(48 * image.shape[1] / image.shape[0]))
+                    resized = cv2.resize(image, (w, 48)).astype(np.float32)
+                    blob[j, :, :, :w] = resized.transpose(2, 0, 1) / 127.5 - 1
+                try:
+                    scores = self.session.run(None, {self.input_name: blob})[0]
+                except Exception as exc:
+                    raise RuntimeError('同梱OCRの読取に失敗しました：' + str(exc)) from exc
+                if scores.shape[-1] != len(self.characters):
+                    raise RuntimeError('OCRモデルの文字辞書が一致しません。')
+                ids, probabilities = scores.argmax(2), scores.max(2)
+                for j, i in enumerate(batch):
+                    # CTCの連続重複と空白トークンだけを除く。文字の推測置換はしない。
+                    keep = np.ones(len(ids[j]), dtype=bool)
+                    keep[1:] = ids[j][1:] != ids[j][:-1]
+                    keep &= ids[j] != 0
+                    text = ''.join(self.characters[k] for k in ids[j][keep])
+                    confidence = float(probabilities[j][keep].mean()) if keep.any() else 0.0
+                    result[i] = (text, confidence)
+        return result
+
+
+@lru_cache(maxsize=1)
+def engine():
+    """読取時に初期化し、UI起動や設定変更でモデルを再ロードしない。"""
+    return JapaneseRecognizer()
 
 
 def suggestions(images):
-    """大量の品名でも一枚の巨大画像にせず、元の順序でOCR候補を返す。"""
+    """画像ごとに候補名を返す。正式名への一致・未確認扱いはVision側で判断。"""
+    if not images:
+        return []
     from .tracker import normalize
-    found = []
-    for start in range(0, len(images), 10):
-        batch = images[start:start + 10]
-        atlas, row_height = make_atlas(batch)
-        with tempfile.TemporaryDirectory(prefix='mabi-ocr-') as temp:
-            path = Path(temp) / 'labels.png'
-            atlas.save(path)
-            lines = invoke(['-ImagePath', str(path)])
-        if isinstance(lines, dict):
-            lines = [lines]
-        if not isinstance(lines, list):
-            raise ValueError('OCRの行データが不正です。')
-        names = [''] * len(batch)
-        for line in lines:
-            words = line.get('words', [])
-            if not words:
-                continue
-            index = int(min(w['y'] for w in words) // row_height)
-            if 0 <= index < len(names):
-                names[index] += normalize(line['text'])
-        found.extend(names)
-    return found
+    return [normalize(text) for text, _ in engine().recognize(images)]
+
+
+def probe():
+    """モデル読込と推論を実行する。実データは読み書きしない。"""
+    engine().recognize([Image.new('RGB', (80, 14), 'black')])
+    return 'PP-OCRv6 small / ONNX Runtime CPU'

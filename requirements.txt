@@ -1,3 +1,5 @@
 Pillow==11.3.0
 numpy==2.5.3
 opencv-python==5.0.0.93
+onnxruntime==1.30.0
+windows-capture==2.0.1

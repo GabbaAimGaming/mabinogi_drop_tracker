@@ -1,0 +1,5 @@
+OCR model: PP-OCRv6 small, PaddlePaddle/PaddleOCR authors (Baidu and respective rights holders).
+ONNX conversion: RapidAI/RapidOCR authors.
+Model redistributed under Apache License 2.0. Source and SHA256: ../models/manifest.json
+Runtime: Microsoft ONNX Runtime, MIT license.
+Preprocessing follows the PaddleOCR/RapidOCR recognition input convention; application implementation is adapted for local game-label crops.

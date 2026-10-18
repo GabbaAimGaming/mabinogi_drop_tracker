@@ -38,6 +38,14 @@ class ScrollablePane(ttk.Frame):
         else:
             self.vertical.grid_remove()
 
+    def set_minimum_height(self, height):
+        """画像プレビューが増えた時も下部の操作をスクロールで到達可能にする。"""
+        self.minimum_height = height
+        event = tk.Event()
+        event.width = self.canvas.winfo_width()
+        event.height = self.canvas.winfo_height()
+        self._resize(event)
+
     def _wheel(self, event):
         """一覧や選択欄のホイール操作を奪わず、余白上だけ全体をスクロールする。"""
         if event.widget.winfo_class() in ('Treeview', 'TCombobox', 'Text', 'Listbox'):

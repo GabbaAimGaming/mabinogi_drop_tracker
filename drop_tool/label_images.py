@@ -1,4 +1,4 @@
-"""品名画像の分割とOCR前処理。元の証拠画像は加工せず保存する。"""
+"""品名分割・照合用マスクと比較表示。実OCRへの入力は元のカラー画像。"""
 import numpy as np
 from PIL import Image
 
@@ -27,7 +27,10 @@ def split_labels(image):
             start = x
         elif not empty and start is not None:
             gap = brightness[start:x]
-            if x - start >= 4:
+            # 別の品名板の継ぎ目は、両側の板の余白を含めて6px以上空く（参照画像で6～9px）。
+            # 4～5pxは同じ品名の文字間で、半透明の板の奥が明るいと誤って分割していた
+            # （録画：ケルティックトライボルトワ｜ンド）。
+            if x - start >= 6:
                 bright = gap > 75
                 if any(bright[:-1] & bright[1:]):
                     cuts.append((start + x) // 2)
@@ -42,7 +45,7 @@ def split_labels(image):
 
 
 def ocr_image(image):
-    """白地の黒文字へ変換。背景の模様や色を除き、原寸の文字位置は保つ。"""
+    """比較表示用の白黒画像。旧関数名を維持するが、実OCRでは使用しない。"""
     mask = text_pixels(image)
     return Image.fromarray(np.where(mask, 0, 255).astype('uint8')).convert('RGB')
 

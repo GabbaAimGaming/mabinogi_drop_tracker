@@ -1,4 +1,4 @@
-"""標準ライブラリだけで動く環境診断。記録の読込み・書換えは行わない。"""
+"""同梱資産・ライブラリ・推論を確認する環境診断。記録の読込み・書換えは行わない。"""
 import importlib.metadata
 import json
 import platform
@@ -19,10 +19,24 @@ def check_assets(root):
         value = rules.get(key)
         if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
             raise ValueError('exclusions.jsonの項目が不正です：' + key)
+    master = json.loads((root / 'item-master.json').read_text('utf-8'))
+    if master.get('schema_version') != 1 or not isinstance(master.get('items'), list):
+        raise ValueError('item-master.jsonの形式が不正です。')
+    for sound in ('read-complete.wav', 'capture-complete.wav', 'read-error.wav'):
+        if not (root / 'assets' / sound).is_file():
+            raise ValueError('効果音がありません：assets/' + sound)
     if not (root / 'assets/karen.png').is_file():
         raise ValueError('カレンの画像がありません：assets/karen.png')
-    if not (root / 'ocr_ja.ps1').is_file():
-        raise ValueError('ocr_ja.ps1がありません。配布一式を展開してください。')
+    from .ocr_engine import check_model
+    check_model(root)
+    chest_folder = root / 'assets/chests'
+    for name in ('question.png', 'buttons.png'):
+        if not (root / 'assets/near-dialog' / name).is_file():
+            raise ValueError('ネアル画面の参照データがありません：' + name)
+    chest_manifest = json.loads((chest_folder / 'manifest.json').read_text('utf-8'))
+    for template in chest_manifest['templates']:
+        if not (chest_folder / template['file']).is_file():
+            raise ValueError('宝箱の参照データがありません：' + template['file'])
 
 
 def check_tk():
@@ -32,11 +46,17 @@ def check_tk():
     root.destroy()
 
 
+# 無くても読取は動く（前面撮影へ戻る）ため、起動を止めない依存。
+OPTIONAL = {'windows-capture'}
+
+
 def check_libraries():
     for line in (ROOT / 'requirements.txt').read_text().splitlines():
         if not line.strip() or line.startswith('#'):
             continue
         name, expected = line.split('==')
+        if name in OPTIONAL:
+            continue
         actual = importlib.metadata.version(name)
         if actual != expected:
             raise ValueError(f'{name}：必要 {expected} / 現在 {actual}')
@@ -54,17 +74,22 @@ def check_writable():
             pass
 
 
+def check_window_share():
+    """画面共有（Windows Graphics Capture）のライブラリを読み込めるか。"""
+    for line in (ROOT / 'requirements.txt').read_text().splitlines():
+        if line.startswith('windows-capture=='):
+            expected = line.split('==')[1].strip()
+            actual = importlib.metadata.version('windows-capture')
+            if actual != expected:
+                raise ValueError(f'windows-capture：必要 {expected} / 現在 {actual}')
+    import windows_capture  # noqa: F401
+    if not hasattr(windows_capture, 'WindowsCapture'):
+        raise ValueError('windows_capture が別のファイルを指しています：' + str(windows_capture.__file__))
+
+
 def check_ocr():
-    from PIL import Image
-    from .ocr_engine import probe, invoke
+    from .ocr_engine import probe
     probe()
-    # 言語機能があっても画像ファイルの読込権限などで失敗する場合がある。
-    # 利用者の画面ではなく、無地PNGを実際に渡して通信経路まで確認する。
-    from pathlib import Path
-    with tempfile.TemporaryDirectory(prefix='mabi-check-') as folder:
-        path = Path(folder) / 'blank.png'
-        Image.new('RGB', (80, 30), 'white').save(path)
-        invoke(['-ImagePath', str(path)])
 
 
 def inspect():
@@ -73,9 +98,10 @@ def inspect():
         ('保存先への書込み', check_writable, True),
         ('画面機能（Tk）', check_tk, True),
         ('画像ライブラリ', check_libraries, True),
-        ('Windows日本語OCR', check_ocr, False),
+        ('同梱日本語OCR（CPU）', check_ocr, False),
+        ('画面共有（Windows Graphics Capture）', check_window_share, False),
     ]
-    lines = ['ドロップ記録 v0.12 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.0 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:
