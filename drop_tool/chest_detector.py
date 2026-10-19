@@ -47,8 +47,10 @@ class ChestDetector:
             for left,top,right,bottom in regions:
                 trial=self._detect(image.crop((left,top,right,bottom)))
                 if trial['found']:
-                    x0,y0,x1,y1=trial['match']['box']
-                    trial['match']['box']=[x0+left,y0+top,x1+left,y1+top]
+                    for key in ('box','evidence_box'):
+                        if key in trial['match']:
+                            x0,y0,x1,y1=trial['match'][key]
+                            trial['match'][key]=[x0+left,y0+top,x1+left,y1+top]
                     result=trial;result['search']='detail'
                     break
         if not result['found']:
@@ -115,7 +117,13 @@ class ChestDetector:
                 if x0<0 or y0<0 or x1>image.width or y1>image.height:
                     continue
                 if best is None or count > best['inliers']:
-                    best = {'template':name,'inliers':count,'box':[float(x0),float(y0),float(x1),float(y1)]}
+                    evidence=dest.reshape(-1,2)[mask.ravel().astype(bool)]/scale
+                    ex0,ey0=evidence.min(0); ex1,ey1=evidence.max(0)
+                    # The reference may show an open lid while matching a
+                    # closed chest's body. Record actual matched surfaces too;
+                    # the projected whole-reference box can include extra space.
+                    best = {'template':name,'inliers':count,'box':[float(x0),float(y0),float(x1),float(y1)],
+                            'evidence_box':[float(ex0),float(ey0),float(ex1),float(ey1)]}
                     if count >= 12:
                         break
         return {'found':best is not None,'match':best,'seconds':time.monotonic()-started}

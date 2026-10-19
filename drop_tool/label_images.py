@@ -4,11 +4,12 @@ import cv2
 from PIL import Image
 
 
-def text_pixels(image, include_red=False):
-    """白・緑の文字候補。include_redで赤を加え、板の判定は呼び出し側で行う。"""
+def text_pixels(image, include_red=False, include_cyan=False):
+    """白・緑の文字候補。比較・分割では水色も保持し、板の判定と分ける。"""
     a = np.asarray(image.convert('RGB')).astype(float)
     r,g,b=a[:,:,0],a[:,:,1],a[:,:,2]
-    base=(a.min(2) > 175) | ((g > 120) & (g > r*1.5) & (g > b*1.4))
+    cyan=((g>140)&(b>140)&(r<g*.75)) if include_cyan else np.zeros(r.shape,dtype=bool)
+    base=(a.min(2) > 175) | ((g > 120) & (g > r*1.5) & (g > b*1.4)) | cyan
     if not include_red:return base
     red=red_pixels(image)
     # 白・緑の品名に重なる赤い衣装や光で、照合マスクを変えない。
@@ -36,7 +37,7 @@ def split_labels(image):
     背景と板を区別できない場合は推測分割しない。
     """
     a = np.asarray(image.convert('RGB'))
-    occupied = text_pixels(image,include_red=True).any(axis=0)
+    occupied = text_pixels(image,include_red=True,include_cyan=True).any(axis=0)
     brightness = np.percentile(a.max(axis=2), 15, axis=0)
     cuts = [0]
     start = None
@@ -62,13 +63,13 @@ def split_labels(image):
     pieces = [image.crop((left, 0, right, image.height))
               for left, right in zip(cuts, cuts[1:])]
     # 短い孤立した線を品名にしない。両側が品名として十分な幅の場合のみ分割。
-    if len(pieces) > 1 and all(text_pixels(p,include_red=True).any(0).sum() >= 12 for p in pieces):
+    if len(pieces) > 1 and all(text_pixels(p,include_red=True,include_cyan=True).any(0).sum() >= 12 for p in pieces):
         return pieces
     return [image]
 
 
 def ocr_image(image):
     """比較表示用の白黒画像。旧関数名を維持するが、実OCRでは使用しない。"""
-    mask = text_pixels(image,include_red=True)
+    mask = text_pixels(image,include_red=True,include_cyan=True)
     return Image.fromarray(np.where(mask, 0, 255).astype('uint8')).convert('RGB')
 

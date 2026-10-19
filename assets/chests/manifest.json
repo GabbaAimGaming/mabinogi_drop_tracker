@@ -466,6 +466,51 @@
       "id": "surface-new-16",
       "file": "surface-new-16.npz",
       "features": 73
+    },
+    {
+      "id": "closed-oct19-00",
+      "file": "closed-oct19-00.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-01",
+      "file": "closed-oct19-01.npz",
+      "features": 49
+    },
+    {
+      "id": "closed-oct19-03",
+      "file": "closed-oct19-03.npz",
+      "features": 39
+    },
+    {
+      "id": "closed-oct19-04",
+      "file": "closed-oct19-04.npz",
+      "features": 42
+    },
+    {
+      "id": "closed-oct19-05",
+      "file": "closed-oct19-05.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-06",
+      "file": "closed-oct19-06.npz",
+      "features": 35
+    },
+    {
+      "id": "closed-oct19-10",
+      "file": "closed-oct19-10.npz",
+      "features": 43
+    },
+    {
+      "id": "closed-oct19-11",
+      "file": "closed-oct19-11.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-13",
+      "file": "closed-oct19-13.npz",
+      "features": 64
     }
   ]
 }

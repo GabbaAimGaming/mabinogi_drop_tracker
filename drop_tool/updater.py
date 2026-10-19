@@ -15,7 +15,7 @@ from urllib.parse import urlsplit, parse_qs, urlencode
 from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
 from zipfile import ZipFile
 
-VERSION = '1.1.2'
+VERSION = '1.1.3'
 APP_ID = 'KarenDrop'
 REPOSITORY = 'GabbaAimGaming/mabinogi_drop_tracker'
 RELEASES_URL = 'https://github.com/' + REPOSITORY + '/releases'

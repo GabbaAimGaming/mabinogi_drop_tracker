@@ -32,6 +32,18 @@
     {
       "id": "fragment-24",
       "file": "part-24.npz"
+    },
+    {
+      "id": "new4k-00",
+      "file": "new4k-00.npz"
+    },
+    {
+      "id": "new4k-02",
+      "file": "new4k-02.npz"
+    },
+    {
+      "id": "new4k-07",
+      "file": "new4k-07.npz"
     }
   ]
 }
