@@ -36,7 +36,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1')
+        root.title('カレンとドロップ記録 v1.1.1')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -270,6 +270,17 @@ class App:
         from .retention import append_log
         append_log(self.store.folder / 'monitor.log', time.strftime('%H:%M:%S ') + text + '\n', limit=200000)
 
+    def reward_detection(self, frame, near_dialog, now):
+        """Keep checking ALT while the already-confirmed chest memory is valid."""
+        gate=self.reward_gate
+        if (not near_dialog and gate.previous is not None
+                and 0<=now-gate.previous<=gate.max_gap and now<=gate.chest_until
+                and gate.chest_until>0):
+            return {'found':False,'match':None,'seconds':0.,'search':'recent'}
+        if self.chest_detector is None:
+            self.chest_detector=ChestDetector()
+        return self.chest_detector.detect(frame)
+
     def submit(self, mode, image=None):
         """撮影と認識をワーカーで実行し、結果をpollへ返す。
 
@@ -316,12 +327,10 @@ class App:
                     self.jobs.put((epoch, 'start', {'manual':True}, None))
                     self.save_capture(frame)
                 if burst:
-                    if self.chest_detector is None:
-                        self.chest_detector = ChestDetector()
                     if getattr(self, 'near_detector', None) is None:
                         self.near_detector = NearDialogDetector()
                     near_dialog = self.near_detector.detect(frame)
-                    detection = self.chest_detector.detect(frame)
+                    detection = self.reward_detection(frame,near_dialog,time.monotonic())
                     alt = not near_dialog and quick_check(middle(frame))
                     if self.epoch != epoch:
                         self.jobs.put((epoch, 'scan', {}, None))

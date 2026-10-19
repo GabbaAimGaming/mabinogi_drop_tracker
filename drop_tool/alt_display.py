@@ -29,7 +29,7 @@ PITCH = (1.0, 2.7)
 def darkness(crop):
     """切り抜きの背景（文字の周囲1pxを除く）がどれだけ黒い板か。0～1。"""
     a = np.asarray(crop.convert('RGB'))
-    near = cv2.dilate(text_pixels(crop).astype('uint8'), np.ones((3, 3), 'uint8')).astype(bool)
+    near = cv2.dilate(text_pixels(crop,include_red=True).astype('uint8'), np.ones((3, 3), 'uint8')).astype(bool)
     background = a[~near]
     if background.size == 0:
         return 0.0
@@ -133,4 +133,6 @@ def quick_check(region):
             if background.any() and plate[y0:y0 + box.height, x0:x0 + box.width][background].mean() >= SINGLE:
                 return True
     from .plate_recovery import recover
-    return bool(recover(region))
+    if recover(region):return True
+    from .red_labels import candidates
+    return bool(select(candidates(region))[0])

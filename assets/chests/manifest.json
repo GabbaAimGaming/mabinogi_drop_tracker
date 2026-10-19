@@ -241,6 +241,206 @@
       "id": "blue-open-v11-20-small",
       "file": "blue-open-v11-20-small.npz",
       "features": 62
+    },
+    {
+      "id": "4k-open-00-0.34",
+      "file": "4k-open-00-0.34.npz",
+      "features": 18
+    },
+    {
+      "id": "4k-open-00-0.5",
+      "file": "4k-open-00-0.5.npz",
+      "features": 33
+    },
+    {
+      "id": "4k-open-00-0.67",
+      "file": "4k-open-00-0.67.npz",
+      "features": 56
+    },
+    {
+      "id": "4k-open-00-1.0",
+      "file": "4k-open-00-1.0.npz",
+      "features": 85
+    },
+    {
+      "id": "4k-open-07-0.34",
+      "file": "4k-open-07-0.34.npz",
+      "features": 64
+    },
+    {
+      "id": "4k-open-07-0.5",
+      "file": "4k-open-07-0.5.npz",
+      "features": 85
+    },
+    {
+      "id": "4k-open-07-0.67",
+      "file": "4k-open-07-0.67.npz",
+      "features": 144
+    },
+    {
+      "id": "4k-open-07-1.0",
+      "file": "4k-open-07-1.0.npz",
+      "features": 318
+    },
+    {
+      "id": "4k-open-09-0.34",
+      "file": "4k-open-09-0.34.npz",
+      "features": 53
+    },
+    {
+      "id": "4k-open-09-0.5",
+      "file": "4k-open-09-0.5.npz",
+      "features": 101
+    },
+    {
+      "id": "4k-open-09-0.67",
+      "file": "4k-open-09-0.67.npz",
+      "features": 132
+    },
+    {
+      "id": "4k-open-09-1.0",
+      "file": "4k-open-09-1.0.npz",
+      "features": 341
+    },
+    {
+      "id": "4k-open-11-0.34",
+      "file": "4k-open-11-0.34.npz",
+      "features": 48
+    },
+    {
+      "id": "4k-open-11-0.5",
+      "file": "4k-open-11-0.5.npz",
+      "features": 89
+    },
+    {
+      "id": "4k-open-11-0.67",
+      "file": "4k-open-11-0.67.npz",
+      "features": 135
+    },
+    {
+      "id": "4k-open-11-1.0",
+      "file": "4k-open-11-1.0.npz",
+      "features": 271
+    },
+    {
+      "id": "4k-open-15-0.34",
+      "file": "4k-open-15-0.34.npz",
+      "features": 21
+    },
+    {
+      "id": "4k-open-15-0.5",
+      "file": "4k-open-15-0.5.npz",
+      "features": 31
+    },
+    {
+      "id": "4k-open-15-0.67",
+      "file": "4k-open-15-0.67.npz",
+      "features": 41
+    },
+    {
+      "id": "4k-open-15-1.0",
+      "file": "4k-open-15-1.0.npz",
+      "features": 99
+    },
+    {
+      "id": "4k-open-22-0.34",
+      "file": "4k-open-22-0.34.npz",
+      "features": 9
+    },
+    {
+      "id": "4k-open-22-0.5",
+      "file": "4k-open-22-0.5.npz",
+      "features": 23
+    },
+    {
+      "id": "4k-open-22-0.67",
+      "file": "4k-open-22-0.67.npz",
+      "features": 31
+    },
+    {
+      "id": "4k-open-22-1.0",
+      "file": "4k-open-22-1.0.npz",
+      "features": 77
+    },
+    {
+      "id": "4k-open-04-0.34",
+      "file": "4k-open-04-0.34.npz",
+      "features": 44
+    },
+    {
+      "id": "4k-open-04-0.5",
+      "file": "4k-open-04-0.5.npz",
+      "features": 68
+    },
+    {
+      "id": "4k-open-04-0.67",
+      "file": "4k-open-04-0.67.npz",
+      "features": 105
+    },
+    {
+      "id": "4k-open-04-1.0",
+      "file": "4k-open-04-1.0.npz",
+      "features": 216
+    },
+    {
+      "id": "4k-open-08-0.34",
+      "file": "4k-open-08-0.34.npz",
+      "features": 51
+    },
+    {
+      "id": "4k-open-08-0.5",
+      "file": "4k-open-08-0.5.npz",
+      "features": 72
+    },
+    {
+      "id": "4k-open-08-0.67",
+      "file": "4k-open-08-0.67.npz",
+      "features": 116
+    },
+    {
+      "id": "4k-open-08-1.0",
+      "file": "4k-open-08-1.0.npz",
+      "features": 254
+    },
+    {
+      "id": "4k-open-18-0.34",
+      "file": "4k-open-18-0.34.npz",
+      "features": 19
+    },
+    {
+      "id": "4k-open-18-0.5",
+      "file": "4k-open-18-0.5.npz",
+      "features": 40
+    },
+    {
+      "id": "4k-open-18-0.67",
+      "file": "4k-open-18-0.67.npz",
+      "features": 43
+    },
+    {
+      "id": "4k-open-18-1.0",
+      "file": "4k-open-18-1.0.npz",
+      "features": 80
+    },
+    {
+      "id": "4k-open-21-0.34",
+      "file": "4k-open-21-0.34.npz",
+      "features": 24
+    },
+    {
+      "id": "4k-open-21-0.5",
+      "file": "4k-open-21-0.5.npz",
+      "features": 35
+    },
+    {
+      "id": "4k-open-21-0.67",
+      "file": "4k-open-21-0.67.npz",
+      "features": 52
+    },
+    {
+      "id": "4k-open-21-1.0",
+      "file": "4k-open-21-1.0.npz",
+      "features": 121
     }
   ]
 }

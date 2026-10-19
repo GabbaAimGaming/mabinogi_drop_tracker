@@ -1,13 +1,31 @@
 """品名分割・照合用マスクと比較表示。実OCRへの入力は元のカラー画像。"""
 import numpy as np
+import cv2
 from PIL import Image
 
 
-def text_pixels(image):
-    """従来と同じ白文字・緑文字を抽出する。背景を文字として補完しない。"""
+def text_pixels(image, include_red=False):
+    """白・緑の文字候補。include_redで赤を加え、板の判定は呼び出し側で行う。"""
     a = np.asarray(image.convert('RGB')).astype(float)
-    return (a.min(2) > 175) | ((a[:, :, 1] > 120) &
-        (a[:, :, 1] > a[:, :, 0] * 1.5) & (a[:, :, 1] > a[:, :, 2] * 1.4))
+    r,g,b=a[:,:,0],a[:,:,1],a[:,:,2]
+    base=(a.min(2) > 175) | ((g > 120) & (g > r*1.5) & (g > b*1.4))
+    if not include_red:return base
+    red=red_pixels(image)
+    # 白・緑の品名に重なる赤い衣装や光で、照合マスクを変えない。
+    return base | red if red.sum()>base.sum()*4 else base
+
+
+def red_pixels(image):
+    a=np.asarray(image.convert('RGB')).astype(np.int16)
+    r,g,b=a[:,:,0],a[:,:,1],a[:,:,2]
+    red=(r>140)&(r*5>g*7)&(r*5>b*6)
+    if not red.any():return red
+    # HPバーの長い横線が隣の赤い装備・髪とつながるのを防ぐ。
+    # OCRへ渡す元画像は変えず、文字候補のマスクから横線だけを外す。
+    line_width=max(28,round(image.width*.04))
+    lines=cv2.morphologyEx(red.astype('uint8'),cv2.MORPH_OPEN,np.ones((1,line_width),np.uint8))
+    red &= lines==0
+    return red
 
 
 def split_labels(image):
@@ -18,7 +36,7 @@ def split_labels(image):
     背景と板を区別できない場合は推測分割しない。
     """
     a = np.asarray(image.convert('RGB'))
-    occupied = text_pixels(image).any(axis=0)
+    occupied = text_pixels(image,include_red=True).any(axis=0)
     brightness = np.percentile(a.max(axis=2), 15, axis=0)
     cuts = [0]
     start = None
@@ -31,7 +49,12 @@ def split_labels(image):
             # 4～5pxは同じ品名の文字間で、半透明の板の奥が明るいと誤って分割していた
             # （録画：ケルティックトライボルトワ｜ンド）。
             if x - start >= 6:
-                bright = gap > 75
+                # 半透明の同じ板が明るい床に重なると、内部空白も75を超える。
+                # 前後の板背景より明るい縦の隙間だけを切れ目にする。
+                adjacent = np.concatenate((brightness[max(0,start-20):start],
+                                           brightness[x:min(image.width,x+20)]))
+                baseline = float(np.median(adjacent)) if adjacent.size else 0.
+                bright = gap > max(75, baseline+22)
                 if any(bright[:-1] & bright[1:]):
                     cuts.append((start + x) // 2)
             start = None
@@ -39,13 +62,13 @@ def split_labels(image):
     pieces = [image.crop((left, 0, right, image.height))
               for left, right in zip(cuts, cuts[1:])]
     # 短い孤立した線を品名にしない。両側が品名として十分な幅の場合のみ分割。
-    if len(pieces) > 1 and all(text_pixels(p).any(0).sum() >= 12 for p in pieces):
+    if len(pieces) > 1 and all(text_pixels(p,include_red=True).any(0).sum() >= 12 for p in pieces):
         return pieces
     return [image]
 
 
 def ocr_image(image):
     """比較表示用の白黒画像。旧関数名を維持するが、実OCRでは使用しない。"""
-    mask = text_pixels(image)
+    mask = text_pixels(image,include_red=True)
     return Image.fromarray(np.where(mask, 0, 255).astype('uint8')).convert('RGB')
 

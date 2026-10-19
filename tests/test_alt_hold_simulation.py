@@ -1,8 +1,8 @@
-# Full gameplay samples are private and are not distributed in this repository.
+# Gameplay samples stay private; validated separately before publication.
 from pathlib import Path as _FixturePath
 import unittest as _fixture_unittest
 if not (_FixturePath(__file__).resolve().parent / 'fixtures').exists() or not (_FixturePath(__file__).resolve().parents[1] / 'tools/benchmarks/video').exists():
-    raise _fixture_unittest.SkipTest('非公開の提供画像を使う回帰テスト（配布前に別環境で検証済み）')
+    raise _fixture_unittest.SkipTest('非公開の提出画像で別途検証済み')
 
 """ALTを5～10秒押し続けた場合の再現（回帰画像・仮想時計）。"""
 import sys

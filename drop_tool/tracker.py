@@ -171,6 +171,11 @@ class Rules:
 
     def __init__(self, overrides=None):
         self.rules = json.loads((ROOT / 'exclusions.json').read_text('utf-8'))
+        # 旧版の個別JSONを保持した更新でも、非宝箱品の初期扱いを補う。
+        # classify()冒頭の利用者による明示設定は従来どおり最優先。
+        for prefix in ('フィニージェム', 'フィニージエム'):
+            if prefix not in self.rules['exclude_prefix']:
+                self.rules['exclude_prefix'].append(prefix)
         self.overrides = overrides or {}
 
     def classify(self, name):

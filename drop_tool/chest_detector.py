@@ -12,6 +12,9 @@ class ChestDetector:
         self.sift = cv2.SIFT_create(nfeatures=6000, contrastThreshold=.02)
         self.matcher = cv2.BFMatcher(cv2.NORM_L2)
         self.templates = []
+        self.parts = None
+        self.shape = None
+        self.fragments = None
         folder = ROOT / 'assets/chests'
         for entry in json.loads((folder/'manifest.json').read_text('utf-8'))['templates']:
             with np.load(folder/entry['file'], allow_pickle=False) as data:
@@ -19,6 +22,68 @@ class ChestDetector:
                                        data['descriptors'].copy(), data['size'].copy()))
 
     def detect(self, image):
+        started = time.monotonic()
+        result = self._detect(image)
+        result['search'] = 'full'
+        if not result['found']:
+            from .chest_fragments import ChestFragments
+            from .chest_shape import ChestShape,plate_rows
+            rows=plate_rows(image)
+            if self.fragments is None:self.fragments=ChestFragments()
+            trial=self.fragments.detect(image,rows)
+            if trial['found']:
+                result=trial
+            else:
+                if self.shape is None:self.shape=ChestShape()
+                trial=self.shape.detect(image,rows)
+                if trial['found']:result=trial
+        # 大画面の縮小で箱の特徴が消えた場合だけ、中央を高い密度で再探索。
+        # 画像全体を原寸SIFTへ渡さず、通常フレームの負荷を増やさない。
+        if not result['found'] and image.width > 1600:
+            regions = self._proposals(image)
+            width=round(image.width*.35);height=round(image.height*.65)
+            left=(image.width-width)//2;top=round(image.height*.2)
+            regions.append((left,top,left+width,top+height))
+            for left,top,right,bottom in regions:
+                trial=self._detect(image.crop((left,top,right,bottom)))
+                if trial['found']:
+                    x0,y0,x1,y1=trial['match']['box']
+                    trial['match']['box']=[x0+left,y0+top,x1+left,y1+top]
+                    result=trial;result['search']='detail'
+                    break
+        if not result['found']:
+            from .chest_parts import ChestParts
+            if self.parts is None:self.parts=ChestParts()
+            trial=self.parts.detect(image)
+            if trial['found']:
+                result={k:v for k,v in trial.items() if k!='parts'}
+        result['seconds']=time.monotonic()-started
+        return result
+
+    def _proposals(self, image):
+        """暗い蓋の候補を挙げるだけ。箱の成立には従来の特徴点照合が必須。"""
+        scale=min(1.,1280/image.width)
+        rgb=np.asarray(image.convert('RGB').resize((round(image.width*scale),round(image.height*scale)),Image.Resampling.LANCZOS))
+        mask=(rgb.max(2)<16).astype(np.uint8)
+        contours,_=cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        proposals=[]
+        for contour in contours:
+            area=cv2.contourArea(contour)
+            if not 180<area<mask.size*.025:
+                continue
+            x,y,w,h=cv2.boundingRect(contour)
+            if not (18<=w<=220 and 18<=h<=180 and .4<=w/h<=3):
+                continue
+            hull=cv2.contourArea(cv2.convexHull(contour))
+            if not hull or area/hull<.65:
+                continue
+            # 蓋の周囲を広めに含め、箱本体の細部を原寸で照合する。
+            left=max(0,round((x-w*.5)/scale));top=max(0,round((y-h*.35)/scale))
+            right=min(image.width,round((x+w*1.5)/scale));bottom=min(image.height,round((y+h*2)/scale))
+            proposals.append((area/hull*area,(left,top,right,bottom)))
+        return [box for _,box in sorted(proposals,reverse=True)[:4]]
+
+    def _detect(self, image):
         started = time.monotonic()
         scale = min(1.0, 1280/image.width)
         resized = image.convert('RGB').resize((round(image.width*scale), round(image.height*scale)), Image.Resampling.LANCZOS)
@@ -51,4 +116,6 @@ class ChestDetector:
                     continue
                 if best is None or count > best['inliers']:
                     best = {'template':name,'inliers':count,'box':[float(x0),float(y0),float(x1),float(y1)]}
+                    if count >= 12:
+                        break
         return {'found':best is not None,'match':best,'seconds':time.monotonic()-started}
