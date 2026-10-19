@@ -1,4 +1,4 @@
-# 開発案内 v1.1.2
+# 開発案内 v1.1.3
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`
@@ -25,7 +25,7 @@ Windows 64bit / Python 3.12。
 
 `python tools/build_exe.py dist`
 
-`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1.2-windows.zip`
+`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1.3-windows.zip`
 
 `dist/KarenDrop/KarenDrop.exe --self-test result.json`
 
