@@ -28,7 +28,19 @@ def recover(region):
         values=pixels[2:-2,2:-2].reshape(-1)
         hist=np.bincount(values,minlength=256)
         flat=np.convolve(hist,np.ones(5,dtype=int),'same')[:121].max()/max(1,len(values))
-        if flat>=.30:
+        # 平坦な床に文字だけある状態を黒い品名板と取り違えない。
+        # 通常経路で拾えない明るい板には、その外側との明暗差も必要。
+        base=int(np.argmax(np.convolve(hist,np.ones(5,dtype=int),'same')[:121]))
+        y,x,_=row
+        above=a[max(0,y-7):max(0,y-3),max(0,x-2):min(region.width,x+crop.width-2)].max(2)
+        below=a[min(region.height,y+crop.height):min(region.height,y+crop.height+4),max(0,x-2):min(region.width,x+crop.width-2)].max(2)
+        outside=np.concatenate((above.ravel(),below.ravel()))
+        contrast=outside.size and np.mean(outside>base+12)>=.25
+        ca=np.asarray(crop).astype(float)
+        red_only=((ca[:,:,0]>140)&(ca[:,:,0]>ca[:,:,1]*1.4)&(ca[:,:,0]>ca[:,:,2]*1.2))
+        other=((ca.min(2)>175)|((ca[:,:,1]>120)&(ca[:,:,1]>ca[:,:,0]*1.5)))
+        needs_contrast=red_only.sum()>other.sum()*2
+        if flat>=.30 and (not needs_contrast or contrast):
             strong.append(row)
     # 追加経路では単独HUDを採用せず、少なくとも3枚がつながる列に限定する。
     groups=[]

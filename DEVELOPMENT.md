@@ -1,4 +1,4 @@
-# 開発案内 v1.1
+# 開発案内 v1.1.1
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`
@@ -25,10 +25,12 @@ Windows 64bit / Python 3.12。
 
 `python tools/build_exe.py dist`
 
-`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1-windows.zip`
+`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1.1-windows.zip`
 
 `dist/KarenDrop/KarenDrop.exe --self-test result.json`
 
 配布ZIPのdata・個人設定の混入を確認してください。既存LICENSEと第三者ライセンスを維持します。
 更新は利用者のdata・除外設定を上書きしません。
 ソース反映だけでは利用者へ配信されません。Release公開は配布ZIPと更新JSONを検証してから行います。
+
+2026-10-19：非公開の提供画像を含む247テスト成功。宝箱の25枚は開発に使用した静止画であり独立評価ではありません。元画像・個人のdataは公開しません。

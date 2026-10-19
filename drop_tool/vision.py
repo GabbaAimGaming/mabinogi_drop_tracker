@@ -12,10 +12,11 @@ from .hud_filter import remove_gauge_candidates
 from . import alt_display
 from .ocr_engine import suggestions
 from .item_catalog import ItemCatalog
+from .hud_text import is_hud_text,is_system_notice
 
 def ink(image):
     """見本照合用の文字マスク。OCRに渡すカラー画像とは別に扱う。"""
-    m = text_pixels(image)
+    m = text_pixels(image,include_red=True)
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
@@ -125,6 +126,14 @@ class Vision:
                 continue
             boxes.append((y, x, region.crop((max(0,x-2), max(0,y-2),
                                              min(region.width,x+w+2), min(region.height,y+h+2)))))
+        # 赤い文字はHPバーと白文字を横結合しない独立経路で拾う。
+        from .red_labels import candidates as red_candidates
+        ordinary_boxes=list(boxes)
+        for y,x,crop in red_candidates(region):
+            if ordinary_boxes and not any(abs(y-oy)<=max(64,crop.height*4) and x<ox+old.width and x+crop.width>ox for oy,ox,old in ordinary_boxes):
+                continue
+            if not any(abs(y-oy)<=3 and x<ox+old.width and x+crop.width>ox for oy,ox,old in boxes):
+                boxes.append((y,x,crop))
         # 先に同じ板の断片を戻し、最後に別の板の境目で分ける。
         # 順番を逆にすると、スクロール名の内部空白を別アイテムにしてしまう。
         boxes = merge_fragments(region, boxes)
@@ -219,7 +228,8 @@ class Vision:
                     self.cache[key] = (labels[i]['name'], kind, raw)
             if len(self.cache) > 200:
                 self.cache.clear()
-        labels = [label for label in labels if normalize(label['raw']).lower() not in ('ctrl+f', 'ctrl+fキー')]
+        labels = [label for label in labels if normalize(label['raw']).lower() not in ('ctrl+f', 'ctrl+fキー')
+                  and not is_hud_text(label['raw']) and not is_system_notice(label['raw'])]
         for label in labels:
             item = self.catalog.find(label['name'])
             label['registered'] = item is not None

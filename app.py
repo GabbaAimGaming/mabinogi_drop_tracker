@@ -27,6 +27,8 @@ def run_app(guard=None):
                 detector = ChestDetector()
                 from drop_tool.near_dialog import NearDialogDetector
                 from PIL import Image
+                if detector.detect(Image.new('RGB',(320,180)))['found']:
+                    raise ValueError('無地の画像を宝箱と誤判定しました。')
                 near = NearDialogDetector()
                 dialog = Image.new('RGB', (403, 214), (35, 35, 35))
                 for name, pos in (('question', (84, 77)), ('buttons', (105, 155))):
@@ -39,6 +41,9 @@ def run_app(guard=None):
                               update_source=app.settings_views.updates.url.get(),
                               near_dialog=True,
                               chest_templates=len(detector.templates),
+                              chest_part_templates=len(detector.parts.templates),
+                              chest_shape=detector.shape is not None,
+                              chest_fragments=len(detector.fragments.templates),
                               frozen=bool(getattr(sys, 'frozen', False)),
                               character=app.banner.photo.width(),
                               registered_items=len(app.vision.catalog.entries),

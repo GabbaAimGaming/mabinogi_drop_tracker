@@ -24,7 +24,7 @@ def manifest(folder):
 def package(folder, output):
     folder=Path(folder); result=manifest(folder)
     extras=['release-manifest.json','exclusions.json','update-source.json','配布者向け更新手順.txt','更新情報-初期登録用.json']
-    with ZipFile(output,'w',ZIP_DEFLATED) as z:
+    with ZipFile(output,'w',ZIP_DEFLATED,compresslevel=9) as z:
         for rel in [x['path'] for x in result['files']]+extras:
             if (folder/rel).is_file(): z.write(folder/rel,'KarenDrop/'+rel)
 

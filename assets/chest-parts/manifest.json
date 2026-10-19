@@ -1,0 +1,12 @@
+{
+  "templates": [
+    {
+      "id": "part-08-body-1.0",
+      "file": "part-08-body-1.0.npz",
+      "part": "body",
+      "sample_index": 8,
+      "features": 209
+    }
+  ],
+  "purpose": "Small private prototype: body features with independent metal-rim lid confirmation"
+}

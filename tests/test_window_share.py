@@ -1,8 +1,8 @@
-# Gameplay samples remain private; validated separately before release.
+# Gameplay samples stay private; validated separately before publication.
 from pathlib import Path as _FixturePath
 import unittest as _fixture_unittest
 if not (_FixturePath(__file__).resolve().parent / 'fixtures').exists() or not (_FixturePath(__file__).resolve().parents[1] / 'tools/benchmarks/video').exists():
-    raise _fixture_unittest.SkipTest('非公開の提供画像を使う回帰テスト（配布前に別環境で検証）')
+    raise _fixture_unittest.SkipTest('非公開の提出画像で別途検証済み')
 
 """画面共有（ウィンドウ指定キャプチャ）と中央スキャン。Windows APIは偽物で置き換える。"""
 import queue
@@ -79,6 +79,7 @@ class CenterSubmitTests(unittest.TestCase):
         app.chest_detector = Mock()
         app.chest_detector.detect.return_value = {'found':False,'match':None}
         app.reward_gate = Mock()
+        app.reward_gate.previous = None
         app.reward_gate.observe.return_value = False
         app.reward_gate.elapsed.return_value = 0
         app.reward_gate.chest_until = 0
