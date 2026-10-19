@@ -16,7 +16,7 @@ from .hud_text import is_hud_text,is_system_notice
 
 def ink(image):
     """見本照合用の文字マスク。OCRに渡すカラー画像とは別に扱う。"""
-    m = text_pixels(image,include_red=True)
+    m = text_pixels(image,include_red=True,include_cyan=True)
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
@@ -107,7 +107,9 @@ class Vision:
         original_region = region
         region, recognition_scale = normalized(region)
         a = np.asarray(region).astype(float)
-        m = text_pixels(region).astype('uint8') * 255
+        # Scene-wide cyan effects can look like glyphs. Recover cyan through
+        # the local plate route; retain its ink for comparisons and splitting.
+        m = text_pixels(region, include_cyan=False).astype('uint8') * 255
         m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((1, 13), 'uint8'))
         _, _, stats, _ = cv2.connectedComponentsWithStats(m)
         boxes = []
