@@ -3,6 +3,7 @@ import queue
 import threading
 import traceback
 import time
+import sys
 import tkinter as tk
 from tkinter import messagebox, filedialog
 from PIL import Image, ImageTk
@@ -36,7 +37,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1.1')
+        root.title('カレンとドロップ記録 v1.1.2')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -81,6 +82,9 @@ class App:
         root.protocol('WM_DELETE_WINDOW', self.close)
         # 起動直後の画面表示を遅らせないよう、古い画像の整理は少し後に行う。
         root.after(2000, self.prune_evidence)
+        # 表示後に通信ワーカーを起動。自己診断と開発時は外部通信しない。
+        if getattr(sys, 'frozen', False) and '--self-test' not in sys.argv:
+            root.after(1500, self.settings_views.updates.startup_check)
 
     def prune_evidence(self):
         """設定に従い、テキスト化・バックアップ済みの古い証拠画像を削除する。"""

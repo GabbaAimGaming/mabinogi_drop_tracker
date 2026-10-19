@@ -91,7 +91,7 @@ def inspect():
         ('画像ライブラリ', check_libraries, True),
         ('同梱日本語OCR（CPU）', check_ocr, False),
     ]
-    lines = ['ドロップ記録 v1.1.1 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.1.2 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:

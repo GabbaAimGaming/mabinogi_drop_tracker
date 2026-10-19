@@ -1,4 +1,4 @@
-"""設定から確認して同意した時だけ更新する。通信・解凍は画面スレッドを占有しない。"""
+"""起動時と設定から更新を確認。同意後だけ取得・更新し、通信は裏で行う。"""
 import json
 from pathlib import Path
 import queue
@@ -16,6 +16,8 @@ class UpdateView:
         self.app = app
         self.installing = False
         self.checking = False
+        self.startup = False
+        self.startup_checked = False
         self.jobs = queue.Queue()
         self.work = None
         self.dialog = None
@@ -36,7 +38,7 @@ class UpdateView:
         self.entry = ttk.Entry(row, textvariable=self.url)
         self.entry.pack(side='left', fill='x', expand=True)
         ttk.Button(row, text='保存', command=self.save).pack(side='left', padx=(5,0))
-        self.status = tk.StringVar(value='ボタンを押した時だけ確認します。ZIPの共有リンクをこの欄に入れないでください。')
+        self.status = tk.StringVar(value='起動時に更新を確認し、新版があればお知らせします。「はい」を選ぶと更新します。')
         ttk.Label(box, textvariable=self.status, wraplength=800).pack(anchor='w', pady=(5,0))
         links = ttk.Frame(box); links.pack(fill='x', pady=(5, 0))
         ttk.Button(links, text='配布ページ・旧版', command=lambda: webbrowser.open(updater.RELEASES_URL)).pack(side='left')
@@ -58,12 +60,22 @@ class UpdateView:
             messagebox.showerror('更新先', str(exc), parent=self.app.root)
             return False
 
-    def check(self):
+    def startup_check(self):
+        """起動ごとに一度。手動確認が始まっていれば重ねて通信しない。"""
+        if self.startup_checked:
+            return
+        self.startup_checked = True
+        self.check(startup=True)
+
+    def check(self, startup=False):
         if self.checking or self.installing: return
+        self.startup = startup
         if not self.url.get().strip():
+            if startup:
+                return
             messagebox.showinfo('更新先が未設定です', '配布者から案内された更新情報JSONの共有リンクを入力してください。', parent=self.app.root)
             return
-        if not self.save(): return
+        if not startup and not self.save(): return
         self.checking = True; self.button.configure(state='disabled')
         self.status.set('更新情報を確認しています…')
         url = self.url.get().strip()
@@ -78,11 +90,19 @@ class UpdateView:
         threading.Thread(target=run, daemon=True).start()
 
     def offer(self, info):
+        # 起動確認の通信中に利用を始めた場合は、読取・保存・監視を中断しない。
+        if (getattr(self, 'startup', False)
+                and updater.version_key(info['version']) > updater.version_key(updater.VERSION)
+                and (self.app.busy or self.app.watching or self.app.samples.lock.locked())):
+            self.status.set('新しいバージョンがあります。監視・読取が終わってからお知らせします。')
+            self.app.root.after(1000, lambda: self.offer(info))
+            return
         self.checking = False; self.button.configure(state='normal')
         if updater.version_key(info['version']) <= updater.version_key(updater.VERSION):
             updater.cleanup(self.work, ROOT)
             self.status.set('新しいバージョンはありません。')
-            messagebox.showinfo('更新確認', '現在のバージョンは最新版です。', parent=self.app.root)
+            if not getattr(self, 'startup', False):
+                messagebox.showinfo('更新確認', '現在のバージョンは最新版です。', parent=self.app.root)
             return
         notes = info.get('release_notes', '')
         text = f"新しいバージョンがあります。\nv{updater.VERSION} → v{info['version']}\n\n{notes}\n\n更新しますか？\n更新後にツールを再起動します。履歴・学習データは引き継ぎます。"
@@ -90,6 +110,8 @@ class UpdateView:
             updater.cleanup(self.work, ROOT)
             self.status.set('更新を見送りました。現在のバージョンを引き続き使えます。')
             return
+        # 同意後の保存・取得エラーは、起動確認でも必ず利用者へ知らせる。
+        self.startup = False
         if self.app.busy or self.app.samples.lock.locked():
             messagebox.showinfo('読取・保存中です', '読取とサンプル保存が終わってから、もう一度更新を確認してください。', parent=self.app.root)
             return
@@ -138,6 +160,7 @@ class UpdateView:
         self.app.root.after(150, self.poll)
 
     def failed(self, text):
+        quiet = getattr(self, 'startup', False) and not self.installing
         self.checking = self.installing = False
         self.button.configure(state='normal')
         if self.dialog:
@@ -146,6 +169,9 @@ class UpdateView:
         if self.work:
             try: updater.cleanup(self.work, ROOT)
             except OSError: pass
+        if quiet:
+            self.status.set('起動時の更新確認ができませんでした。現在のバージョンを使用できます。「更新を確認」で再確認できます。')
+            return
         messagebox.showerror('更新できませんでした', text + '\n監視を続ける場合は「監視再開」を押してください。', parent=self.app.root)
 
     def local_guide(self):
@@ -157,6 +183,7 @@ class UpdateView:
 
     def publish(self):
         if self.checking or self.installing: return
+        self.startup = False
         package = filedialog.askopenfilename(title='配布するWindows用の全体ZIPを選択', filetypes=[('ZIP', '*.zip')], parent=self.app.root)
         if not package: return
         url = simpledialog.askstring('ZIPの共有リンク', 'このZIPのGoogleドライブ共有リンク、またはGitHub ReleasesのZIPリンクを貼り付けてください。', parent=self.app.root)

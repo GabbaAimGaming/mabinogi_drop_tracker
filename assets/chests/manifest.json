@@ -441,6 +441,31 @@
       "id": "4k-open-21-1.0",
       "file": "4k-open-21-1.0.npz",
       "features": 121
+    },
+    {
+      "id": "surface-new-06",
+      "file": "surface-new-06.npz",
+      "features": 106
+    },
+    {
+      "id": "surface-new-07",
+      "file": "surface-new-07.npz",
+      "features": 36
+    },
+    {
+      "id": "surface-new-11",
+      "file": "surface-new-11.npz",
+      "features": 25
+    },
+    {
+      "id": "surface-new-15",
+      "file": "surface-new-15.npz",
+      "features": 82
+    },
+    {
+      "id": "surface-new-16",
+      "file": "surface-new-16.npz",
+      "features": 73
     }
   ]
 }
