@@ -134,5 +134,7 @@ def quick_check(region):
                 return True
     from .plate_recovery import recover
     if recover(region):return True
+    from .bright_plates import recover as recover_bright
+    if recover_bright(region):return True
     from .red_labels import candidates
     return bool(select(candidates(region))[0])

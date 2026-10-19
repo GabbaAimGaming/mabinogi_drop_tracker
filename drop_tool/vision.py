@@ -148,6 +148,14 @@ class Vision:
                     continue
                 im.info['recovered_plate'] = True
                 boxes.append((y,x,im))
+        # Paired plate edges recover labels whose translucent backgrounds are
+        # brightened by a red or blue flare. Keep the original color for OCR.
+        from .bright_plates import recover as recover_bright
+        for y,x,im in (recover_bright(region) if len(boxes)<2 else []):
+            if any(abs(y-oy)<=5 and x<ox+old.width and x+im.width>ox
+                   for oy,ox,old in boxes):
+                continue
+            boxes.append((y,x,im))
         pieces = []
         for y, x, im in sorted(boxes):
             left = x
