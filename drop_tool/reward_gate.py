@@ -17,6 +17,15 @@ class RewardGate:
         self.chest_until = 0.0
         self.acquired = False
 
+    def has_chest_evidence(self, now):
+        """期限内に始めたALT確認は、連続観測できる間だけ完了まで待つ。"""
+        if self.chest_until <= 0:
+            return False
+        if now <= self.chest_until:
+            return True
+        return (self.since is not None and self.since <= self.chest_until
+                and now <= self.since + self.seconds + self.max_gap)
+
     def observe(self, chest, alt, now, blocked=False):
         if self.acquired:
             return False
@@ -31,7 +40,7 @@ class RewardGate:
             self.since = None
             return False
         # 品名やキャラで一瞬箱が隠れても、直前の箱検出を短時間だけ保持する。
-        if not alt or now > self.chest_until or self.chest_until == 0:
+        if not alt or not self.has_chest_evidence(now):
             self.since = None
             return False
         if self.since is None:

@@ -38,7 +38,8 @@ class SampleReports:
                 frame.save(target/filename)
                 images.append({'file':filename,'width':frame.width,'height':frame.height})
             report = dict(metadata)
-            report.update(version=1, app_version='1.0', kind=kind,
+            from .updater import VERSION
+            report.update(version=1, app_version=VERSION, kind=kind,
                           created=stamp.isoformat(timespec='seconds'), images=images,
                           os=platform.platform())
             # レポートが完成するまでは提出ZIPの対象にしない。

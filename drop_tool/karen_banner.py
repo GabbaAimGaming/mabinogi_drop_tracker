@@ -13,7 +13,7 @@ class KarenBanner(tk.Canvas):
         with Image.open(ROOT / 'assets/karen.png') as image:
             # 透過PNGをそのまま表示。背景除去や描き直しはしない。
             self.photo = ImageTk.PhotoImage(image.convert('RGBA').resize((90, 120), Image.Resampling.LANCZOS))
-        self.button = ttk.Button(self, text='5秒後に報酬を読取', style='Accent.TButton', command=command)
+        self.button = ttk.Button(self, text='3秒後に撮影', style='Accent.TButton', command=command)
         self.button_item = self.create_window(0, 10, anchor='ne', window=self.button, width=218, height=36)
         self.character = self.create_image(0, 0, image=self.photo, anchor='nw')
         self.bind('<Configure>', self._layout)
