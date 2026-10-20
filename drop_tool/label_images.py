@@ -4,12 +4,13 @@ import cv2
 from PIL import Image
 
 
-def text_pixels(image, include_red=False, include_cyan=False):
+def text_pixels(image, include_red=False, include_cyan=False, include_purple=False):
     """白・緑の文字候補。比較・分割では水色も保持し、板の判定と分ける。"""
     a = np.asarray(image.convert('RGB')).astype(float)
     r,g,b=a[:,:,0],a[:,:,1],a[:,:,2]
     cyan=((g>140)&(b>140)&(r<g*.75)) if include_cyan else np.zeros(r.shape,dtype=bool)
     base=(a.min(2) > 175) | ((g > 120) & (g > r*1.5) & (g > b*1.4)) | cyan
+    if include_purple:base |= purple_pixels(image)
     if not include_red:return base
     red=red_pixels(image)
     # 白・緑の品名に重なる赤い衣装や光で、照合マスクを変えない。
@@ -29,6 +30,16 @@ def red_pixels(image):
     return red
 
 
+def purple_pixels(image):
+    """紫・ピンク寄りの文字色。純青や暗い影は含めず、横長ゲージを外す。"""
+    a=np.asarray(image.convert('RGB')).astype(np.int16)
+    r,g,b=a[:,:,0],a[:,:,1],a[:,:,2]
+    mask=(r>100)&(b>140)&(r*4>g*5)&(b*4>g*5)&(r<b*1.6)
+    lines=cv2.morphologyEx(mask.astype('uint8'),cv2.MORPH_OPEN,
+                           np.ones((1,max(28,round(image.width*.04))),np.uint8))
+    return mask & (lines==0)
+
+
 def split_labels(image):
     """横結合された候補を背景板の切れ目で分割する。名称辞書に依存しない。
 
@@ -37,7 +48,7 @@ def split_labels(image):
     背景と板を区別できない場合は推測分割しない。
     """
     a = np.asarray(image.convert('RGB'))
-    occupied = text_pixels(image,include_red=True,include_cyan=True).any(axis=0)
+    occupied = text_pixels(image,include_red=True,include_cyan=True,include_purple=True).any(axis=0)
     brightness = np.percentile(a.max(axis=2), 15, axis=0)
     cuts = [0]
     start = None
@@ -63,13 +74,13 @@ def split_labels(image):
     pieces = [image.crop((left, 0, right, image.height))
               for left, right in zip(cuts, cuts[1:])]
     # 短い孤立した線を品名にしない。両側が品名として十分な幅の場合のみ分割。
-    if len(pieces) > 1 and all(text_pixels(p,include_red=True,include_cyan=True).any(0).sum() >= 12 for p in pieces):
+    if len(pieces) > 1 and all(text_pixels(p,include_red=True,include_cyan=True,include_purple=True).any(0).sum() >= 12 for p in pieces):
         return pieces
     return [image]
 
 
 def ocr_image(image):
     """比較表示用の白黒画像。旧関数名を維持するが、実OCRでは使用しない。"""
-    mask = text_pixels(image,include_red=True,include_cyan=True)
+    mask = text_pixels(image,include_red=True,include_cyan=True,include_purple=True)
     return Image.fromarray(np.where(mask, 0, 255).astype('uint8')).convert('RGB')
 

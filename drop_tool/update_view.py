@@ -29,7 +29,9 @@ class UpdateView:
         self.button.pack(side='right')
         older = ttk.Frame(box); older.pack(fill='x', pady=(5, 0))
         self.old_versions = {}
-        self.old_choice = ttk.Combobox(older, state='readonly', width=16)
+        self.old_loading = self.old_loaded = self.old_retry = False
+        self.old_choice = ttk.Combobox(older, state='readonly', width=16,
+                                      postcommand=self.ensure_old_releases)
         self.old_choice.set('旧バージョンを選択')
         self.old_choice.pack(side='left')
         ttk.Button(older, text='旧版一覧を取得', command=self.load_old_releases).pack(side='left', padx=5)
@@ -96,8 +98,24 @@ class UpdateView:
             except Exception as exc: self.jobs.put(('error', str(exc)))
         threading.Thread(target=run, daemon=True).start()
 
+    def ensure_old_releases(self):
+        """初めてプルダウンを開いた時に取得。起動確認中なら完了後に一度だけ試す。"""
+        if self.old_loaded or self.old_loading or self.installing:return
+        if self.checking:
+            if not self.old_retry:
+                self.old_retry = True
+                def retry():
+                    self.old_retry = False
+                    self.ensure_old_releases()
+                self.app.root.after(500, retry)
+            return
+        self.load_old_releases()
+
     def load_old_releases(self):
         if self.checking or self.installing: return
+        self.old_loading = True
+        self.old_choice.configure(values=('旧版一覧を取得中…',))
+        self.old_choice.set('旧版一覧を取得中…')
         self.startup = False
         self.checking = True; self.button.configure(state='disabled')
         self.status.set('GitHub Releasesの旧版一覧を取得しています…')
@@ -187,6 +205,9 @@ class UpdateView:
                 if kind == 'checked': self.offer(value)
                 elif kind == 'old-releases':
                     self.checking = False; self.button.configure(state='normal')
+                    self.old_loading = False; self.old_loaded = True
+                    if self.old_choice.focus_get() == self.old_choice:
+                        self.old_choice.event_generate('<Escape>')
                     self.old_versions = {'v'+r['version']:r for r in value}
                     self.old_choice.configure(values=list(self.old_versions))
                     self.old_choice.set(next(iter(self.old_versions), '対象の旧版なし'))
@@ -206,6 +227,10 @@ class UpdateView:
         self.app.root.after(150, self.poll)
 
     def failed(self, text):
+        if getattr(self, 'old_loading', False):
+            self.old_loading = False
+            self.old_choice.configure(values=())
+            self.old_choice.set('旧版一覧の取得に失敗')
         quiet = getattr(self, 'startup', False) and not self.installing
         self.checking = self.installing = False
         self.button.configure(state='normal')

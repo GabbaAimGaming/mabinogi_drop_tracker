@@ -41,7 +41,8 @@ def recognition_scale(region):
         heights.setdefault(bucket,[]).append(h)
     if not votes:
         from .red_labels import candidates as red_candidates
-        reds=red_candidates(region,max_height=44)
+        from .purple_labels import candidates as purple_candidates
+        reds=red_candidates(region,max_height=44)+purple_candidates(region,max_height=44)
         if not reds:return 1.0
         height=float(np.percentile([crop.height-4 for _,_,crop in reds],85))
         return (1.0 if height<=18 else min((1.5,1.75,2.,2.5,3.),key=lambda s:abs(height/s-14)))
