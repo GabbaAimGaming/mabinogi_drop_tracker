@@ -16,7 +16,7 @@ from .hud_text import is_hud_text,is_system_notice
 
 def ink(image):
     """見本照合用の文字マスク。OCRに渡すカラー画像とは別に扱う。"""
-    m = text_pixels(image,include_red=True,include_cyan=True)
+    m = text_pixels(image,include_red=True,include_cyan=True,include_purple=True)
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
@@ -134,6 +134,12 @@ class Vision:
         for y,x,crop in red_candidates(region):
             if ordinary_boxes and not any(abs(y-oy)<=max(64,crop.height*4) and x<ox+old.width and x+crop.width>ox for oy,ox,old in ordinary_boxes):
                 continue
+            if not any(abs(y-oy)<=3 and x<ox+old.width and x+crop.width>ox for oy,ox,old in boxes):
+                boxes.append((y,x,crop))
+        from .purple_labels import candidates as purple_candidates
+        for y,x,crop in purple_candidates(region):
+            if ordinary_boxes and not any(abs(y-oy)<=max(64,crop.height*4)
+                    and x<ox+old.width and x+crop.width>ox for oy,ox,old in ordinary_boxes):continue
             if not any(abs(y-oy)<=3 and x<ox+old.width and x+crop.width>ox for oy,ox,old in boxes):
                 boxes.append((y,x,crop))
         # 先に同じ板の断片を戻し、最後に別の板の境目で分ける。
