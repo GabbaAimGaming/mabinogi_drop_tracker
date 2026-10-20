@@ -38,3 +38,11 @@ class OldReleaseDropdownTests(unittest.TestCase):
         with patch('drop_tool.update_view.messagebox.showerror'):v.failed('offline')
         self.assertFalse(v.old_loading);self.assertFalse(v.old_loaded)
         v.old_choice.set.assert_called_with('旧版一覧の取得に失敗')
+
+    def test_failed_refresh_of_cached_versions_can_retry_on_next_open(self):
+        v=self.view();v.old_loaded=v.old_loading=True
+        v.old_versions={'v1.1.4':{'version':'1.1.4'}}
+        with patch('drop_tool.update_view.messagebox.showerror'):v.failed('offline')
+        self.assertFalse(v.old_loaded);self.assertEqual(v.old_versions,{})
+        v.load_old_releases=Mock();v.ensure_old_releases()
+        v.load_old_releases.assert_called_once()

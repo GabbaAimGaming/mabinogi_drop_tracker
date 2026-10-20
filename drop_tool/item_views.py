@@ -18,7 +18,7 @@ class ItemViews:
         self.app = app
         self.frame = ttk.Frame(app.notebook, padding=8)
         app.notebook.add(self.frame, text='アイテム管理')
-        ttk.Label(self.frame, text='誤登録名を残して集計先を指定できます。対応付けは過去の確定済み周回の集計にも反映します。', wraplength=930).pack(anchor='w')
+        ttk.Label(self.frame, text='除外設定と品名の対応付けは過去の統計・CSV出力にも反映します。元の周回記録は残ります。', wraplength=930).pack(anchor='w')
         bar = ttk.Frame(self.frame)
         bar.pack(fill='x', pady=6)
         ttk.Label(bar, text='品名検索：').pack(side='left')
@@ -95,7 +95,7 @@ class ItemViews:
             self.app.stable.reset()
             self.refresh()
             self.app.refresh()
-            self.app.status.set('アイテム設定を保存しました。確認待ちの周回には、履歴の「設定を反映」を押してください。')
+            self.app.status.set('保存しました。除外設定は過去の統計・CSV出力にも反映済みです。確認待ちの周回には、履歴の「設定を反映」を押してください。')
         except (OSError, ValueError) as exc:
             messagebox.showerror('アイテム設定', str(exc))
 

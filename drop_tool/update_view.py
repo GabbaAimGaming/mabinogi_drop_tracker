@@ -1,12 +1,11 @@
 """起動時と設定から更新を確認。同意後だけ取得・更新し、通信は裏で行う。"""
 import json
-from pathlib import Path
 import queue
 import shutil
 import threading
 import webbrowser
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, simpledialog
+from tkinter import ttk, messagebox
 from .config import ROOT
 from . import updater
 
@@ -53,7 +52,6 @@ class UpdateView:
         ttk.Button(links, text='配布ページ・旧版', command=lambda: webbrowser.open(updater.RELEASES_URL)).pack(side='left')
         ttk.Button(links, text='復旧手順（GitHub）', command=lambda: webbrowser.open(updater.RECOVERY_URL)).pack(side='left', padx=5)
         ttk.Button(links, text='同梱の復旧手順', command=self.local_guide).pack(side='left')
-        ttk.Button(box, text='配布者用：更新情報JSONを作成', command=self.publish).pack(anchor='e')
         app.root.after(150, self.poll)
 
     def save(self):
@@ -218,9 +216,6 @@ class UpdateView:
                     updater.launch(value, self.work, ROOT)
                     self.app.root.destroy()
                     return
-                elif kind == 'published':
-                    self.checking = False; self.button.configure(state='normal')
-                    messagebox.showinfo('更新情報を作成しました', '保存先：' + value + '\nGitHubではupdate-info.jsonという名前で新しいReleaseへ添付してください。旧版向けはドライブのZIPリンクで作成し、既存JSONを「版を管理」で差し替えてください。', parent=self.app.root)
                 elif kind == 'error': self.failed(value)
         except queue.Empty: pass
         except Exception as exc: self.failed(str(exc))
@@ -228,7 +223,9 @@ class UpdateView:
 
     def failed(self, text):
         if getattr(self, 'old_loading', False):
-            self.old_loading = False
+            # 再取得の失敗後も、次にプルダウンを開けば再試行できるようにする。
+            self.old_loading = self.old_loaded = False
+            self.old_versions.clear()
             self.old_choice.configure(values=())
             self.old_choice.set('旧版一覧の取得に失敗')
         quiet = getattr(self, 'startup', False) and not self.installing
@@ -251,21 +248,3 @@ class UpdateView:
             os.startfile(ROOT / '更新方法.txt')
         except OSError as exc:
             messagebox.showerror('復旧手順を開けません', str(exc), parent=self.app.root)
-
-    def publish(self):
-        if self.checking or self.installing: return
-        self.startup = False
-        package = filedialog.askopenfilename(title='配布するWindows用の全体ZIPを選択', filetypes=[('ZIP', '*.zip')], parent=self.app.root)
-        if not package: return
-        url = simpledialog.askstring('ZIPの共有リンク', 'このZIPのGoogleドライブ共有リンク、またはGitHub ReleasesのZIPリンクを貼り付けてください。', parent=self.app.root)
-        if not url: return
-        dest = filedialog.asksaveasfilename(title='更新情報を保存', initialfile='更新情報.json', defaultextension='.json', parent=self.app.root)
-        if not dest: return
-        self.checking = True; self.button.configure(state='disabled')
-        def run():
-            try:
-                info = updater.make_info(package, url)
-                Path(dest).write_text(json.dumps(info, ensure_ascii=False, indent=2), 'utf-8')
-                self.jobs.put(('published', dest))
-            except Exception as exc: self.jobs.put(('error', str(exc)))
-        threading.Thread(target=run, daemon=True).start()

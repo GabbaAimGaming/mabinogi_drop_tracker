@@ -12,7 +12,7 @@ from .notification import CompletionSound
 from .exporting import export_statistics
 from .image_display import pixel_preview
 from .label_images import ocr_image
-from .tracker import ROOT, Store, StableReading, default_near, SHADOW_MISSIONS
+from .tracker import Store, StableReading, default_near, SHADOW_MISSIONS
 from .vision import Vision, CENTER
 from .alt_display import quick_check
 from . import alt_capture
@@ -39,7 +39,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1.5')
+        root.title('カレンとドロップ記録 v1.1.6')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme

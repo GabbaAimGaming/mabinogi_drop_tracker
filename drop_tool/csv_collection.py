@@ -1,7 +1,6 @@
 """累積CSVを名義・条件別のスナップショットとして保持する。周回を推測加算しない。"""
 import copy
 import csv
-import hashlib
 import json
 from pathlib import Path
 from .exporting import CSV_COLUMNS

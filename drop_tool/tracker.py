@@ -1,12 +1,12 @@
 """周回・学習設定の保存と出現率の計算。未確認の観測をゼロドロップにしない。"""
-from pathlib import Path
-from datetime import datetime
-import hashlib
+import copy
 import json
 import re
-import uuid
 import unicodedata
-import copy
+import uuid
+from datetime import datetime
+from pathlib import Path
+
 from .config import ROOT
 
 SHADOW_MISSIONS = ('全面戦争', '以夷制夷', 'スナイパー参戦', '影の世界のチャンピオン', '遭遇戦')
@@ -143,15 +143,24 @@ class Store:
             raise
 
     def stats(self, context):
-        """確認済みの周回だけを分母にする。同じ品の複数行は1回にまとめる。"""
+        """確認済み周回を分母にし、現在の除外設定を過去の集計にも適用する。"""
         matching = [r for r in self.data['runs'] if (r['dungeon'], r['difficulty'], r['near']) == tuple(context) and r['status'] != 'discarded']
         confirmed = [r for r in matching if r['status'] == 'confirmed']
         n = len(confirmed)
         hits = {}
         from .item_links import row_identity
+        from .item_catalog import ItemCatalog
+        catalog = ItemCatalog(self)
+        excluded = {}
         for run in confirmed:
             # 対応先へ解決してから集合にする。同じ周回に正誤両名があっても1回。
             for name in {name for name,kind in (row_identity(self.data,row) for row in run['rows']) if kind == 'material'}:
+                # 元記録・周回単独の修正は保持し、集計時だけ現在の除外を優先する。
+                # 「集計」への変更では過去の除外行・未確認行を自動加算しない。
+                if name not in excluded:
+                    excluded[name] = catalog.classify(name) == 'excluded'
+                if excluded[name]:
+                    continue
                 hits[name] = hits.get(name, 0) + 1
         return (n, len(matching) - n, [(name, count, count / n if n else 0.0) for name, count in sorted(hits.items(), key=lambda x: (-x[1], x[0]))])
 
