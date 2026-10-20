@@ -1,4 +1,8 @@
 """起動入口。画面・保存・認識はdrop_toolパッケージを参照。"""
+# Tclの参照先は、tkinterが環境を読む前に設定する。
+from drop_tool.config import configure_tk
+configure_tk()
+
 import tkinter as tk
 from tkinter import messagebox
 import sys

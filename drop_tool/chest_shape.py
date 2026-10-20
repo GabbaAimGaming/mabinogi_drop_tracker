@@ -1,7 +1,6 @@
 """Weak shape evidence requires a rimmed lid and at least three nearby ALT plates."""
 import cv2
 import numpy as np
-from PIL import Image
 from .config import ROOT
 from .chest_gradients import GradientClassifier
 

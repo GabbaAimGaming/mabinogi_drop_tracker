@@ -24,8 +24,6 @@ def main():
         shutil.copytree(ROOT / name, target / name, dirs_exist_ok=True)
     for name in ('item-master.json', 'exclusions.json', 'requirements.txt', 'README_EXE.txt', '更新内容.txt', '更新方法.txt', '現在の問題点と対処方法.txt', 'update_helper.ps1', 'update-source.json'):
         shutil.copy2(ROOT / name, target / name)
-    for name in ('配布者向け更新手順.txt', '更新情報-初期登録用.json'):
-        shutil.copy2(ROOT / name, target / name)
     print('配布フォルダー：', target)
 
 
