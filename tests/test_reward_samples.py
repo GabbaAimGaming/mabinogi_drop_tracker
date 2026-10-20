@@ -108,6 +108,9 @@ class AppSampleTests(unittest.TestCase):
     def app(self):
         from drop_tool.app import App
         app=App.__new__(App)
+        from drop_tool.tracker import Store
+        temporary=tempfile.TemporaryDirectory();self.addCleanup(temporary.cleanup)
+        app.store=Store(temporary.name)
         app.jobs=__import__('queue').Queue();app.epoch=0;app.busy=True
         app.root=Mock();app.status=Mock();app.completion_sound=Mock()
         app.stable=Mock();app.reward_gate=RewardGate();app.watching=True
