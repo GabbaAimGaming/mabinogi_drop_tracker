@@ -15,12 +15,13 @@ from urllib.parse import urlsplit, parse_qs, urlencode
 from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
 from zipfile import ZipFile
 
-VERSION = '1.1.3'
+VERSION = '1.1.4'
 APP_ID = 'KarenDrop'
 REPOSITORY = 'GabbaAimGaming/mabinogi_drop_tracker'
 RELEASES_URL = 'https://github.com/' + REPOSITORY + '/releases'
 DEFAULT_SOURCE = RELEASES_URL + '/latest/download/update-info.json'
 RECOVERY_URL = RELEASES_URL + '/latest/download/recovery-guide.txt'
+RELEASES_API = 'https://api.github.com/repos/' + REPOSITORY + '/releases?per_page=100'
 LEGACY_FEED_ID = '1dcxGWJkqxCZ9ViOkcnQUI-mWNCZd7niN'
 
 
@@ -179,6 +180,75 @@ def check(url, work):
     return validate_info(json.loads(file.read_text('utf-8-sig')))
 
 
+def old_releases():
+    """公開済みの通常Releaseから、検証情報が付いた旧版を列挙する。"""
+    opener = build_opener(DriveRedirect())
+    request = Request(RELEASES_API, headers={'User-Agent':'KarenDropUpdater/1.0',
+                                            'Accept':'application/vnd.github+json'})
+    with opener.open(request, timeout=30) as response:
+        if response.geturl() != RELEASES_API:
+            raise ValueError('旧版一覧の取得先が変わっています。')
+        raw = response.read(2 * 1024**2 + 1)
+    if len(raw) > 2 * 1024**2:
+        raise ValueError('旧版一覧が大きすぎます。')
+    releases = json.loads(raw.decode('utf-8'))
+    if not isinstance(releases, list):
+        raise ValueError('旧版一覧を取得できません。')
+    found = {}
+    for release in releases:
+        if not isinstance(release, dict) or release.get('draft') or release.get('prerelease'):
+            continue
+        tag = release.get('tag_name', '')
+        if not isinstance(tag, str) or not re.fullmatch(r'v\d+(?:\.\d+){1,3}', tag):
+            continue
+        try:
+            if version_key(tag[1:]) >= version_key(VERSION):
+                continue
+        except ValueError:
+            continue
+        expected = RELEASES_URL + '/download/' + tag + '/update-info.json'
+        if any(isinstance(a, dict) and a.get('name') == 'update-info.json'
+               and a.get('browser_download_url') == expected for a in release.get('assets', [])):
+            found[tag[1:]] = {'version':tag[1:], 'url':expected}
+    return sorted(found.values(), key=lambda r: version_key(r['version']), reverse=True)
+
+
+def check_old_release(release, work):
+    expected = RELEASES_URL + '/download/v' + release['version'] + '/update-info.json'
+    if (release['url'] != expected
+            or version_key(release['version']) >= version_key(VERSION)):
+        raise ValueError('戻す版の指定が不正です。')
+    info = check(expected, work)
+    if info['version'] != release['version'] or not info.get('package'):
+        raise ValueError('旧版の全体ZIPまたは検証情報が一致しません。')
+    return info
+
+
+def rollback_removals(root, plan):
+    """新版だけにある配布ファイルを一覧で限定。手動変更や利用者データは削除しない。"""
+    root = Path(root)
+    manifest = json.loads((root/'release-manifest.json').read_text('utf-8-sig'))
+    if manifest.get('app_id') != APP_ID or manifest.get('schema_version') != 1:
+        raise ValueError('現在の配布ファイル一覧を確認できません。')
+    if version_key(manifest['version']) != version_key(VERSION):
+        raise ValueError('現在の配布バージョンが一致しません。')
+    wanted = {r['path'].casefold() for r in plan['files']}
+    removals = []
+    for item in manifest['files']:
+        name = safe_path(item['path'])
+        if name.casefold() in wanted:
+            continue
+        path = root/name
+        if path.exists():
+            if path.is_symlink() or any(p.is_symlink() or p.stat().st_file_attributes & 0x400
+                                        for p in [path] + list(path.parents)[:len(Path(name).parts)-1]):
+                raise ValueError('リンク形式の配布ファイルは変更できません。')
+            if digest(path) != item['sha256']:
+                raise ValueError('配布後に変更されたファイルがあります：' + name)
+            removals.append({'path':name, 'sha256':item['sha256'], 'delete_file':True})
+    return removals
+
+
 def new_work(root):
     folder = Path(root) / '.updates'
     if folder.exists() and (folder.is_symlink() or folder.stat().st_file_attributes & 0x400):
@@ -269,6 +339,8 @@ def prepare(info, work, progress=lambda done, total: None):
 def launch(plan, work, root):
     if not getattr(sys, 'frozen', False): raise ValueError('本体の更新はWindows配布EXEで実行してください。')
     root, work = Path(root).resolve(), Path(work).resolve()
+    if version_key(plan['version']) < version_key(VERSION):
+        plan['files'] = plan['files'] + rollback_removals(root, plan)
     plan.update(target=str(root), parent_pid=os.getpid(), from_version=VERSION,
                 base_exe_sha256=digest(root/'KarenDrop.exe'))
     plan_file = work / 'plan.json'

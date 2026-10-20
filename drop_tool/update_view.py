@@ -27,6 +27,13 @@ class UpdateView:
         ttk.Label(row, text='現在のバージョン：v' + updater.VERSION).pack(side='left')
         self.button = ttk.Button(row, text='更新を確認', command=self.check)
         self.button.pack(side='right')
+        older = ttk.Frame(box); older.pack(fill='x', pady=(5, 0))
+        self.old_versions = {}
+        self.old_choice = ttk.Combobox(older, state='readonly', width=16)
+        self.old_choice.set('旧バージョンを選択')
+        self.old_choice.pack(side='left')
+        ttk.Button(older, text='旧版一覧を取得', command=self.load_old_releases).pack(side='left', padx=5)
+        ttk.Button(older, text='この版に戻す', command=self.return_to_old).pack(side='left')
         self.url = tk.StringVar(value=app.settings.get('update_url', ''))
         if not self.url.get():
             try:
@@ -89,7 +96,35 @@ class UpdateView:
             except Exception as exc: self.jobs.put(('error', str(exc)))
         threading.Thread(target=run, daemon=True).start()
 
-    def offer(self, info):
+    def load_old_releases(self):
+        if self.checking or self.installing: return
+        self.startup = False
+        self.checking = True; self.button.configure(state='disabled')
+        self.status.set('GitHub Releasesの旧版一覧を取得しています…')
+        def run():
+            try: self.jobs.put(('old-releases', updater.old_releases()))
+            except Exception as exc: self.jobs.put(('error', str(exc)))
+        threading.Thread(target=run, daemon=True).start()
+
+    def return_to_old(self):
+        if self.checking or self.installing: return
+        release = self.old_versions.get(self.old_choice.get())
+        if not release:
+            messagebox.showinfo('旧版を選択', '「旧版一覧を取得」を押して、戻す版を選んでください。', parent=self.app.root)
+            return
+        self.startup = False
+        self.checking = True; self.button.configure(state='disabled')
+        self.status.set('選択した旧版の検証情報を確認しています…')
+        try: self.work = updater.new_work(ROOT)
+        except Exception as exc:
+            self.failed(str(exc)); return
+        work = self.work
+        def run():
+            try: self.jobs.put(('rollback-checked', updater.check_old_release(release, work)))
+            except Exception as exc: self.jobs.put(('error', str(exc)))
+        threading.Thread(target=run, daemon=True).start()
+
+    def offer(self, info, rollback=False):
         # 起動確認の通信中に利用を始めた場合は、読取・保存・監視を中断しない。
         if (getattr(self, 'startup', False)
                 and updater.version_key(info['version']) > updater.version_key(updater.VERSION)
@@ -98,7 +133,9 @@ class UpdateView:
             self.app.root.after(1000, lambda: self.offer(info))
             return
         self.checking = False; self.button.configure(state='normal')
-        if updater.version_key(info['version']) <= updater.version_key(updater.VERSION):
+        if rollback and updater.version_key(info['version']) >= updater.version_key(updater.VERSION):
+            self.failed('戻す版が現在より古い版ではありません。'); return
+        if not rollback and updater.version_key(info['version']) <= updater.version_key(updater.VERSION):
             updater.cleanup(self.work, ROOT)
             self.status.set('新しいバージョンはありません。')
             if not getattr(self, 'startup', False):
@@ -106,6 +143,8 @@ class UpdateView:
             return
         notes = info.get('release_notes', '')
         text = f"新しいバージョンがあります。\nv{updater.VERSION} → v{info['version']}\n\n{notes}\n\n更新しますか？\n更新後にツールを再起動します。履歴・学習データは引き継ぎます。"
+        if rollback:
+            text = f"旧バージョンに戻します。\nv{updater.VERSION} → v{info['version']}\n\n本体・同梱辞書を選択した版へ戻し、再起動します。\n周回履歴・設定・学習データは巻き戻しません。\n\nこの版に戻しますか？"
         if not messagebox.askyesno('更新の確認', text, parent=self.app.root):
             updater.cleanup(self.work, ROOT)
             self.status.set('更新を見送りました。現在のバージョンを引き続き使えます。')
@@ -146,6 +185,13 @@ class UpdateView:
             while True:
                 kind, value = self.jobs.get_nowait()
                 if kind == 'checked': self.offer(value)
+                elif kind == 'old-releases':
+                    self.checking = False; self.button.configure(state='normal')
+                    self.old_versions = {'v'+r['version']:r for r in value}
+                    self.old_choice.configure(values=list(self.old_versions))
+                    self.old_choice.set(next(iter(self.old_versions), '対象の旧版なし'))
+                    self.status.set('戻す版を選び「この版に戻す」を押してください。' if value else '全体ZIPと検証情報がある旧版が見つかりません。「配布ページ・旧版」も確認できます。')
+                elif kind == 'rollback-checked': self.offer(value, rollback=True)
                 elif kind == 'progress': self.status.set(value)
                 elif kind == 'prepared':
                     updater.launch(value, self.work, ROOT)

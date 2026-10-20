@@ -37,7 +37,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1.3')
+        root.title('カレンとドロップ記録 v1.1.4')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -277,9 +277,12 @@ class App:
     def reward_detection(self, frame, near_dialog, now):
         """Keep checking ALT while the already-confirmed chest memory is valid."""
         gate=self.reward_gate
-        if (not near_dialog and gate.previous is not None
-                and 0<=now-gate.previous<=gate.max_gap and now<=gate.chest_until
-                and gate.chest_until>0):
+        # 確認ダイアログ中は取得できない。探索で観測を遅らせず、記憶も更新しない。
+        if near_dialog:
+            return {'found':False,'match':None,'seconds':0.,'search':'blocked'}
+        if (gate.previous is not None
+                and 0<=now-gate.previous<=gate.max_gap
+                and gate.has_chest_evidence(now)):
             return {'found':False,'match':None,'seconds':0.,'search':'recent'}
         if self.chest_detector is None:
             self.chest_detector=ChestDetector()
@@ -344,7 +347,7 @@ class App:
                     scan = dict(detection, alt=bool(alt), near_dialog=near_dialog, elapsed=self.reward_gate.elapsed(now))
                     self.scan_trace = (self.scan_trace + [dict(scan,time=now)])[-30:]
                     if not triggered:
-                        message = ('宝箱を確認。ALT表示を3秒待っています。' if now <= self.reward_gate.chest_until
+                        message = ('宝箱を確認。ALT表示を3秒待っています。' if self.reward_gate.has_chest_evidence(now)
                                    else '宝箱を探しています。未検出の場合は手動読取を使ってください。')
                         if near_dialog:
                             message = 'ネアル確認画面のため待機中。閉じてからALT表示を3秒確認します。'
