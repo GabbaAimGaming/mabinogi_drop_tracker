@@ -92,10 +92,15 @@ class Vision:
         live = set()
         for record in self.store.data['templates']:
             path = self.store.folder / record['path']
-            if not path.exists():
+            if not path.is_file():
+                continue
+            try:
+                learned = self._mask(path)
+            except (OSError, ValueError):
+                continue  # 学習フォルダーの削除中や破損画像でもOCRを使って続行する。
+            if learned is None:
                 continue
             live.add(str(path))
-            learned = self._mask(path)
             # 後から学習したほぼ同一の見本を優先する（従来どおり）。
             self.templates = [t for t in self.templates if mask_similarity(learned, t[2]) < 0.98]
             self.templates.append((record['name'], overrides.get(record['name'], record['kind']), learned))

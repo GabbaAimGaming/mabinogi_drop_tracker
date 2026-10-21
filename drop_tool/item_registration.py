@@ -1,6 +1,6 @@
-"""登録・対応付け・任意の見本追加を一度の保存で確定する。元の観測と見本は保持。"""
+"""通常の品名修正と、上限付きの画像見本登録。元の観測は保持する。"""
 import copy
-import hashlib
+from . import learning
 from .names import normalize
 from .item_links import name_key, resolve_name
 
@@ -22,6 +22,7 @@ def assign(catalog, source, target, kind, *, new=False, run_id=None, row_index=N
         raise ValueError('別の品への対応付けがある名前です。集計先の正式名を選んでください。')
     source = normalize(source)
     previous = copy.deepcopy(store.data)
+    created = None
     try:
         names = store.data.setdefault('item_names', [])
         for name in (source, target):
@@ -44,21 +45,24 @@ def assign(catalog, source, target, kind, *, new=False, run_id=None, row_index=N
             row['reviewed_kind'] = kind
             if run['status'] == 'confirmed':
                 run['status'] = 'review'
-        if image is not None:
-            learned_name = source if source and source != '読取不明' else target
-            digest = hashlib.sha256(image.tobytes() + str(image.size).encode() + learned_name.encode('utf-8')).hexdigest()[:24]
-            folder = store.folder / 'labels'
-            folder.mkdir(exist_ok=True)
-            file = folder / (digest + '.png')
-            image.save(file)
-            record = {'name':learned_name, 'kind':kind, 'path':file.relative_to(store.folder).as_posix()}
-            # 元の見本は消さない。同じ見本の繰返し登録だけ増殖を防ぐ。
-            if not any(t['path'] == record['path'] for t in store.data['templates']):
-                store.data['templates'].append(record)
+        # 分割した行が同じ結合画像を共有している場合、単品の見本にはしない。
+        shared_image = (run_id is not None and row.get('image') and
+                        sum(r.get('image') == row['image'] for r in run['rows']) > 1)
+        if image is not None and not shared_image:
+            try:
+                created = learning.add(store, target, kind, image)
+            except OSError:
+                pass  # 見本を書けなくても、利用者の通常の品名修正は保存する。
         store.save()
     except Exception:
         store.data = previous
+        if created:
+            try:
+                created.unlink(missing_ok=True)
+            except OSError:
+                pass  # 書き込み途中の孤立見本は次回の整理で回収する。
         raise
+    learning.cleanup(store, previous['templates'])
     catalog.__init__(store)
 
 
