@@ -98,13 +98,15 @@ class ItemLinkTests(unittest.TestCase):
         self.assertEqual(row_identity(self.store.data,run['rows'][0]),(TARGET,'excluded'))
         self.assertEqual(self.store.data['templates'],[])
 
-    def test_old_template_is_preserved_and_same_new_template_not_duplicated(self):
+    def test_missing_template_is_retired_and_same_new_template_not_duplicated(self):
         old={'name':TYPO,'kind':'review','path':'labels/old.png'}
         self.store.data['templates'].append(old.copy())
-        image=Image.new('RGB',(40,14),'white')
+        from drop_tool.config import ROOT
+        image=Image.open(ROOT/'references/labels/00.png').convert('RGB')
         for _ in range(2):assign(self.catalog,TYPO,TARGET,'material',image=image)
-        self.assertIn(old,self.store.data['templates'])
-        self.assertEqual(len(self.store.data['templates']),2)
+        self.assertNotIn(old,self.store.data['templates'])
+        self.assertEqual(len(self.store.data['templates']),1)
+        self.assertEqual(self.store.data['templates'][0]['name'],TARGET)
 
     def test_failed_save_rolls_back_names_policy_link_and_row(self):
         run=self.run_with(TYPO,kind='review');before=copy.deepcopy(self.store.data)
