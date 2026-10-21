@@ -8,6 +8,8 @@ Claudeが開発・調査・整理に使う場所。**リリースには含めな
 |---|---|
 | `CLAUDE.md` | コードマップ。Claudeが編集する時の地図 |
 | `HANDOFF.md` | 引き継ぎメモ。作業の遵守事項と残作業 |
+| `HANDOFF.en.md` | 引き継ぎメモの英語版 |
+| `REVIEW_REQUEST.en.md` | コードレビュー依頼票（英語） |
 | `RELEASE_RULES.md` | リリースに含めないためのルールと強制の仕組み |
 | `verification/` | リファクタの旧新比較スクリプト |
 

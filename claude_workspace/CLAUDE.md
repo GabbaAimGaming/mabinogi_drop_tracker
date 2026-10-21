@@ -79,7 +79,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 判定 | `chest_fragments.py` `chest_shape.py` `chest_parts.py` `chest_gradients.py` | 箱の補助判定（表面マスク、蓋の形、蓋と本体の部品照合、勾配セル分類器） | test_chest_fragments, test_chest_shape, test_chest_parts, test_closed_oct19 |
 | 判定 | `reward_gate.py` `near_dialog.py` | 3秒ゲート、ネアル確認画面の除外 | test_near_dialog, test_reward_scan_reuse |
 | 判定 | `alt_display.py` `alt_capture.py` | ALT品名板の判定と連写 | test_alt_display, test_alt_hold_simulation |
-| 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR・`learn`（学習）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
+| 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR（`learn`は段階6でコメントアウト。学習は`item_registration.assign`）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
 | 認識 | `label_images.py` `label_scale.py` `label_detection.py` `plate_recovery.py` `hud_filter.py` | マスク生成（`text_pixels/red_pixels/purple_pixels`等）、倍率補正、発光時の補助検出、HUD除外 | test_label_*, test_glow_recovery, test_hud_filter, test_cyan_labels |
 | 認識 | `color_labels.py` | 赤・紫文字の補助候補。`red/purple`が共通の`_candidates`へ色ごとの条件（密度範囲・色画素の比・紫の字形条件）を渡す。`vision.boxes`、`alt_display`、`label_scale`（`max_height=44`）が使う | test_red_labels, test_purple_labels |
 | 認識 | `bright_plates.py` `hud_text.py` | 色光の上の半透明板の復元、百分率・時刻の除外 | test_bright_plates, test_hud_text |
@@ -177,6 +177,7 @@ Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、s
 - `compare_worker.py`：段階1。旧`App.submit`と`read_worker`のキュー出力（14シナリオ）。
 - `compare_vision.py`：段階2。合成画像316枚で色付き品名・`Vision.boxes`・`quick_check`・倍率補正。
 - `compare_chest.py`：段階3。宝箱検知の段の制御（384通り）。
+- `compare_split.py`・`compare_ui.py`：段階7。`App`分割のメソッド同一性と、`build_widgets`の部品呼び出し列（引数は旧・新リポジトリ）。
 
 `test_tracker`（`Store`・`StableReading`の中核テスト）は公開環境ではskipされる。保存と確定のロジックを直す時は、公開テストだけだと守りが薄い。認識・宝箱系の退行は非公開画像のある作者側環境で確認してもらう。
 
@@ -197,6 +198,10 @@ Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、s
 5. **済（案A）**：`updater`はファイルを分けず、中を「取得／検証／適用・復旧／配布者用」の区切りに並べ直し、重複した値を定数へ集約、詰め書きを整形（ブランチ`refactor/step5-updater`）。
    - 分割しなかった理由：テストが`updater.build_opener`・`download`・`check`・`prepare`・`cleanup`・`new_work`・`launch`・`old_releases`・`sys`をモジュール属性としてpatchしている（約20か所）。別ファイルへ移すと、移した先の関数が自分のモジュールの名前を参照するためpatchが効かず、テスト中に実通信が起きうる。通信まわりに追加機能の予定もなく、分割の恩恵が薄いと利用者と判断した。
    - 確認：新しい定数を元の値へ戻した構文木で、33定義とimportが旧版と全件一致。
+
+6. **済（削減1回目）**：未使用コードを`[削減候補 2026-10-21]`でコメントアウト、カウントダウンを`App.countdown`へ集約（`1a7b565`）。削除はレビューと利用者確認の後。詳細は[HANDOFF.md](HANDOFF.md)§3
+7. **済**：`app.py`を`HistoryActions`・`ManualActions`・`SampleActions`へ分割、`ui.build_widgets`を領域ごとの関数へ（`a24cb34`）。詳細は[HANDOFF.md](HANDOFF.md)§4
+8. **レビュー待ち**（[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)）→ 削減2回目（削除）
 
 **様子見中（影響が無ければ削除）**：
 - `'captured'`イベント：本体のどこからも送られない。`App.show_progress`の表示処理はコメントアウト済み。`App.handle_job`の見張りが、届いた場合だけ`errors.log`へ「想定外のcapturedイベントを受信しました」と残して無視する。`test_alt_display.test_capture_event_plays_short_sound_without_ending_work`はskip。実機で一度も記録されなければ、見張り・コメント・テスト・`notification.SOUNDS['captured']`をまとめて削除する。
