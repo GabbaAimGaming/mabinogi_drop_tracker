@@ -101,6 +101,26 @@ class ManualReviewTests(unittest.TestCase):
             if cancel:app.submit.assert_not_called()
             else:app.submit.assert_called_once_with('manual_photo')
 
+    def test_missed_report_countdown_keeps_trace_and_stop_cancels(self):
+        """report_missedもApp.countdown経由で3・2・1と表示してから撮影し、停止で中止する。"""
+        for cancel in (False,True):
+            app=App.__new__(App);app.busy=False;app.hwnd=1;app.epoch=5
+            app.root=Mock();app.status=Mock();app.submit=Mock();app.scan_trace=['直前の判定']
+            def stop(app=app):app.scan_trace=[]
+            app.stop=stop
+            pending=[];app.root.after.side_effect=lambda delay,callback:pending.append((delay,callback))
+            app.report_missed()
+            self.assertEqual(app.scan_trace,['直前の判定'])
+            if cancel:app.epoch+=1
+            while pending:
+                delay,callback=pending.pop(0);self.assertEqual(delay,1000);callback()
+            shown=[c.args[0][:8] for c in app.status.set.call_args_list]
+            if cancel:
+                app.submit.assert_not_called();self.assertEqual(shown,['検証用撮影まで3'])
+            else:
+                app.submit.assert_called_once_with('missed')
+                self.assertEqual(shown,['検証用撮影まで3','検証用撮影まで2','検証用撮影まで1'])
+
     def test_decline_saved_read_does_not_replace_anything(self):
         app=App.__new__(App);app.root=Mock();app.store=self.store
         with patch('drop_tool.app.messagebox.askyesno',return_value=False),patch.object(m,'replace_reading') as replace:

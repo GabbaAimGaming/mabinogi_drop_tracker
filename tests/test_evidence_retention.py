@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from PIL import Image
 
-from drop_tool import retention
+from drop_tool import retention, settings
 from drop_tool.tracker import Store
 
 
@@ -118,18 +118,34 @@ class PruneEvidenceTests(unittest.TestCase):
 
 class SettingsTests(unittest.TestCase):
     def test_defaults_and_validation(self):
+        # [削減候補 2026-10-21] retention.load_settings/save_settingsのコメントアウトに合わせ、
+        # 本体が使うsettings.load/saveで同じ内容を確認する。旧版は下にコメントで残す。確認後に旧版を削除
+        def evidence(folder):
+            loaded = settings.load(folder)
+            return {key: loaded[key] for key in ('evidence_auto_delete', 'evidence_keep_runs')}
         with tempfile.TemporaryDirectory() as folder:
-            self.assertEqual(retention.load_settings(folder),
-                             {'evidence_auto_delete': True, 'evidence_keep_runs': 3})
+            self.assertEqual(evidence(folder), {'evidence_auto_delete': True, 'evidence_keep_runs': 3})
             (Path(folder) / 'settings.json').write_text('{"evidence_keep_runs": -4, "evidence_auto_delete": "x"}', 'utf-8')
-            self.assertEqual(retention.load_settings(folder)['evidence_keep_runs'], 3)
+            self.assertEqual(evidence(folder)['evidence_keep_runs'], 3)
             (Path(folder) / 'settings.json').write_text('壊れた', 'utf-8')
-            self.assertTrue(retention.load_settings(folder)['evidence_auto_delete'])
-            saved = retention.save_settings(folder, evidence_auto_delete=False, evidence_keep_runs=10)
-            self.assertEqual(saved, {'evidence_auto_delete': False, 'evidence_keep_runs': 10})
+            self.assertTrue(evidence(folder)['evidence_auto_delete'])
+            settings.save(folder, evidence_auto_delete=False, evidence_keep_runs=10)
+            self.assertEqual(evidence(folder), {'evidence_auto_delete': False, 'evidence_keep_runs': 10})
             with self.assertRaises(ValueError):
-                retention.save_settings(folder, evidence_auto_delete=True, evidence_keep_runs=0)
+                settings.save(folder, evidence_auto_delete=True, evidence_keep_runs=0)
             self.assertEqual(json.loads((Path(folder) / 'settings.json').read_text('utf-8'))['evidence_keep_runs'], 10)
+        # with tempfile.TemporaryDirectory() as folder:
+        #     self.assertEqual(retention.load_settings(folder),
+        #                      {'evidence_auto_delete': True, 'evidence_keep_runs': 3})
+        #     (Path(folder) / 'settings.json').write_text('{"evidence_keep_runs": -4, "evidence_auto_delete": "x"}', 'utf-8')
+        #     self.assertEqual(retention.load_settings(folder)['evidence_keep_runs'], 3)
+        #     (Path(folder) / 'settings.json').write_text('壊れた', 'utf-8')
+        #     self.assertTrue(retention.load_settings(folder)['evidence_auto_delete'])
+        #     saved = retention.save_settings(folder, evidence_auto_delete=False, evidence_keep_runs=10)
+        #     self.assertEqual(saved, {'evidence_auto_delete': False, 'evidence_keep_runs': 10})
+        #     with self.assertRaises(ValueError):
+        #         retention.save_settings(folder, evidence_auto_delete=True, evidence_keep_runs=0)
+        #     self.assertEqual(json.loads((Path(folder) / 'settings.json').read_text('utf-8'))['evidence_keep_runs'], 10)
 
 
 class SettingsTabTests(unittest.TestCase):
@@ -160,7 +176,9 @@ class SettingsTabTests(unittest.TestCase):
         self.assertEqual(view.keep.get(), '3')
         view.keep.set('1')
         self.assertTrue(view.save())
-        self.assertEqual(retention.load_settings(self.store.folder)['evidence_keep_runs'], 1)
+        # [削減候補 2026-10-21] retention.load_settingsのコメントアウトに合わせsettings.loadへ。確認後に旧行を削除
+        # self.assertEqual(retention.load_settings(self.store.folder)['evidence_keep_runs'], 1)
+        self.assertEqual(settings.load(self.store.folder)['evidence_keep_runs'], 1)
         self.assertFalse(any(p.exists() for p in images(self.store, self.runs[0])))
         self.assertTrue(all(p.exists() for p in images(self.store, self.runs[-1])))
         self.assertIn('2枚', view.usage.get())

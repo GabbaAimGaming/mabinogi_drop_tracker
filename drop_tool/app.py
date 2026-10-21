@@ -469,8 +469,26 @@ class App:
         self.notify_unregistered(result)
         self.submit_sample('auto_success', result.get('sample_frames',[]), self.read_metadata(result))
 
-    def test_image(self):
-        self.review_capture()
+    # [削減候補 2026-10-21] 呼び出し元なし（review_captureを呼ぶだけ）。確認後に削除
+    # def test_image(self):
+    #     self.review_capture()
+
+    def countdown(self, seconds, text, mode):
+        """seconds秒数えてからsubmit(mode)。textの{left}に残り秒を入れる。
+
+        数え始めた後にepochが変われば（停止・ゲーム切替等）何もせず終える。
+        """
+        token = self.epoch
+
+        def step(left):
+            if token != self.epoch:
+                return
+            if left:
+                self.status.set(text.format(left=left))
+                self.root.after(1000, lambda: step(left - 1))
+            else:
+                self.submit(mode)
+        step(seconds)
 
     def capture_manual(self):
         if self.busy:
@@ -483,18 +501,20 @@ class App:
             self.status.set('撮影するゲームを選んでください。')
             return
         self.stop()
-        token = self.epoch
         self.manual_target = target
-
-        def countdown(left):
-            if token != self.epoch:
-                return
-            if left:
-                self.status.set(f'撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。')
-                self.root.after(1000, lambda: countdown(left - 1))
-            else:
-                self.submit('manual_photo')
-        countdown(3)
+        self.countdown(3, '撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。', 'manual_photo')
+        # [削減候補 2026-10-21] self.countdownへ集約した旧実装。確認後に削除
+        # token = self.epoch
+        #
+        # def countdown(left):
+        #     if token != self.epoch:
+        #         return
+        #     if left:
+        #         self.status.set(f'撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。')
+        #         self.root.after(1000, lambda: countdown(left - 1))
+        #     else:
+        #         self.submit('manual_photo')
+        # countdown(3)
 
     def review_capture(self):
         if self.busy:
@@ -561,30 +581,32 @@ class App:
         except Exception as exc:
             messagebox.showerror('反映できません', str(exc), parent=self.root)
 
-    def timed_read(self):
-        """旧呼び出し用の直接読取。通常の手動操作はcapture_manualから行う。"""
-        if not self.hwnd:
-            self.status.set('撮影するゲームを選んでください。')
-            return
-        if not self.active_id or self.store.find(self.active_id)['status'] != 'waiting':
-            self.status.set('先に「新しい周回」、または未取得の履歴を選んで「監視再開」を押してください。')
-            return
-        if self.busy:
-            self.status.set('読取処理中です。下の監視表示で進行状況を確認してください。')
-            return
-        self.stop()
-        token = self.epoch
-
-        def countdown(left):
-            if token != self.epoch:
-                return
-            if left:
-                self.status.set(f'報酬読取まで {left}秒。ゲームへ戻ってALTを押し続けてください。')
-                self.root.after(1000, lambda: countdown(left - 1))
-            else:
-                self.status.set('報酬を撮影・読取中です。')
-                self.submit('manual')
-        countdown(5)
+    # [削減候補 2026-10-21] 本体からの呼び出し元なし（旧呼び出し用。手動操作はcapture_manual）。
+    # 使うのはtests/test_capture_flowの1件だけで、そちらもコメントアウト済み。確認後に削除
+    # def timed_read(self):
+    #     """旧呼び出し用の直接読取。通常の手動操作はcapture_manualから行う。"""
+    #     if not self.hwnd:
+    #         self.status.set('撮影するゲームを選んでください。')
+    #         return
+    #     if not self.active_id or self.store.find(self.active_id)['status'] != 'waiting':
+    #         self.status.set('先に「新しい周回」、または未取得の履歴を選んで「監視再開」を押してください。')
+    #         return
+    #     if self.busy:
+    #         self.status.set('読取処理中です。下の監視表示で進行状況を確認してください。')
+    #         return
+    #     self.stop()
+    #     token = self.epoch
+    #
+    #     def countdown(left):
+    #         if token != self.epoch:
+    #             return
+    #         if left:
+    #             self.status.set(f'報酬読取まで {left}秒。ゲームへ戻ってALTを押し続けてください。')
+    #             self.root.after(1000, lambda: countdown(left - 1))
+    #         else:
+    #             self.status.set('報酬を撮影・読取中です。')
+    #             self.submit('manual')
+    #     countdown(5)
 
     def show_test(self, result):
         text = '\n'.join((f"{KIND[r['kind']]}：{r['name']}" for r in result['labels']))
@@ -913,16 +935,18 @@ class App:
         trace = list(self.scan_trace)
         self.stop()
         self.scan_trace = trace
-        token = self.epoch
-        def countdown(left):
-            if token != self.epoch:
-                return
-            if left:
-                self.status.set(f'検証用撮影まで{left}秒。ゲームへ戻り、宝箱を画面に入れてください。ALTは不要です。')
-                self.root.after(1000,lambda:countdown(left-1))
-            else:
-                self.submit('missed')
-        countdown(3)
+        self.countdown(3, '検証用撮影まで{left}秒。ゲームへ戻り、宝箱を画面に入れてください。ALTは不要です。', 'missed')
+        # [削減候補 2026-10-21] self.countdownへ集約した旧実装。確認後に削除
+        # token = self.epoch
+        # def countdown(left):
+        #     if token != self.epoch:
+        #         return
+        #     if left:
+        #         self.status.set(f'検証用撮影まで{left}秒。ゲームへ戻り、宝箱を画面に入れてください。ALTは不要です。')
+        #         self.root.after(1000,lambda:countdown(left-1))
+        #     else:
+        #         self.submit('missed')
+        # countdown(3)
 
     def export_samples(self):
         """利用者が内容を確認して提出するためのZIP。ネット送信は行わない。"""

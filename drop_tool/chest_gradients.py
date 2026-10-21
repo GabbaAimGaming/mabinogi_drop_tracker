@@ -11,7 +11,8 @@ class GradientClassifier:
         hist=np.bincount(index.ravel(),weights=mag.ravel(),minlength=(h//8)*(w//8)*9).reshape(h//8,w//8,9).astype('float32')
         norm=np.sqrt((hist*hist).sum(2,keepdims=True)+100.)
         return hist/norm
-    def compute(self,gray):return self.cells(gray).reshape(-1,1)
+    # [削減候補 2026-10-21] 呼び出し元なし（cv2.HOGDescriptor互換の名残。ChestShapeはdetectMultiScaleだけ使う）。確認後に削除
+    # def compute(self,gray):return self.cells(gray).reshape(-1,1)
     def set_weights(self,weights):self.weights=np.asarray(weights[:-1]).reshape(10,8,9);self.bias=float(weights[-1])
     def detectMultiScale(self,gray,hitThreshold=.5,winStride=None,padding=None,scale=1.12,finalThreshold=0):
         rects=[];values=[];factor=1.

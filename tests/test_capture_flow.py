@@ -44,13 +44,14 @@ class CaptureFlowTests(unittest.TestCase):
         return app
 
 
-    def test_timed_read_bypasses_alt_key_gate_and_chest(self):
-        app=self.make_app();app.submit=Mock()
-        app.active_id=app.store.new_run('アルビ','HD','使用')['id']
-        with patch('app.capture.user32.GetAsyncKeyState',side_effect=AssertionError('must not require ALT API')):
-            app.timed_read()
-            for _ in range(5):app.root.after.call_args.args[1]()
-        app.submit.assert_called_once_with('manual')
+    # [削減候補 2026-10-21] App.timed_readのコメントアウトに合わせて止める。確認後に削除
+    # def test_timed_read_bypasses_alt_key_gate_and_chest(self):
+    #     app=self.make_app();app.submit=Mock()
+    #     app.active_id=app.store.new_run('アルビ','HD','使用')['id']
+    #     with patch('app.capture.user32.GetAsyncKeyState',side_effect=AssertionError('must not require ALT API')):
+    #         app.timed_read()
+    #         for _ in range(5):app.root.after.call_args.args[1]()
+    #     app.submit.assert_called_once_with('manual')
 
     def test_label_stability_does_not_need_chest(self):
         stable=StableReading();result={'labels':[{'name':'素材','kind':'material'}]}

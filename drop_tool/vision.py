@@ -1,5 +1,6 @@
 """画面の品名切り抜き、見本照合、日本語OCRの候補生成。"""
-import copy
+# [削減候補 2026-10-21] Vision.learnのコメントアウトで未使用。確認後に削除
+# import copy
 import hashlib
 import json
 import cv2
@@ -22,9 +23,10 @@ def ink(image):
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
-def similarity(a, b):
-    """文字の縦横比が近い見本だけ、重なる画素の割合で比較する。"""
-    return mask_similarity(ink(a), ink(b))
+# [削減候補 2026-10-21] 呼び出し元なし（照合はmask_similarityで作成済みマスク同士を比べる）。確認後に削除
+# def similarity(a, b):
+#     """文字の縦横比が近い見本だけ、重なる画素の割合で比較する。"""
+#     return mask_similarity(ink(a), ink(b))
 
 
 def mask_similarity(a, b):
@@ -257,44 +259,47 @@ class Vision:
             message += ' / OCRエラー：' + ocr_error
         return {'labels': labels, 'message': message}
 
-    def learn(self, name, kind, image, *, run_id=None, row_index=None):
-        """品名画像・扱い・選択行の修正を一度に保存。失敗時は全設定を戻す。"""
-        name = normalize(name)
-        if not name or kind not in ('material', 'excluded', 'review'):
-            raise ValueError('品名と集計/除外/未確認を指定してください。')
-        folder = self.store.folder / 'labels'
-        folder.mkdir(exist_ok=True)
-        digest = hashlib.sha256(image.tobytes() + name.encode('utf-8')).hexdigest()[:20]
-        path = folder / (digest + '.png')
-        image.save(path)
-        rel = path.relative_to(self.store.folder).as_posix()
-        previous = copy.deepcopy(self.store.data)
-        # ほぼ同一の旧見本は読込時に新しい見本で置き換わるため、記録からも外す。
-        # 残すと修正の度に見本一覧が伸び、照合と再読込が遅くなり続ける。
-        new_mask = ink(image)
-        def superseded(record):
-            if record['path'] == rel:
-                return True
-            path = self.store.folder / record['path']
-            if not path.exists():
-                return False
-            try:
-                return mask_similarity(new_mask, self._mask(path)) >= 0.98
-            except OSError:
-                return False
-        self.store.data['templates'] = [r for r in self.store.data['templates'] if not superseded(r)]
-        self.store.data['templates'].append({'name': name, 'kind': kind, 'path': rel})
-        self.store.data['overrides'][name] = kind
-        if run_id is not None:
-            run = self.store.find(run_id)
-            run['rows'][row_index].pop('reviewed_kind', None)
-            run['rows'][row_index].pop('resolved_name', None)
-            run['rows'][row_index].update(name=name, kind=kind)
-            run['status'] = 'review'
-        try:
-            self.store.save()
-        except Exception:
-            self.store.data = previous
-            raise
-        self.reload()
+    # [削減候補 2026-10-21] 本体からの呼び出し元なし。v0.18.2で履歴の修正（App.correct_row）が
+    # item_registration.assign（元の読み取り名を残し、誤読名→正式名を対応付ける方式）へ置き換わってから未使用。
+    # 公開テストはassign経由へ書き換え済み。非公開のtests/test_tracker.pyも同様に書き換え済み（要・手元確認）。確認後に削除
+    # def learn(self, name, kind, image, *, run_id=None, row_index=None):
+    #     """品名画像・扱い・選択行の修正を一度に保存。失敗時は全設定を戻す。"""
+    #     name = normalize(name)
+    #     if not name or kind not in ('material', 'excluded', 'review'):
+    #         raise ValueError('品名と集計/除外/未確認を指定してください。')
+    #     folder = self.store.folder / 'labels'
+    #     folder.mkdir(exist_ok=True)
+    #     digest = hashlib.sha256(image.tobytes() + name.encode('utf-8')).hexdigest()[:20]
+    #     path = folder / (digest + '.png')
+    #     image.save(path)
+    #     rel = path.relative_to(self.store.folder).as_posix()
+    #     previous = copy.deepcopy(self.store.data)
+    #     # ほぼ同一の旧見本は読込時に新しい見本で置き換わるため、記録からも外す。
+    #     # 残すと修正の度に見本一覧が伸び、照合と再読込が遅くなり続ける。
+    #     new_mask = ink(image)
+    #     def superseded(record):
+    #         if record['path'] == rel:
+    #             return True
+    #         path = self.store.folder / record['path']
+    #         if not path.exists():
+    #             return False
+    #         try:
+    #             return mask_similarity(new_mask, self._mask(path)) >= 0.98
+    #         except OSError:
+    #             return False
+    #     self.store.data['templates'] = [r for r in self.store.data['templates'] if not superseded(r)]
+    #     self.store.data['templates'].append({'name': name, 'kind': kind, 'path': rel})
+    #     self.store.data['overrides'][name] = kind
+    #     if run_id is not None:
+    #         run = self.store.find(run_id)
+    #         run['rows'][row_index].pop('reviewed_kind', None)
+    #         run['rows'][row_index].pop('resolved_name', None)
+    #         run['rows'][row_index].update(name=name, kind=kind)
+    #         run['status'] = 'review'
+    #     try:
+    #         self.store.save()
+    #     except Exception:
+    #         self.store.data = previous
+    #         raise
+    #     self.reload()
 

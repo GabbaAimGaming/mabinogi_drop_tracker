@@ -15,6 +15,7 @@ from drop_tool import retention
 from drop_tool.csv_collection import CsvCollection
 from drop_tool.tracker import Store, StableReading
 from drop_tool.vision import Vision
+from drop_tool.item_registration import assign
 
 
 def label(text_width, seed=0):
@@ -142,17 +143,26 @@ class TemplateGrowthTests(unittest.TestCase):
     def test_templates_keep_masks_not_images(self):
         self.assertTrue(all(isinstance(t[2], np.ndarray) for t in self.vision.templates))
 
-    def test_relearning_same_label_does_not_grow_records(self):
-        image = label(120)
-        for name in ('誤読A', '誤読B', '正式名'):
-            self.vision.learn(name, 'material', image)
-        self.assertEqual([r['name'] for r in self.store.data['templates']], ['正式名'])
-        self.assertEqual(self.vision.recognize_template(image), ('正式名', 'material'))
+    # [削減候補 2026-10-21] Vision.learn固有の動作（ほぼ同一の旧見本を記録から外す）のテスト。
+    # learnのコメントアウトに合わせて止める。本体の経路assignは同じパスの重複だけを防ぎ、
+    # ほぼ同一の見本は読込時（Vision.reload）に間引く。確認後に削除
+    # def test_relearning_same_label_does_not_grow_records(self):
+    #     image = label(120)
+    #     for name in ('誤読A', '誤読B', '正式名'):
+    #         self.vision.learn(name, 'material', image)
+    #     self.assertEqual([r['name'] for r in self.store.data['templates']], ['正式名'])
+    #     self.assertEqual(self.vision.recognize_template(image), ('正式名', 'material'))
 
     def test_different_labels_are_all_kept(self):
-        self.vision.learn('素材A', 'material', label(120, 0))
-        self.vision.learn('素材B', 'material', label(60, 1))
+        # [削減候補 2026-10-21] Vision.learnのコメントアウトに合わせassign経由へ。旧版は下にコメントで残す。確認後に旧版を削除
+        assign(self.vision.catalog, '素材A', '素材A', 'material', new=True, image=label(120, 0))
+        assign(self.vision.catalog, '素材B', '素材B', 'material', new=True, image=label(60, 1))
+        self.vision.reload()
         self.assertEqual(sorted(r['name'] for r in self.store.data['templates']), ['素材A', '素材B'])
+        self.assertEqual(self.vision.recognize_template(label(120, 0)), ('素材A', 'material'))
+        # self.vision.learn('素材A', 'material', label(120, 0))
+        # self.vision.learn('素材B', 'material', label(60, 1))
+        # self.assertEqual(sorted(r['name'] for r in self.store.data['templates']), ['素材A', '素材B'])
 
 
 if __name__ == '__main__':
