@@ -224,6 +224,11 @@ def check_old_release(release, work):
     return info
 
 
+def _is_link(path):
+    """シンボリックリンク、またはWindowsの再解析ポイント（ジャンクション等）か。"""
+    return path.is_symlink() or bool(getattr(path.stat(), 'st_file_attributes', 0) & 0x400)
+
+
 def rollback_removals(root, plan):
     """新版だけにある配布ファイルを一覧で限定。手動変更や利用者データは削除しない。"""
     root = Path(root)
@@ -240,8 +245,7 @@ def rollback_removals(root, plan):
             continue
         path = root/name
         if path.exists():
-            if path.is_symlink() or any(p.is_symlink() or p.stat().st_file_attributes & 0x400
-                                        for p in [path] + list(path.parents)[:len(Path(name).parts)-1]):
+            if any(_is_link(p) for p in [path] + list(path.parents)[:len(Path(name).parts)-1]):
                 raise ValueError('リンク形式の配布ファイルは変更できません。')
             if digest(path) != item['sha256']:
                 raise ValueError('配布後に変更されたファイルがあります：' + name)
@@ -251,7 +255,7 @@ def rollback_removals(root, plan):
 
 def new_work(root):
     folder = Path(root) / '.updates'
-    if folder.exists() and (folder.is_symlink() or folder.stat().st_file_attributes & 0x400):
+    if folder.exists() and _is_link(folder):
         raise ValueError('更新用フォルダーがリンクになっています。通常のフォルダーで使用してください。')
     work = folder / uuid.uuid4().hex
     work.mkdir(parents=True)
@@ -264,7 +268,7 @@ def cleanup(work, root):
     if work.parent != root/'.updates' or not re.fullmatch('[a-f0-9]{32}', work.name): return
     if not work.exists(): return
     for p in [work.parent, work] + list(work.rglob('*')):
-        if p.is_symlink() or p.stat().st_file_attributes & 0x400: return
+        if _is_link(p): return
     if work.resolve().parent != root/'.updates': return
     shutil.rmtree(work)
 
