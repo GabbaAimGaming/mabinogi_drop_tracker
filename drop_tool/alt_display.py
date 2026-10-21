@@ -133,10 +133,12 @@ def quick_check(region):
             if background.any() and plate[y0:y0 + box.height, x0:x0 + box.width][background].mean() >= SINGLE:
                 return True
     from .plate_recovery import recover
-    if recover(region):return True
+    if recover(region):
+        return True
     from .bright_plates import recover as recover_bright
-    if recover_bright(region):return True
-    from .red_labels import candidates
-    if select(candidates(region))[0]:return True
-    from .purple_labels import candidates as purple_candidates
-    return bool(select(purple_candidates(region))[0])
+    if recover_bright(region):
+        return True
+    from .color_labels import purple, red
+    if select(red(region))[0]:
+        return True
+    return bool(select(purple(region))[0])

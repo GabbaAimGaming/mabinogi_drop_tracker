@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import numpy as np
 from PIL import Image,ImageDraw,ImageFont
 from drop_tool.label_images import text_pixels,split_labels
-from drop_tool.purple_labels import candidates
+from drop_tool.color_labels import purple as candidates
 from drop_tool.alt_display import quick_check
 from drop_tool.label_scale import recognition_scale
 from drop_tool.vision import Vision
