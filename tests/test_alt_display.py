@@ -165,6 +165,7 @@ class CaptureSoundTests(unittest.TestCase):
         app.read_attempts = 0; app.worker_phase = ''; app.worker_started = 0
         return app
 
+    @unittest.skip('様子見・削除予定：capturedイベントは送信元がなく、受信処理をコメントアウト中')
     def test_capture_event_plays_short_sound_without_ending_work(self):
         app = self.make_app()
         app.jobs.put((0, 'captured', {'frames': 6}, None))

@@ -348,10 +348,15 @@ class App:
             self.root.after(150, self.poll)
 
     def handle_job(self, epoch, mode, result, error):
-        if mode in ('start', 'captured'):
+        if mode == 'start':
             # 途中経過。ワーカーは続いているのでbusyは解除しない。
             if epoch == self.epoch:
                 self.show_progress(mode, result)
+            return
+        # 【様子見・削除予定】'captured'は本体のどこからも送られていない。
+        # 実機で届かないことを確認したら、この見張りとshow_progressのコメントを消す。
+        if mode == 'captured':
+            self.log_error(f"想定外のcapturedイベントを受信しました：{result!r}\n")
             return
         if mode not in ('sample_saved', 'sample_error'):
             self.busy = False
@@ -371,12 +376,11 @@ class App:
         handler.get(mode, self.apply_live)(result)
 
     def show_progress(self, mode, result):
-        if mode == 'start':
-            self.completion_sound.play(kind='start')
-            self.status.set('読取開始。ALTを押したまま、完了音までゲームを前面に置いてください。')
-        else:
-            self.completion_sound.play(kind='captured')
-            self.status.set(f"撮影完了（{result['frames']}枚）。ALTを離して構いません。品名を解析しています…")
+        self.completion_sound.play(kind='start')
+        self.status.set('読取開始。ALTを押したまま、完了音までゲームを前面に置いてください。')
+        # 【様子見・削除予定】'captured'の表示。送信元がないためコメントアウト中。
+        # self.completion_sound.play(kind='captured')
+        # self.status.set(f"撮影完了（{result['frames']}枚）。ALTを離して構いません。品名を解析しています…")
 
     def show_scan(self, result):
         self.status.set(result.get('message', '宝箱を探しています。') + f" ALT継続 {result.get('elapsed', 0):.1f}/3秒")
