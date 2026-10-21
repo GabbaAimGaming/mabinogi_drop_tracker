@@ -25,6 +25,9 @@ def run_app(guard=None):
                 root.update_idletasks()
                 from drop_tool.ocr_engine import probe
                 ocr_name = probe()
+                # 通常の起動だけでは通信準備を検証できない。同梱漏れを公開前に検出する。
+                import ssl
+                ssl.create_default_context()
                 from drop_tool.chest_detector import ChestDetector
                 from drop_tool.preflight import check_assets
                 check_assets(ROOT)
@@ -49,6 +52,7 @@ def run_app(guard=None):
                               chest_shape=detector.shape is not None,
                               chest_fragments=len(detector.fragments.templates),
                               frozen=bool(getattr(sys, 'frozen', False)),
+                              https_context=True,
                               character=app.banner.photo.width(),
                               registered_items=len(app.vision.catalog.entries),
                               item_tab=app.notebook.tab(app.item_views.frame, "text"))
