@@ -3,7 +3,7 @@
 次からの作業場所は **`claude/dev-workspace`**。地図は[CLAUDE.md](CLAUDE.md)、リリース除外は[RELEASE_RULES.md](RELEASE_RULES.md)。
 
 ## 1. 何をしたか（一言で）
-`main` v1.1.7（`5ed115c`）の上で、**挙動を変えずに**構造を整理した（段階0〜5）。そのうえで`claude/dev-workspace`へマージした（`45f9be6`）。作業用の`refactor/step*`ブランチは統合後に削除済みで、コミットはdev-workspaceの履歴に残っている。
+`main` v1.1.7（`5ed115c`）の上で、**挙動を変えずに**構造を整理した（段階0〜5）。そのうえで`claude/dev-workspace`へマージした（`45f9be6`）。作業用の`refactor/step0-safety-net`〜`refactor/step5-updater`（6本）は、先頭コミットがすべてdev-workspaceに含まれることを確認した。ローカルからは削除済み。**リモートからの削除はセッションの権限で拒否（HTTP 403）されたため、利用者がGitHubの画面から削除する**（中身はdev-workspaceにあるので消しても失われない）。
 
 最終目標は「無駄を削ってコードを軽量化」。今回は**整理まで**。行数はむしろ増えている（`drop_tool`で+852/−655。整形で1行を複数行に戻したのと、docstringを足したため）。実際に削るのは次の「削減フェーズ」から（§4）。
 
@@ -36,7 +36,8 @@
 3. **`'captured'`の様子見**：実機で動かして`errors.log`に「想定外のcapturedイベントを受信しました」が一度も出なければ、まとめて削除する。対象は`App.handle_job`の見張り、`App.show_progress`のコメント、`test_alt_display`のskip中テスト1件、`notification.SOUNDS['captured']`。
 4. **削減フェーズ（次の本題）**：呼ばれていない関数・定数・引数・import、送り手のない処理、同じことをする小関数を一覧にする。候補を利用者に見せて、削るものを決めてもらってから消す。例：`App.timed_read`（docstringに「旧呼び出し用」とある）、`App.test_image`（`review_capture`を呼ぶだけ）。
 5. **`claude_workspace/`内のソースコピー**：v1.1時点の軽量コピー（`drop_tool/`、`tests/`等）が残っていて、今のコードとは別物になっている。二重管理になるので、削除するか（CLAUDE.md・RELEASE_RULES.md・HANDOFF.md・verification/だけ残す）利用者に確認する。
-6. **mainへ戻す時**：混入ガード（`RELEASE_EXCLUDED_DIRS`）はdev-workspaceにしか無い。PRを作る時は`AGENTS.md`の公開前確認に従う。
+6. **リモートの`refactor/step*`ブランチ6本の削除**（利用者がGitHubのBranches画面から）。
+7. **mainへ戻す時**：混入ガード（`RELEASE_EXCLUDED_DIRS`）はdev-workspaceにしか無い。PRを作る時は`AGENTS.md`の公開前確認に従う。
 
 ## 5. 利用者との約束（作業の進め方）
 - コーディング前に実装方針を一度共有する。
