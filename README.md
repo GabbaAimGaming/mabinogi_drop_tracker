@@ -1,10 +1,10 @@
-# KarenDrop v1.1.6
+# KarenDrop v1.1.7
 
 マビノギの画面に表示されたドロップ品名を読み取り、周回ごとの記録・確認・集計を行うWindowsツールです。
 
 ## ダウンロード
 
-[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.6-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
+[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.7-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
 Pythonの導入は不要です。Source code ZIPは開発者向けです。
 
 操作は [README_EXE.txt](README_EXE.txt)、更新・復旧は [更新方法.txt](更新方法.txt)、制限と回避方法は [現在の問題点と対処方法.txt](現在の問題点と対処方法.txt) を参照してください。
@@ -15,6 +15,20 @@ OCR結果は確認してから確定してください。人形カバンなど�
 構成・テスト・EXE作成は [DEVELOPMENT.md](DEVELOPMENT.md) を参照してください。
 記録、学習データ、提供者の画面サンプル、認証情報はリポジトリに含めません。
 依存ソフト・モデル・画像等の権利情報は `licenses/` を確認してください。リポジトリのMITライセンスは第三者素材の権利を変更しません。
+
+## v1.1.7の変更
+
+KarenDrop v1.1.7
+
+・配布EXEのHTTPS通信で必要なファイルの同梱漏れを修正しました。「更新を確認」「旧版一覧を取得」で No such file or directory が発生する問題を再現し、修正後の通信成功を確認しています。
+・ビルド時にSSL実装が必要とする信頼設定ファイルを同梱し、欠けた状態ではビルドを停止します。配布EXEの自己診断にもHTTPS初期化の確認を追加しました。証明書の検証・信頼設定は維持します。
+・辞書・モデル・周回記録の形式は変更していません。
+
+v1.1.6で更新機能が使えない場合：
+このReleaseに添付した「KarenDrop-v1.1.6-更新通信の復旧.zip」をダウンロードしてください。KarenDropを終了し、ZIP内の_internalフォルダーをKarenDrop.exeと同じ場所へ追加してから起動し、「更新を確認」を押してください。既存の_internalフォルダーは削除しないでください。
+復旧ZIPは必要なファイル1個だけを追加し、data・辞書・設定には触れません。
+
+Illegal byte sequence については、報告された実機での再確認が必要です。同じ通信準備の処理に関係する可能性がありますが、このエラー自体の再現には至っていません。
 
 ## v1.1.6の変更
 

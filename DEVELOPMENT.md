@@ -1,4 +1,4 @@
-# 開発案内 v1.1.6
+# 開発案内 v1.1.7
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`
@@ -25,7 +25,7 @@ Windows 64bit / Python 3.12。
 
 `python tools/build_exe.py dist`
 
-`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1.6-windows.zip`
+`python tools/package_release.py dist/KarenDrop KarenDrop-v1.1.7-windows.zip`
 
 `dist/KarenDrop/KarenDrop.exe --self-test result.json`
 
@@ -36,3 +36,7 @@ Windows 64bit / Python 3.12。
 2026-10-19：非公開の提供画像を含む247テスト成功。宝箱の25枚は開発に使用した静止画であり独立評価ではありません。元画像・個人のdataは公開しません。
 
 配布者向け手順・旧Drive初期登録JSONは開発資料としてのみ保持し、一般向けZIPには同梱しません。更新情報の作成には tools/package_release.py と drop_tool.updater.make_info を使います。
+
+## SSL実装固有の配布データ
+
+ビルド元のssl.pyがcodex-rejected-cas.pemを要求する環境では、tools/ssl_runtime.pyが同じ証明書データを凍結版sslの隣へ同梱します。信頼設定を除去せず保持し、必要ファイルが欠けたビルドは停止します。配布EXEの --self-test ではHTTPSコンテキストの生成も確認します。

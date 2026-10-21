@@ -5,6 +5,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from tools.ssl_runtime import runtime_data
 
 
 def main():
@@ -17,6 +19,8 @@ def main():
                '--copy-metadata', 'opencv-python', '--copy-metadata', 'onnxruntime']
     for excluded in ('rapidocr_onnxruntime', 'matplotlib', 'pandas', 'scipy', 'windows_capture'):
         command.extend(['--exclude-module', excluded])
+    for source, destination in runtime_data():
+        command.extend(['--add-data', source + ';' + destination])
     command.append(str(ROOT / 'app.py'))
     subprocess.run(command, cwd=ROOT, check=True)
     target = output / 'KarenDrop'
