@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "fragment-01",
+      "file": "part-01.npz"
+    },
+    {
+      "id": "fragment-02",
+      "file": "part-02.npz"
+    },
+    {
+      "id": "fragment-03",
+      "file": "part-03.npz"
+    },
+    {
+      "id": "fragment-06",
+      "file": "part-06.npz"
+    },
+    {
+      "id": "fragment-14",
+      "file": "part-14.npz"
+    },
+    {
+      "id": "fragment-16",
+      "file": "part-16.npz"
+    },
+    {
+      "id": "fragment-17",
+      "file": "part-17.npz"
+    },
+    {
+      "id": "fragment-24",
+      "file": "part-24.npz"
+    },
+    {
+      "id": "new4k-00",
+      "file": "new4k-00.npz"
+    },
+    {
+      "id": "new4k-02",
+      "file": "new4k-02.npz"
+    },
+    {
+      "id": "new4k-07",
+      "file": "new4k-07.npz"
+    }
+  ]
+}

@@ -11,25 +11,44 @@ def recognition_scale(region):
     rgb = pixels.astype(np.uint16)
     r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
     mask = ((rgb.min(2) > 175) | ((g > 120) & (g*2 > r*3) & (g*5 > b*7))).astype('uint8')
-    del rgb, r, g, b
+    del rgb,r,g,b
     joined = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((1, 13), 'uint8'))
     _, _, stats, _ = cv2.connectedComponentsWithStats(joined)
-    votes = {}
+    candidates = []
     for x, y, w, h, area in stats[1:]:
-        if not (7 <= h <= 44 and 2*h <= w <= 1200 and x >= 3 and y >= 3
+        if not (7 <= h <= 44 and 2.5*h <= w <= 1200 and x >= 3 and y >= 3
                 and x+w+3 <= region.width and y+h+3 <= region.height):
             continue
         edge = np.concatenate((pixels[y-2:y, x:x+w].reshape(-1, 3),
                                pixels[y+h:y+h+2, x:x+w].reshape(-1, 3)))
-        if np.mean(edge.max(1) < 70) < .90:
+        dark = float(np.mean(edge.max(1) < 70))
+        if dark < .65:
             continue
-        # 一つの長いHUD文字列だけが倍率を支配しないよう票数を制限する。
-        scale = 1.0 if h <= 18 else min((1.5, 1.75, 2., 2.5, 3.), key=lambda s: abs(h/s-14))
-        votes[scale] = votes.get(scale, 0.) + min(4., w/h)
+        candidates.append((int(x),int(y),int(w),int(h),dark))
+    # 同じ文字サイズの縦列を優先する。横並びの百分率や孤立したHUDを
+    # 多数の品名板より強い倍率の根拠にしない。
+    votes = {}
+    heights = {}
+    for x,y,w,h,dark in candidates:
+        neighbors = sum(1 for bx,by,bw,bh,_ in candidates
+                        if abs(h-bh) <= max(3,h*.15) and h <= abs(y-by) <= h*4
+                        and x < bx+bw and bx < x+w)
+        if not neighbors and dark < .90:
+            continue
+        # 文字内容で24～29pxにばらつく同じフォントをまとめてから決める。
+        bucket = next((key for key in votes if abs(key-h) <= max(3,key*.15)),h)
+        votes[bucket] = votes.get(bucket,0.) + min(4.,w/h)*dark*(3 if neighbors else 1)
+        heights.setdefault(bucket,[]).append(h)
     if not votes:
-        return 1.0
+        from .color_labels import purple, red
+        reds = red(region, max_height=44) + purple(region, max_height=44)
+        if not reds:
+            return 1.0
+        height=float(np.percentile([crop.height-4 for _,_,crop in reds],85))
+        return (1.0 if height<=18 else min((1.5,1.75,2.,2.5,3.),key=lambda s:abs(height/s-14)))
     best = max(votes, key=votes.get)
-    return best if votes[best] >= 2 else 1.0
+    height = float(np.percentile(heights[best],85))
+    return (1.0 if height <= 18 else min((1.5,1.75,2.,2.5,3.),key=lambda s:abs(height/s-14)))
 
 
 def normalized(region):

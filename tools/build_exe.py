@@ -5,6 +5,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from tools.ssl_runtime import runtime_data
 
 
 def main():
@@ -17,14 +19,14 @@ def main():
                '--copy-metadata', 'opencv-python', '--copy-metadata', 'onnxruntime']
     for excluded in ('rapidocr_onnxruntime', 'matplotlib', 'pandas', 'scipy', 'windows_capture'):
         command.extend(['--exclude-module', excluded])
+    for source, destination in runtime_data():
+        command.extend(['--add-data', source + ';' + destination])
     command.append(str(ROOT / 'app.py'))
     subprocess.run(command, cwd=ROOT, check=True)
     target = output / 'KarenDrop'
     for name in ('assets', 'references', 'dictionary-docs', 'models', 'licenses'):
         shutil.copytree(ROOT / name, target / name, dirs_exist_ok=True)
     for name in ('item-master.json', 'exclusions.json', 'requirements.txt', 'README_EXE.txt', '更新内容.txt', '更新方法.txt', '現在の問題点と対処方法.txt', 'update_helper.ps1', 'update-source.json'):
-        shutil.copy2(ROOT / name, target / name)
-    for name in ('配布者向け更新手順.txt', '更新情報-初期登録用.json'):
         shutil.copy2(ROOT / name, target / name)
     print('配布フォルダー：', target)
 

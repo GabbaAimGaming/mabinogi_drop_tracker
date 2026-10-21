@@ -1,8 +1,8 @@
-# Full gameplay samples are private and are not distributed in this repository.
+# Gameplay samples stay private; validated separately before publication.
 from pathlib import Path as _FixturePath
 import unittest as _fixture_unittest
 if not (_FixturePath(__file__).resolve().parent / 'fixtures').exists() or not (_FixturePath(__file__).resolve().parents[1] / 'tools/benchmarks/video').exists():
-    raise _fixture_unittest.SkipTest('非公開の提供画像を使う回帰テスト（配布前に別環境で検証済み）')
+    raise _fixture_unittest.SkipTest('非公開の提出画像で別途検証済み')
 
 """試験版の取得条件と提出保存を検証。ゲームの実機認識率を保証するテストではない。"""
 import json
@@ -108,6 +108,9 @@ class AppSampleTests(unittest.TestCase):
     def app(self):
         from drop_tool.app import App
         app=App.__new__(App)
+        from drop_tool.tracker import Store
+        temporary=tempfile.TemporaryDirectory();self.addCleanup(temporary.cleanup)
+        app.store=Store(temporary.name)
         app.jobs=__import__('queue').Queue();app.epoch=0;app.busy=True
         app.root=Mock();app.status=Mock();app.completion_sound=Mock()
         app.stable=Mock();app.reward_gate=RewardGate();app.watching=True

@@ -36,14 +36,21 @@ def recover_rows(image):
                         if 4 < abs(by-y) <= 65 and bx < x+w and bx+bw > x)
         if neighbors < 2:
             continue
-        # 局所暗部で欠けた末尾を元の色マスクから補う。拡張は最大32px。
-        band=raw[y:y+h].astype('uint8')
+        # 局所暗部で欠けた左右を、元の色マスクの同じ行から補う。
+        # Cyan text over a bright beam can lose a long central section from the
+        # dark-background seeds. Follow that color's complete row, rather than
+        # limiting recovery to 32px or joining a neighboring white label.
+        cyan_row = cyan[y:y+h,x:x+w].sum() > raw[y:y+h,x:x+w].sum()*.6
+        band=(cyan if cyan_row else raw)[y:y+h].astype('uint8')
         band=cv2.morphologyEx(band,cv2.MORPH_CLOSE,np.ones((1,13),'uint8'))
         _,_,parts,_=cv2.connectedComponentsWithStats(band)
         for bx,by,bw,bh,_ in parts[1:]:
             if bx < x+w and bx+bw > x and bh >= h-2:
-                end=min(x+w+32,int(bx+bw))
-                w=max(w,end-x)
+                end=max(x+w, int(bx+bw) if cyan_row and bw<=550
+                        else min(x+w+32,int(bx+bw)))
+                left=min(x, int(bx) if cyan_row and bw<=550
+                         else max(x-max(32,h*4),int(bx)))
+                x,w=left,end-left
         result.append((x,y,w,h))
     return result
 
@@ -62,12 +69,13 @@ def merge_fragments(region, candidates):
         partner=None
         for row in reversed(merged):
             ry,rx,rl,rt,rr,rb=row
-            gap=left-rr
-            if abs(ry-y)>2 or abs((rb-rt)-crop.height)>2 or not 0<=gap<=max(16,crop.height*2):
+            gap = max(left,rl) - min(right,rr)
+            if abs(ry-y)>3 or abs((rb-rt)-crop.height)>3 or not -4<=gap<=max(16,crop.height*2):
                 continue
             # 間の70%以上が暗い場合だけ同じ背景板とみなす。
             # 短い品名が横に並んだ場合に、距離だけで結合するのを避ける。
-            band=a[max(rt,top):min(rb,bottom),rr:left]
+            start,end=(rr,left) if left>=rl else (right,rl)
+            band=a[max(rt,top):min(rb,bottom),start:end]
             if band.size and np.mean(band.max(2)<90)<.70:
                 continue
             partner=row
@@ -75,6 +83,8 @@ def merge_fragments(region, candidates):
         if partner is None:
             merged.append([y,x,left,top,right,bottom])
         else:
+            partner[0]=min(partner[0],y)
+            partner[1]=min(partner[1],x)
             partner[2]=min(partner[2],left)
             partner[3]=min(partner[3],top)
             partner[4]=max(partner[4],right)

@@ -37,6 +37,16 @@ def check_assets(root):
     for template in chest_manifest['templates']:
         if not (chest_folder / template['file']).is_file():
             raise ValueError('宝箱の参照データがありません：' + template['file'])
+    if not (root/'assets/chest-shape.npz').is_file():
+        raise ValueError('宝箱の輪郭データがありません。')
+    fragments=root/'assets/chest-fragments'
+    for entry in json.loads((fragments/'manifest.json').read_text('utf-8'))['templates']:
+        if not (fragments/entry['file']).is_file():
+            raise ValueError('宝箱の部分見本がありません：'+entry['file'])
+    parts=root/'assets/chest-parts'
+    for entry in json.loads((parts/'manifest.json').read_text('utf-8'))['templates']:
+        if not (parts/entry['file']).is_file():
+            raise ValueError('宝箱の部分照合データがありません：'+entry['file'])
 
 
 def check_tk():
@@ -81,7 +91,7 @@ def inspect():
         ('画像ライブラリ', check_libraries, True),
         ('同梱日本語OCR（CPU）', check_ocr, False),
     ]
-    lines = ['ドロップ記録 v1.1 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.1.7 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:

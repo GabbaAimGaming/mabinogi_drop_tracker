@@ -1,4 +1,8 @@
 """起動入口。画面・保存・認識はdrop_toolパッケージを参照。"""
+# Tclの参照先は、tkinterが環境を読む前に設定する。
+from drop_tool.config import configure_tk
+configure_tk()
+
 import tkinter as tk
 from tkinter import messagebox
 import sys
@@ -21,12 +25,17 @@ def run_app(guard=None):
                 root.update_idletasks()
                 from drop_tool.ocr_engine import probe
                 ocr_name = probe()
+                # 通常の起動だけでは通信準備を検証できない。同梱漏れを公開前に検出する。
+                import ssl
+                ssl.create_default_context()
                 from drop_tool.chest_detector import ChestDetector
                 from drop_tool.preflight import check_assets
                 check_assets(ROOT)
                 detector = ChestDetector()
                 from drop_tool.near_dialog import NearDialogDetector
                 from PIL import Image
+                if detector.detect(Image.new('RGB',(320,180)))['found']:
+                    raise ValueError('無地の画像を宝箱と誤判定しました。')
                 near = NearDialogDetector()
                 dialog = Image.new('RGB', (403, 214), (35, 35, 35))
                 for name, pos in (('question', (84, 77)), ('buttons', (105, 155))):
@@ -39,10 +48,22 @@ def run_app(guard=None):
                               update_source=app.settings_views.updates.url.get(),
                               near_dialog=True,
                               chest_templates=len(detector.templates),
+                              chest_part_templates=len(detector.parts.templates),
+                              chest_shape=detector.shape is not None,
+                              chest_fragments=len(detector.fragments.templates),
                               frozen=bool(getattr(sys, 'frozen', False)),
+                              https_context=True,
                               character=app.banner.photo.width(),
                               registered_items=len(app.vision.catalog.entries),
                               item_tab=app.notebook.tab(app.item_views.frame, "text"))
+                if '--check-update-network' in sys.argv:
+                    # 公開前の明示的な検証時だけ実通信を行う。通常の自己診断はオフライン。
+                    from drop_tool import updater
+                    with tempfile.TemporaryDirectory() as update_folder:
+                        info = updater.check(updater.DEFAULT_SOURCE, update_folder)
+                    older = updater.old_releases()
+                    report['update_network'] = dict(ok=True, latest=info['version'],
+                                                    old_versions=[r['version'] for r in older])
                 index = sys.argv.index('--self-test')
                 Path(sys.argv[index + 1]).write_text(json.dumps(report, ensure_ascii=False), 'utf-8')
             root.destroy()

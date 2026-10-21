@@ -1,32 +1,48 @@
 """監視と履歴操作を調整する。Tk更新はメインスレッドで行う。"""
 import queue
+import copy
 import threading
 import traceback
+from types import MappingProxyType
 import time
+import sys
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, ttk
 from PIL import Image, ImageTk
 from .notification import CompletionSound
 from .exporting import export_statistics
 from .image_display import pixel_preview
 from .label_images import ocr_image
-from .tracker import ROOT, Store, StableReading, default_near, SHADOW_MISSIONS
-from .vision import Vision, CENTER
-from .alt_display import quick_check
-from . import alt_capture
+from .reading import StableReading
+from .tracker import Store, default_near, SHADOW_MISSIONS
+from .vision import Vision
+from . import read_worker
 from . import windows_capture as capture
 from . import settings as user_settings
 from .reward_gate import RewardGate
 from .chest_detector import ChestDetector
-from .near_dialog import NearDialogDetector
 from .sample_reports import SampleReports
 from .item_links import row_identity, name_key
 from .item_registration import assign
+from . import manual_review
 STATUS = {'waiting': '未取得', 'review': '確認待ち', 'confirmed': '集計済み', 'discarded': '集計対象外'}
 KIND = {'material': '集計', 'excluded': '除外', 'review': '要確認'}
 
 class App:
     """Tkの操作画面。画像処理をワーカーへ渡し、結果はTk側で反映する。"""
+
+    # __init__を通さない検証用インスタンス（App.__new__）でも参照できる既定値。
+    # どれも読むだけか、代入で差し替える値に限る。
+    settings = MappingProxyType({})
+    settings_views = None
+    samples = None
+    reward_gate = None
+    chest_detector = None
+    near_detector = None
+    scan_trace = ()
+    manual_target = None
+    saved_read_target = None
+    saved_read_expected = None
 
     def _build_widgets(self):
         """レイアウトを専用モジュールへ委譲し、読取の状態管理と分離する。"""
@@ -36,7 +52,7 @@ class App:
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1')
+        root.title('カレンとドロップ記録 v1.1.7')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -47,8 +63,6 @@ class App:
         self.vision = Vision(self.store)
         self.settings = user_settings.load(self.store.folder)
         self.reward_gate = RewardGate()
-        self.chest_detector = None
-        self.near_detector = None
         self.samples = SampleReports(self.store.folder)
         self.scan_trace = []
         self.scan_mode = tk.StringVar(value=self.settings['scan_mode'])
@@ -81,10 +95,14 @@ class App:
         root.protocol('WM_DELETE_WINDOW', self.close)
         # 起動直後の画面表示を遅らせないよう、古い画像の整理は少し後に行う。
         root.after(2000, self.prune_evidence)
+        # 表示後に通信ワーカーを起動。自己診断と開発時は外部通信しない。
+        if getattr(sys, 'frozen', False) and '--self-test' not in sys.argv:
+            root.after(1500, self.settings_views.updates.startup_check)
 
     def prune_evidence(self):
         """設定に従い、テキスト化・バックアップ済みの古い証拠画像を削除する。"""
-        if not getattr(self, 'settings', None) or not self.settings['evidence_auto_delete']:
+        manual_review.cleanup_confirmed(self.store)
+        if not self.settings or not self.settings['evidence_auto_delete']:
             return 0
         from .retention import prune_evidence
         try:
@@ -94,13 +112,13 @@ class App:
             return 0
         if removed:
             self.status.set(f'保存世代を超えた古い品名画像を{removed}枚整理しました（「設定」タブで変更できます）。')
-            if hasattr(self, 'settings_views'):
+            if self.settings_views:
                 self.settings_views.refresh_usage()
         return removed
 
     def close(self):
         """更新準備中は待機し、それ以外は終了する。"""
-        updates = getattr(getattr(self, 'settings_views', None), 'updates', None)
+        updates = getattr(self.settings_views, 'updates', None)
         if updates and updates.installing:
             messagebox.showinfo('更新中', '更新準備が終わるまでお待ちください。')
             return
@@ -125,7 +143,7 @@ class App:
         return capture.capture(hwnd, region) if region is not None else capture.capture(hwnd)
 
     def center_scan(self):
-        return getattr(self, 'settings', {}).get('scan_mode') == 'center'
+        return self.settings.get('scan_mode') == 'center'
 
     def change_scan_mode(self):
         if not self.save_setting(scan_mode=self.scan_mode.get()):
@@ -245,8 +263,8 @@ class App:
                 state = '監視：ゲームが手前になるのを待っています。'
                 self.stable.reset()
                 self.reset_reward()
-            elif not getattr(self, 'settings', {}).get('auto_reward', True):
-                state = '監視：手動読取のみ。5秒後の報酬読取を使ってください。'
+            elif not self.settings.get('auto_reward', True):
+                state = '監視：手動のみ。「3秒後に撮影」→「画像で確認・読取」を使ってください。'
             elif self.center_scan():
                 state = '監視：中央のALT品名表示を待っています（キー入力は読みません）。'
                 self.submit('live')
@@ -270,96 +288,38 @@ class App:
         from .retention import append_log
         append_log(self.store.folder / 'monitor.log', time.strftime('%H:%M:%S ') + text + '\n', limit=200000)
 
-    def submit(self, mode, image=None):
-        """撮影と認識をワーカーで実行し、結果をpollへ返す。
+    def reward_detection(self, frame, near_dialog, now):
+        """Keep checking ALT while the already-confirmed chest memory is valid."""
+        gate=self.reward_gate
+        # 確認ダイアログ中は取得できない。探索で観測を遅らせず、記憶も更新しない。
+        if near_dialog:
+            return {'found':False,'match':None,'seconds':0.,'search':'blocked'}
+        if (gate.previous is not None
+                and 0<=now-gate.previous<=gate.max_gap
+                and gate.has_chest_evidence(now)):
+            return {'found':False,'match':None,'seconds':0.,'search':'recent'}
+        if self.chest_detector is None:
+            self.chest_detector=ChestDetector()
+        return self.chest_detector.detect(frame)
 
-        liveは宝箱と3秒のALT表示が揃ってから連写し、候補を多数決でまとめる。
-        manualは5秒後の1枚を登録候補にする。missedは提出画像のみ、testは表示のみ。
-        epochは開始時点を固定し、古い結果の登録を防ぐ。
+    def submit(self, mode, image=None):
+        """撮影と認識をワーカーで実行し、結果はpollで受け取る（read_worker）。
+
+        epoch・対象ゲーム・対象周回は開始時点の値を渡し、古い結果の登録を防ぐ。
         """
         if self.busy:
             return
         self.busy = True
-        epoch = self.epoch
-        hwnd = self.hwnd
         self.worker_started = time.monotonic()
         self.worker_phase = '画面を撮影中'
         if mode in ('live', 'manual'):
             self.read_attempts += 1
-
-        # ALTキーの状態はゲームが他アプリへ渡さないため、画面の表示で判断する。
-        # 箱の探索には全体画像が必要。中央設定は品名の解析範囲だけを変える。
-        center = mode == 'live' and image is None and self.center_scan()
-        burst = mode == 'live' and image is None
-        region = None  # 箱は中央外にもあるため常にゲームの画面全体を撮影する。
-
-        def middle(frame):
-            w, h = frame.size
-            return frame.crop((round(w * CENTER[0]), round(h * CENTER[1]),
-                               round(w * CENTER[2]), round(h * CENTER[3])))
-
-        def again():
-            if self.epoch != epoch:
-                raise ValueError('監視が停止・変更されました。')
-            return self.grab(hwnd, region)
-
-        def work():
-            frame = None
-            frames = []
-            attempted = mode == 'manual'
-            try:
-                frame = image if image is not None else self.grab(hwnd)
-                if mode == 'missed':
-                    self.jobs.put((epoch, mode, {'frame':frame}, None))
-                    return
-                if mode == 'manual':
-                    self.jobs.put((epoch, 'start', {'manual':True}, None))
-                    self.save_capture(frame)
-                if burst:
-                    if self.chest_detector is None:
-                        self.chest_detector = ChestDetector()
-                    if getattr(self, 'near_detector', None) is None:
-                        self.near_detector = NearDialogDetector()
-                    near_dialog = self.near_detector.detect(frame)
-                    detection = self.chest_detector.detect(frame)
-                    alt = not near_dialog and quick_check(middle(frame))
-                    if self.epoch != epoch:
-                        self.jobs.put((epoch, 'scan', {}, None))
-                        return
-                    now = time.monotonic()
-                    triggered = self.reward_gate.observe(detection['found'], alt, now, blocked=near_dialog)
-                    scan = dict(detection, alt=bool(alt), near_dialog=near_dialog, elapsed=self.reward_gate.elapsed(now))
-                    self.scan_trace = (self.scan_trace + [dict(scan,time=now)])[-30:]
-                    if not triggered:
-                        message = ('宝箱を確認。ALT表示を3秒待っています。' if now <= self.reward_gate.chest_until
-                                   else '宝箱を探しています。未検出の場合は手動読取を使ってください。')
-                        if near_dialog:
-                            message = 'ネアル確認画面のため待機中。閉じてからALT表示を3秒確認します。'
-                        self.jobs.put((epoch, 'scan', dict(scan,message=message), None))
-                        return
-                    attempted = True
-                    self.jobs.put((epoch, 'start', {'manual':False}, None))
-                    self.worker_phase = '取得条件成立・報酬を連写中'
-                    frames = alt_capture.collect(again, lambda f: not self.near_detector.detect(f) and quick_check(middle(f)), first=frame)
-                    self.worker_phase = f'撮影済み（{len(frames)}枚）・品名を解析中'
-                    if len(frames) < 2:
-                        result = {'labels':[], 'message':'品名表示中の画像が2枚以上集まりませんでした。'}
-                    else:
-                        result = alt_capture.read(lambda f: self.vision.analyze(middle(f),cropped=True)
-                                                  if center else self.vision.analyze(f), frames)
-                    result.update(final=True, attempted=True, sample_frames=frames,
-                                  detection=scan, frame=frames[len(frames)//2])
-                    self.jobs.put((epoch, mode, result, None))
-                    return
-                self.worker_phase = '品名を解析中'
-                result = self.vision.analyze(frame)
-                if mode in ('live','manual'):
-                    result.update(frame=frame, sample_frames=[frame], attempted=True)
-                self.jobs.put((epoch, mode, result, None))
-            except Exception as exc:
-                self.jobs.put((epoch, mode, {'sample_frames':frames or ([frame] if frame is not None else []),
-                                            'attempted':attempted}, str(exc)))
-        threading.Thread(target=work, daemon=True).start()
+        options = dict(epoch=self.epoch, hwnd=self.hwnd, manual_target=self.manual_target,
+                       saved_target=self.saved_read_target,
+                       saved_expected=copy.deepcopy(self.saved_read_expected),
+                       center=mode == 'live' and image is None and self.center_scan())
+        threading.Thread(target=read_worker.run, args=(self, mode, image),
+                         kwargs=options, daemon=True).start()
 
     def save_capture(self, frame):
         """確認用の元スクリーンショット。一時ファイル経由で上書きし、失敗は記録だけ残す。"""
@@ -380,93 +340,118 @@ class App:
         """結果の世代番号を照合し、停止や周回変更前の結果を破棄する。"""
         try:
             while True:
-                epoch, mode, result, error = self.jobs.get_nowait()
-                if mode == 'start':
-                    if epoch == self.epoch:
-                        self.completion_sound.play(kind='start')
-                        self.status.set('読取開始。ALTを押したまま、完了音までゲームを前面に置いてください。')
-                    continue
-                if mode == 'captured':
-                    # 撮影だけ終わった途中経過。ワーカーは解析中なのでbusyは解除しない。
-                    if epoch == self.epoch:
-                        self.completion_sound.play(kind='captured')
-                        self.status.set(f"撮影完了（{result['frames']}枚）。ALTを離して構いません。品名を解析しています…")
-                    continue
-                if mode not in ('sample_saved','sample_error'):
-                    self.busy = False
-                if epoch != self.epoch:
-                    continue
-                if error:
-                    if result and result.get('attempted'):
-                        self.read_failed(mode, result, error)
-                    else:
-                        self.status.set('読取できません：' + error)
-                        self.stable.reset()
-                    continue
-                if mode == 'scan':
-                    self.status.set(result.get('message','宝箱を探しています。') + f" ALT継続 {result.get('elapsed',0):.1f}/3秒")
-                    continue
-                if mode == 'missed':
-                    self.submit_sample('missed_detection', [result['frame']], {'reason':'利用者が自動で読めなかったと報告。ALT表示は不要。'})
-                    continue
-                if mode == 'sample_saved':
-                    prefix = ('読み取れませんでした。手動読取に切り替えてください。' if result.get('kind','').endswith('_failure')
-                              else '読取完了。履歴で確認してください。' if result.get('kind','').endswith('_success') else '')
-                    self.status.set(prefix + ' 提出用サンプルを保存しました：' + result['path'])
-                    continue
-                if mode == 'sample_error':
-                    prefix = '読み取れませんでした。手動読取に切り替えてください。' if result.get('kind','').endswith('_failure') else ''
-                    self.status.set(prefix + ' 提出用サンプルを保存できません：' + result['reason'])
-                    continue
-                if mode == 'test':
-                    self.show_test(result)
-                elif mode == 'manual':
-                    if not result.get('labels'):
-                        self.read_failed('manual', result, result['message'])
-                    else:
-                        rows = self.store.persist_rows(self.active_id, result['labels'])
-                        self.store.record(self.active_id, rows, require_review=True)
-                        self.refresh()
-                        self.status.set('撮影・読取できました。履歴タブで品名と除外対象を確認し、この周回を確定してください。')
-                        self.completion_sound.play()
-                        self.notify_unregistered(result)
-                        self.submit_sample('manual_success', result.get('sample_frames',[]), self.read_metadata(result))
-                else:
-                    # 撮影中の画面切替も再確認し、別ウィンドウへ移った結果を採用しない。
-                    if not self.watching or not self.ready(self.hwnd):
-                        self.stable.reset()
-                        self.reset_reward()
-                        continue
-                    labels = result.get('labels')
-                    if result.get('final'):
-                        # 表示中に連写したフレームの多数決で確定済み。
-                        self.stable.reset()
-                        if labels:
-                            self.save_live_reading(result)
-                        else:
-                            self.read_failed('auto', result, result['message'])
-                        continue
-                    if not labels:
-                        # ALTを離して品名板が消えた。直前に同じ一覧を2回以上読めていれば採用する。
-                        # 録画ではALT表示は約1.4秒で、3回一致を待つと間に合わないことがある。
-                        held = self.stable.release()
-                        if held is not None:
-                            self.save_live_reading(held)
-                        else:
-                            self.status.set(result['message'])
-                        continue
-                    if self.stable.observe(result):
-                        self.save_live_reading(self.stable.finish())
-                    else:
-                        self.status.set(result['message'] + ' / 同じ品名表示を確認中。')
-                        # ALT表示が見えている間は待たずに続けて読む（表示は数秒で消えるため）。
-                        self.submit('live')
+                self.handle_job(*self.jobs.get_nowait())
         except queue.Empty:
             pass
         except Exception as exc:
             self.callback_error(type(exc), exc, exc.__traceback__)
         finally:
             self.root.after(150, self.poll)
+
+    def handle_job(self, epoch, mode, result, error):
+        if mode == 'start':
+            # 途中経過。ワーカーは続いているのでbusyは解除しない。
+            if epoch == self.epoch:
+                self.show_progress(mode, result)
+            return
+        # 【様子見・削除予定】'captured'は本体のどこからも送られていない。
+        # 実機で届かないことを確認したら、この見張りとshow_progressのコメントを消す。
+        if mode == 'captured':
+            self.log_error(f"想定外のcapturedイベントを受信しました：{result!r}\n")
+            return
+        if mode not in ('sample_saved', 'sample_error'):
+            self.busy = False
+        if epoch != self.epoch:
+            return
+        if error:
+            if result and result.get('attempted'):
+                self.read_failed(mode, result, error)
+            else:
+                self.status.set('読取できません：' + error)
+                self.stable.reset()
+            return
+        handler = {'scan': self.show_scan, 'missed': self.save_missed,
+                   'sample_saved': self.sample_saved, 'sample_error': self.sample_error,
+                   'manual_photo': self.save_manual_photo, 'saved_read': self.apply_saved_read,
+                   'test': self.show_test, 'manual': self.save_manual_reading}
+        handler.get(mode, self.apply_live)(result)
+
+    def show_progress(self, mode, result):
+        self.completion_sound.play(kind='start')
+        self.status.set('読取開始。ALTを押したまま、完了音までゲームを前面に置いてください。')
+        # 【様子見・削除予定】'captured'の表示。送信元がないためコメントアウト中。
+        # self.completion_sound.play(kind='captured')
+        # self.status.set(f"撮影完了（{result['frames']}枚）。ALTを離して構いません。品名を解析しています…")
+
+    def show_scan(self, result):
+        self.status.set(result.get('message', '宝箱を探しています。') + f" ALT継続 {result.get('elapsed', 0):.1f}/3秒")
+
+    def save_missed(self, result):
+        self.submit_sample('missed_detection', [result['frame']], {'reason': '利用者が自動で読めなかったと報告。ALT表示は不要。'})
+
+    def sample_saved(self, result):
+        manual_review.cleanup_confirmed(self.store)
+        kind = result.get('kind', '')
+        prefix = ('読み取れませんでした。手動読取に切り替えてください。' if kind.endswith('_failure')
+                  else '読取完了。履歴で確認してください。' if kind.endswith('_success') else '')
+        self.status.set(prefix + ' 提出用サンプルを保存しました：' + result['path'])
+
+    def sample_error(self, result):
+        prefix = '読み取れませんでした。手動読取に切り替えてください。' if result.get('kind', '').endswith('_failure') else ''
+        self.status.set(prefix + ' 提出用サンプルを保存できません：' + result['reason'])
+
+    def save_manual_photo(self, result):
+        try:
+            manual_review.save_photo(self.store, result['run_id'], result['frame'])
+            self.refresh()
+            self.runs.selection_set(result['run_id'])
+            self.select_run()
+            self.status.set('撮影しました。「画像で確認・読取」でこの周回の画像を確認してください。')
+        except Exception as exc:
+            messagebox.showerror('撮影を保存できません', str(exc))
+
+    def save_manual_reading(self, result):
+        if not result.get('labels'):
+            self.read_failed('manual', result, result['message'])
+            return
+        rows = self.store.persist_rows(self.active_id, result['labels'])
+        self.store.record(self.active_id, rows, require_review=True)
+        self.refresh()
+        self.status.set('撮影・読取できました。履歴タブで品名と除外対象を確認し、この周回を確定してください。')
+        self.completion_sound.play()
+        self.notify_unregistered(result)
+        self.submit_sample('manual_success', result.get('sample_frames', []), self.read_metadata(result))
+
+    def apply_live(self, result):
+        # 撮影中の画面切替も再確認し、別ウィンドウへ移った結果を採用しない。
+        if not self.watching or not self.ready(self.hwnd):
+            self.stable.reset()
+            self.reset_reward()
+            return
+        labels = result.get('labels')
+        if result.get('final'):
+            # 表示中に連写したフレームの多数決で確定済み。
+            self.stable.reset()
+            if labels:
+                self.save_live_reading(result)
+            else:
+                self.read_failed('auto', result, result['message'])
+            return
+        if not labels:
+            # ALTを離して品名板が消えた。直前に同じ一覧を2回以上読めていれば採用する。
+            # 録画ではALT表示は約1.4秒で、3回一致を待つと間に合わないことがある。
+            held = self.stable.release()
+            if held is not None:
+                self.save_live_reading(held)
+            else:
+                self.status.set(result['message'])
+            return
+        if self.stable.observe(result):
+            self.save_live_reading(self.stable.finish())
+        else:
+            self.status.set(result['message'] + ' / 同じ品名表示を確認中。')
+            # ALT表示が見えている間は待たずに続けて読む（表示は数秒で消えるため）。
+            self.submit('live')
 
     def save_live_reading(self, result):
         """キー解放を待たず1周1回保存する。道中の品との区別は利用者が確認する。"""
@@ -485,18 +470,99 @@ class App:
         self.submit_sample('auto_success', result.get('sample_frames',[]), self.read_metadata(result))
 
     def test_image(self):
+        self.review_capture()
+
+    def capture_manual(self):
         if self.busy:
             return
-        path = filedialog.askopenfilename(initialdir=ROOT / 'references', filetypes=[('画像', '*.png *.jpg *.bmp')])
-        if path:
-            self.stop()
+        target = self.display_id or self.active_id
+        if not target:
+            self.status.set('先に新しい周回を作るか、履歴から撮影する周回を選んでください。')
+            return
+        if not self.hwnd:
+            self.status.set('撮影するゲームを選んでください。')
+            return
+        self.stop()
+        token = self.epoch
+        self.manual_target = target
+
+        def countdown(left):
+            if token != self.epoch:
+                return
+            if left:
+                self.status.set(f'撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。')
+                self.root.after(1000, lambda: countdown(left - 1))
+            else:
+                self.submit('manual_photo')
+        countdown(3)
+
+    def review_capture(self):
+        if self.busy:
+            return
+        target = self.display_id or self.active_id
+        if not target:
+            self.status.set('履歴から確認する周回を選んでください。')
+            return
+        paths = manual_review.photos(self.store, target)
+        if not paths:
+            messagebox.showinfo('保存画像がありません', '確認済みの元画像は削除しています。品名がまだ画面に出ている場合は「3秒後に撮影」で撮り直してください。', parent=self.root)
+            return
+        window = tk.Toplevel(self.root)
+        window.title('この周回の撮影画像を確認・読取')
+        window.transient(self.root)
+        ttk.Label(window, text='画像を確認してから読み取ります。別の周回や共通の学習設定は変更しません。').pack(padx=10, pady=5)
+        choice = ttk.Combobox(window, state='readonly', values=[f'画像 {i+1}/{len(paths)}' for i in range(len(paths))])
+        choice.current(len(paths) // 2)
+        choice.pack()
+        preview = ttk.Label(window)
+        preview.pack(padx=8, pady=8)
+
+        def show(*_):
             try:
-                self.submit('test', Image.open(path).convert('RGB'))
+                with Image.open(paths[choice.current()]) as source:
+                    shown = source.convert('RGB')
+                shown.thumbnail((1050, 600))
+                window.photo = ImageTk.PhotoImage(shown)
+                preview.configure(image=window.photo)
+            except (OSError, ValueError) as exc:
+                messagebox.showerror('画像', str(exc), parent=window)
+
+        def read():
+            if self.busy:
+                return
+            try:
+                with Image.open(paths[choice.current()]) as source:
+                    frame = source.convert('RGB')
+                run = self.store.find(target)
+                self.saved_read_target = target
+                self.saved_read_expected = copy.deepcopy({'rows': run['rows'], 'status': run['status']})
+                self.stop()
+                window.destroy()
+                self.submit('saved_read', frame)
             except Exception as exc:
-                messagebox.showerror('画像', str(exc))
+                messagebox.showerror('画像を読み取れません', str(exc), parent=self.root)
+        choice.bind('<<ComboboxSelected>>', show)
+        show()
+        ttk.Button(window, text='この画像を読み取る', command=read).pack(pady=8)
+
+    def apply_saved_read(self, result):
+        if not result.get('labels'):
+            messagebox.showinfo('読取できませんでした', '元の記録は保持しています。撮影画像の品名表示を確認してください。', parent=self.root)
+            return
+        if not messagebox.askyesno('この周回へ反映', f"{len(result['labels'])}行を読み取りました。選んだ周回の品名を置き換え、確認待ちに戻しますか？\n他の周回や学習設定は変更しません。", parent=self.root):
+            return
+        try:
+            manual_review.replace_reading(self.store, result['run_id'], result, result['expected'])
+            self.refresh()
+            self.runs.selection_set(result['run_id'])
+            self.select_run()
+            self.notebook.select(1)
+            self.status.set('この周回に読み取り結果を反映しました。内容を確認して確定してください。')
+        except Exception as exc:
+            messagebox.showerror('反映できません', str(exc), parent=self.root)
 
     def timed_read(self):
-        """ALTキー検出に依存しない5秒後撮影。1フレームの周回は確認待ちにし、登録名の設定は保持する。"""
+        """旧呼び出し用の直接読取。通常の手動操作はcapture_manualから行う。"""
         if not self.hwnd:
             self.status.set('撮影するゲームを選んでください。')
             return
@@ -642,6 +708,49 @@ class App:
         except Exception as exc:
             messagebox.showerror('登録', str(exc))
 
+    def edit_this_run(self):
+        if self.busy:
+            return
+        selection = self.rows.selection()
+        if not selection or not self.display_id:
+            self.status.set('先に履歴から修正する行を選んでください。')
+            return
+        run_id = self.display_id
+        index = int(selection[0])
+        run = self.store.find(run_id)
+        original = copy.deepcopy(run['rows'])
+        name, kind = row_identity(self.store.data, run['rows'][index])
+        window = tk.Toplevel(self.root)
+        window.title('この周回だけ修正・分割')
+        window.transient(self.root)
+        ttk.Label(window, text='正しい品名を1行に1品入力。結合された行は改行して分割できます。\n空欄で保存すると、この行をこの周回から除きます。共通学習は変更しません。').pack(padx=12, pady=8)
+        text = tk.Text(window, width=55, height=5)
+        text.insert('1.0', name)
+        text.pack(padx=12)
+        policy = ttk.Combobox(window, state='readonly', values=list(KIND.values()))
+        policy.set(KIND[kind])
+        policy.pack(pady=6)
+
+        def save():
+            try:
+                current = self.store.find(run_id)
+                if current['rows'] != original:
+                    raise ValueError('周回の内容が変わりました。開き直してください。')
+                names = [n.strip() for n in text.get('1.0', 'end').splitlines() if n.strip()]
+                selected = next(k for k, v in KIND.items() if v == policy.get())
+                summary = '\n'.join(names) if names else 'この行を除く'
+                if not messagebox.askyesno('この周回だけ変更', summary + '\n扱い：' + policy.get() + '\n\nこの周回だけ変更して確認待ちに戻しますか？', parent=window):
+                    return
+                manual_review.edit_row(self.store, run_id, index, names, selected)
+                window.destroy()
+                self.refresh()
+                self.runs.selection_set(run_id)
+                self.select_run()
+                self.status.set('この周回だけ修正しました。共通の対応付け・学習設定は変更していません。')
+            except Exception as exc:
+                messagebox.showerror('修正できません', str(exc), parent=window)
+        ttk.Button(window, text='この周回だけ保存', command=save).pack(pady=10)
+
     def confirm_run(self):
         if not self.display_id:
             return
@@ -736,9 +845,8 @@ class App:
 
     def reset_reward(self):
         """周回・撮影対象・監視状態が変わった時は、箱の記憶と3秒待ちを消す。"""
-        gate = getattr(self, 'reward_gate', None)
-        if gate is not None:
-            gate.reset()
+        if self.reward_gate is not None:
+            self.reward_gate.reset()
         self.scan_trace = []
 
     def change_auto_reward(self, enabled):
@@ -764,12 +872,12 @@ class App:
             except StopIteration:
                 pass
         return {'player_name':self.store.player_name,'run':run,
-                'settings':dict(getattr(self,'settings',{})),
-                'scan_trace':list(getattr(self,'scan_trace',[]))}
+                'settings':dict(self.settings),
+                'scan_trace':list(self.scan_trace)}
 
     def submit_sample(self, kind, frames, metadata):
         """PNG保存を別スレッドへ渡す。提出画像の保存失敗で周回記録を取り消さない。"""
-        reports = getattr(self, 'samples', None)
+        reports = self.samples
         if reports is None:  # 初期化前の検証用Appには提出機能がない。
             return
         context = self.sample_context()
@@ -795,7 +903,7 @@ class App:
         self.reset_reward()
 
     def report_missed(self):
-        """5秒後にゲーム画面とログだけ保存。OCR・周回登録をしない。"""
+        """3秒後に提出用のゲーム画面とログだけ保存。OCR・周回登録をしない。"""
         if self.busy:
             self.status.set('読取処理が終わってから押してください。')
             return
@@ -814,7 +922,7 @@ class App:
                 self.root.after(1000,lambda:countdown(left-1))
             else:
                 self.submit('missed')
-        countdown(5)
+        countdown(3)
 
     def export_samples(self):
         """利用者が内容を確認して提出するためのZIP。ネット送信は行わない。"""

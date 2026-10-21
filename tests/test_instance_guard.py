@@ -6,6 +6,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+if sys.platform != 'win32':
+    raise unittest.SkipTest('Windowsのmutexを使うためWindows専用')
 from drop_tool.instance_guard import InstanceGuard, identity
 
 CHILD = '''

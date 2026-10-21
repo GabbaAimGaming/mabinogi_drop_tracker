@@ -5,17 +5,20 @@ import json
 import cv2
 import numpy as np
 from PIL import Image
-from .tracker import ROOT, Rules, normalize
+from .config import ROOT
+from .names import normalize
+from .tracker import Rules
 from .label_images import split_labels, text_pixels
 from .label_detection import recover_rows, merge_fragments
 from .hud_filter import remove_gauge_candidates
-from . import alt_display
+from . import alt_display, color_labels
 from .ocr_engine import suggestions
 from .item_catalog import ItemCatalog
+from .hud_text import is_hud_text,is_system_notice
 
 def ink(image):
     """見本照合用の文字マスク。OCRに渡すカラー画像とは別に扱う。"""
-    m = text_pixels(image)
+    m = text_pixels(image,include_red=True,include_cyan=True,include_purple=True)
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
@@ -44,6 +47,12 @@ def load_mask(path):
 # 品が多いとALTの品名板が縦に長く積み上がるため、下側を0.82→0.88へ広げた。
 # 上端は画面上部のタイマー等（黒地の白文字が縦に並ぶ）を拾うため0.12のまま。
 CENTER = (0.22, 0.12, 0.8, 0.88)
+
+
+def _overlaps(boxes, y, x, width, tolerance):
+    """(y, x, 画像)の一覧に、縦の差がtolerance以内で横に重なる枠があるか。"""
+    return any(abs(y - oy) <= tolerance and x < ox + old.width and x + width > ox
+               for oy, ox, old in boxes)
 
 
 def label_presence(region):
@@ -106,7 +115,9 @@ class Vision:
         original_region = region
         region, recognition_scale = normalized(region)
         a = np.asarray(region).astype(float)
-        m = text_pixels(region).astype('uint8') * 255
+        # Scene-wide cyan effects can look like glyphs. Recover cyan through
+        # the local plate route; retain its ink for comparisons and splitting.
+        m = text_pixels(region, include_cyan=False).astype('uint8') * 255
         m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((1, 13), 'uint8'))
         _, _, stats, _ = cv2.connectedComponentsWithStats(m)
         boxes = []
@@ -120,11 +131,17 @@ class Vision:
             boxes.append((y, x, region.crop((x - 2, y - 2, x + w + 2, y + h + 2))))
         # 従来の確実な枠を優先し、周囲の発光で落ちた行を補う。
         for x, y, w, h in recover_rows(region):
-            if any(abs(y - old_y) <= 3 and x < old_x + old_im.width and x + w > old_x
-                   for old_y, old_x, old_im in boxes):
+            if not _overlaps(boxes, y, x, w, 3):
+                boxes.append((y, x, region.crop((max(0,x-2), max(0,y-2),
+                                                 min(region.width,x+w+2), min(region.height,y+h+2)))))
+        # 赤・紫の文字はHPバーと白文字を横結合しない独立経路で拾う。
+        # 白・緑の品名がある時は、その列の近くにある行だけを追加する。
+        ordinary_boxes = list(boxes)
+        for y, x, crop in color_labels.red(region) + color_labels.purple(region):
+            if ordinary_boxes and not _overlaps(ordinary_boxes, y, x, crop.width, max(64, crop.height*4)):
                 continue
-            boxes.append((y, x, region.crop((max(0,x-2), max(0,y-2),
-                                             min(region.width,x+w+2), min(region.height,y+h+2)))))
+            if not _overlaps(boxes, y, x, crop.width, 3):
+                boxes.append((y, x, crop))
         # 先に同じ板の断片を戻し、最後に別の板の境目で分ける。
         # 順番を逆にすると、スクロール名の内部空白を別アイテムにしてしまう。
         boxes = merge_fragments(region, boxes)
@@ -135,9 +152,15 @@ class Vision:
         if len(boxes) < 2:
             from .plate_recovery import recover
             for y,x,im in recover(region):
-                if any(abs(y-oy)<=3 and x<ox+old.width and x+im.width>ox for oy,ox,old in boxes):
+                if _overlaps(boxes, y, x, im.width, 3):
                     continue
                 im.info['recovered_plate'] = True
+                boxes.append((y,x,im))
+        # Paired plate edges recover labels whose translucent backgrounds are
+        # brightened by a red or blue flare. Keep the original color for OCR.
+        from .bright_plates import recover as recover_bright
+        for y,x,im in (recover_bright(region) if len(boxes)<2 else []):
+            if not _overlaps(boxes, y, x, im.width, 5):
                 boxes.append((y,x,im))
         pieces = []
         for y, x, im in sorted(boxes):
@@ -219,7 +242,8 @@ class Vision:
                     self.cache[key] = (labels[i]['name'], kind, raw)
             if len(self.cache) > 200:
                 self.cache.clear()
-        labels = [label for label in labels if normalize(label['raw']).lower() not in ('ctrl+f', 'ctrl+fキー')]
+        labels = [label for label in labels if normalize(label['raw']).lower() not in ('ctrl+f', 'ctrl+fキー')
+                  and not is_hud_text(label['raw']) and not is_system_notice(label['raw'])]
         for label in labels:
             item = self.catalog.find(label['name'])
             label['registered'] = item is not None

@@ -1,10 +1,11 @@
 """元の観測名を残し、明示された対応付けだけを集計時に解決する。"""
 import re
-import unicodedata
+
+from .names import normalize
 
 
 def name_key(name):
-    key = ''.join(unicodedata.normalize('NFKC', name).split())
+    key = normalize(name)
     key = re.sub(r'\([\d,]+\)$', '', key)
     return re.sub(r'^(専用)?エンチャントスクロール-', lambda m: (m[1] or '') + 'エンチャントスクロール・', key)
 
@@ -31,5 +32,5 @@ def row_identity(data, row):
     target = resolve_name(data, original)
     if name_key(original) in data.get('item_links', {}):
         # 明示した誤登録名だけは、集計先の扱いを使用する。元行は変更しない。
-        return target, data.get('overrides', {}).get(''.join(unicodedata.normalize('NFKC', target).split()), 'review')
+        return target, data.get('overrides', {}).get(normalize(target), 'review')
     return original, row.get('reviewed_kind', row['kind'])

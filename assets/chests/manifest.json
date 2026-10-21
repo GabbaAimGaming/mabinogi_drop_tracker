@@ -241,6 +241,276 @@
       "id": "blue-open-v11-20-small",
       "file": "blue-open-v11-20-small.npz",
       "features": 62
+    },
+    {
+      "id": "4k-open-00-0.34",
+      "file": "4k-open-00-0.34.npz",
+      "features": 18
+    },
+    {
+      "id": "4k-open-00-0.5",
+      "file": "4k-open-00-0.5.npz",
+      "features": 33
+    },
+    {
+      "id": "4k-open-00-0.67",
+      "file": "4k-open-00-0.67.npz",
+      "features": 56
+    },
+    {
+      "id": "4k-open-00-1.0",
+      "file": "4k-open-00-1.0.npz",
+      "features": 85
+    },
+    {
+      "id": "4k-open-07-0.34",
+      "file": "4k-open-07-0.34.npz",
+      "features": 64
+    },
+    {
+      "id": "4k-open-07-0.5",
+      "file": "4k-open-07-0.5.npz",
+      "features": 85
+    },
+    {
+      "id": "4k-open-07-0.67",
+      "file": "4k-open-07-0.67.npz",
+      "features": 144
+    },
+    {
+      "id": "4k-open-07-1.0",
+      "file": "4k-open-07-1.0.npz",
+      "features": 318
+    },
+    {
+      "id": "4k-open-09-0.34",
+      "file": "4k-open-09-0.34.npz",
+      "features": 53
+    },
+    {
+      "id": "4k-open-09-0.5",
+      "file": "4k-open-09-0.5.npz",
+      "features": 101
+    },
+    {
+      "id": "4k-open-09-0.67",
+      "file": "4k-open-09-0.67.npz",
+      "features": 132
+    },
+    {
+      "id": "4k-open-09-1.0",
+      "file": "4k-open-09-1.0.npz",
+      "features": 341
+    },
+    {
+      "id": "4k-open-11-0.34",
+      "file": "4k-open-11-0.34.npz",
+      "features": 48
+    },
+    {
+      "id": "4k-open-11-0.5",
+      "file": "4k-open-11-0.5.npz",
+      "features": 89
+    },
+    {
+      "id": "4k-open-11-0.67",
+      "file": "4k-open-11-0.67.npz",
+      "features": 135
+    },
+    {
+      "id": "4k-open-11-1.0",
+      "file": "4k-open-11-1.0.npz",
+      "features": 271
+    },
+    {
+      "id": "4k-open-15-0.34",
+      "file": "4k-open-15-0.34.npz",
+      "features": 21
+    },
+    {
+      "id": "4k-open-15-0.5",
+      "file": "4k-open-15-0.5.npz",
+      "features": 31
+    },
+    {
+      "id": "4k-open-15-0.67",
+      "file": "4k-open-15-0.67.npz",
+      "features": 41
+    },
+    {
+      "id": "4k-open-15-1.0",
+      "file": "4k-open-15-1.0.npz",
+      "features": 99
+    },
+    {
+      "id": "4k-open-22-0.34",
+      "file": "4k-open-22-0.34.npz",
+      "features": 9
+    },
+    {
+      "id": "4k-open-22-0.5",
+      "file": "4k-open-22-0.5.npz",
+      "features": 23
+    },
+    {
+      "id": "4k-open-22-0.67",
+      "file": "4k-open-22-0.67.npz",
+      "features": 31
+    },
+    {
+      "id": "4k-open-22-1.0",
+      "file": "4k-open-22-1.0.npz",
+      "features": 77
+    },
+    {
+      "id": "4k-open-04-0.34",
+      "file": "4k-open-04-0.34.npz",
+      "features": 44
+    },
+    {
+      "id": "4k-open-04-0.5",
+      "file": "4k-open-04-0.5.npz",
+      "features": 68
+    },
+    {
+      "id": "4k-open-04-0.67",
+      "file": "4k-open-04-0.67.npz",
+      "features": 105
+    },
+    {
+      "id": "4k-open-04-1.0",
+      "file": "4k-open-04-1.0.npz",
+      "features": 216
+    },
+    {
+      "id": "4k-open-08-0.34",
+      "file": "4k-open-08-0.34.npz",
+      "features": 51
+    },
+    {
+      "id": "4k-open-08-0.5",
+      "file": "4k-open-08-0.5.npz",
+      "features": 72
+    },
+    {
+      "id": "4k-open-08-0.67",
+      "file": "4k-open-08-0.67.npz",
+      "features": 116
+    },
+    {
+      "id": "4k-open-08-1.0",
+      "file": "4k-open-08-1.0.npz",
+      "features": 254
+    },
+    {
+      "id": "4k-open-18-0.34",
+      "file": "4k-open-18-0.34.npz",
+      "features": 19
+    },
+    {
+      "id": "4k-open-18-0.5",
+      "file": "4k-open-18-0.5.npz",
+      "features": 40
+    },
+    {
+      "id": "4k-open-18-0.67",
+      "file": "4k-open-18-0.67.npz",
+      "features": 43
+    },
+    {
+      "id": "4k-open-18-1.0",
+      "file": "4k-open-18-1.0.npz",
+      "features": 80
+    },
+    {
+      "id": "4k-open-21-0.34",
+      "file": "4k-open-21-0.34.npz",
+      "features": 24
+    },
+    {
+      "id": "4k-open-21-0.5",
+      "file": "4k-open-21-0.5.npz",
+      "features": 35
+    },
+    {
+      "id": "4k-open-21-0.67",
+      "file": "4k-open-21-0.67.npz",
+      "features": 52
+    },
+    {
+      "id": "4k-open-21-1.0",
+      "file": "4k-open-21-1.0.npz",
+      "features": 121
+    },
+    {
+      "id": "surface-new-06",
+      "file": "surface-new-06.npz",
+      "features": 106
+    },
+    {
+      "id": "surface-new-07",
+      "file": "surface-new-07.npz",
+      "features": 36
+    },
+    {
+      "id": "surface-new-11",
+      "file": "surface-new-11.npz",
+      "features": 25
+    },
+    {
+      "id": "surface-new-15",
+      "file": "surface-new-15.npz",
+      "features": 82
+    },
+    {
+      "id": "surface-new-16",
+      "file": "surface-new-16.npz",
+      "features": 73
+    },
+    {
+      "id": "closed-oct19-00",
+      "file": "closed-oct19-00.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-01",
+      "file": "closed-oct19-01.npz",
+      "features": 49
+    },
+    {
+      "id": "closed-oct19-03",
+      "file": "closed-oct19-03.npz",
+      "features": 39
+    },
+    {
+      "id": "closed-oct19-04",
+      "file": "closed-oct19-04.npz",
+      "features": 42
+    },
+    {
+      "id": "closed-oct19-05",
+      "file": "closed-oct19-05.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-06",
+      "file": "closed-oct19-06.npz",
+      "features": 35
+    },
+    {
+      "id": "closed-oct19-10",
+      "file": "closed-oct19-10.npz",
+      "features": 43
+    },
+    {
+      "id": "closed-oct19-11",
+      "file": "closed-oct19-11.npz",
+      "features": 64
+    },
+    {
+      "id": "closed-oct19-13",
+      "file": "closed-oct19-13.npz",
+      "features": 64
     }
   ]
 }

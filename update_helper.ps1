@@ -54,8 +54,15 @@ try {
     $needed = 0L
     foreach ($item in $plan.files) {
         if ($seen.ContainsKey($item.path)) { throw 'Duplicate update entry.' }; $seen[$item.path] = $true
-        $source = CheckedPath $payload $item.path
         $destination = CheckedPath $target $item.path
+        if ($item.delete_file) {
+            if ($item.path -in @('KarenDrop.exe','update_helper.ps1','release-manifest.json')) { throw 'Cannot remove required application files.' }
+            if ($item.sha256 -notmatch '^[a-f0-9]{64}$' -or -not (Test-Path -LiteralPath $destination) -or (Hash $destination) -ne $item.sha256) { throw ('Installed file changed: ' + $item.path) }
+            $needed += (Get-Item -LiteralPath $destination).Length
+            $changed += @{path=$item.path;existed=$true;sha256=$item.sha256;delete_file=$true}
+            continue
+        }
+        $source = CheckedPath $payload $item.path
         if ($item.sha256 -notmatch '^[a-f0-9]{64}$' -or (Hash $source) -ne $item.sha256) { throw ('File verification failed: ' + $item.path) }
         if (-not (Test-Path -LiteralPath $destination) -or (Hash $destination) -ne $item.sha256) {
             $needed += (Get-Item -LiteralPath $source).Length
@@ -85,6 +92,10 @@ try {
             $dest = CheckedPath $target $item.path
             New-Item -ItemType Directory -Path (Split-Path -Parent $dest) -Force | Out-Null
             $applied += $item
+            if ($item.delete_file) {
+                Remove-Item -LiteralPath $dest -Force
+                continue
+            }
             Copy-Item -LiteralPath (CheckedPath $payload $item.path) -Destination $dest -Force
             if ((Hash $dest) -ne $item.sha256) { throw 'Installed file verification failed.' }
         }
@@ -113,7 +124,7 @@ try {
     $work = [IO.Path]::GetFullPath((Split-Path -Parent $PlanFile))
     $expectedWork = Join-Path $target '.updates'
     if ($work.StartsWith($expectedWork + '\', [StringComparison]::OrdinalIgnoreCase) -and $payload -eq (Join-Path $work 'payload')) {
-        foreach ($item in $plan.files) { Remove-Item -LiteralPath (CheckedPath $payload $item.path) -Force -ErrorAction SilentlyContinue }
+        foreach ($item in $plan.files) { if (-not $item.delete_file) { Remove-Item -LiteralPath (CheckedPath $payload $item.path) -Force -ErrorAction SilentlyContinue } }
         Remove-Item -LiteralPath (Join-Path $work 'download.zip') -Force -ErrorAction SilentlyContinue
     }
     # 旧バックアップは記録されたファイルだけ整理し、直前の1版を保持する。
