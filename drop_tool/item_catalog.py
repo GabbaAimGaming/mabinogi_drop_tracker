@@ -2,7 +2,9 @@
 import copy
 import difflib
 import json
-from .tracker import ROOT, Rules, normalize
+from .config import ROOT
+from .names import normalize
+from .tracker import Rules
 from .item_links import name_key, resolve_name
 
 KINDS = {'material': '集計', 'excluded': '除外', 'review': '未確認'}

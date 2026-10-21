@@ -130,7 +130,7 @@ def cleanup_confirmed(store):
 def edit_row(store, run_id, index, names, kind):
     """その周回だけ修正・分割・行削除。共通の名前対応や学習を作らない。"""
     from .item_links import name_key
-    from .tracker import normalize
+    from .names import normalize
     if kind not in ('material','excluded','review'):raise ValueError('扱いを選んでください。')
     names=[normalize(n) for n in names]
     if len(names)>20 or any(not n or len(n)>160 for n in names):raise ValueError('1行に1品、20品以内・各160文字以内で入力してください。')

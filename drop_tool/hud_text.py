@@ -1,6 +1,6 @@
 """品名ではない、完全な百分率表示・時刻表示だけを取り除く。"""
 import re
-from .tracker import normalize
+from .names import normalize
 
 def is_hud_text(text):
     text=normalize(text)

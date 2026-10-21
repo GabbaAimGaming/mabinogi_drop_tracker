@@ -5,7 +5,9 @@ import json
 import cv2
 import numpy as np
 from PIL import Image
-from .tracker import ROOT, Rules, normalize
+from .config import ROOT
+from .names import normalize
+from .tracker import Rules
 from .label_images import split_labels, text_pixels
 from .label_detection import recover_rows, merge_fragments
 from .hud_filter import remove_gauge_candidates

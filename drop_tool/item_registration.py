@@ -1,7 +1,7 @@
 """登録・対応付け・任意の見本追加を一度の保存で確定する。元の観測と見本は保持。"""
 import copy
 import hashlib
-from .tracker import normalize
+from .names import normalize
 from .item_links import name_key, resolve_name
 
 

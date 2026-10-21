@@ -8,14 +8,14 @@
 1. 撮影：品名板の列（alt_display.quick_check）が見えている間、軽い撮影だけを
    約0.15秒ごとに繰り返し、最大6枚を保持する。表示が2回続けて見えなくなったら終了。
 2. 読取：保持したフレームから最大4枚を等間隔に選んで解析し、品名板の位置ごとの
-   多数決（tracker.consensus）で1つの一覧にまとめる。ALTを離した後でも読める。
+   多数決（reading.consensus）で1つの一覧にまとめる。ALTを離した後でも読める。
 
 キー入力は一切読まない。画面の表示だけで判断する。
 """
 import time
 
 from .alt_display import quick_check
-from .tracker import consensus
+from .reading import consensus
 
 MAX_FRAMES = 6
 READ_FRAMES = 4

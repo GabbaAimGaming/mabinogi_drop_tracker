@@ -13,7 +13,8 @@ from .notification import CompletionSound
 from .exporting import export_statistics
 from .image_display import pixel_preview
 from .label_images import ocr_image
-from .tracker import Store, StableReading, default_near, SHADOW_MISSIONS
+from .reading import StableReading
+from .tracker import Store, default_near, SHADOW_MISSIONS
 from .vision import Vision
 from . import read_worker
 from . import windows_capture as capture
