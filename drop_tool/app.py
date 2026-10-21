@@ -1,4 +1,4 @@
-"""監視と履歴操作を調整する。Tk更新はメインスレッドで行う。"""
+"""操作画面の本体（起動・設定・監視ループ・読取結果の振り分け）。Tk更新はメインスレッドで行う。"""
 import queue
 import copy
 import threading
@@ -7,12 +7,15 @@ from types import MappingProxyType
 import time
 import sys
 import tkinter as tk
-from tkinter import messagebox, filedialog, ttk
-from PIL import Image, ImageTk
+from tkinter import messagebox
+# [削減候補 2026-10-21] app.pyの分割で移動先（history_actions/manual_actions/sample_actions）へ。app.pyでは未使用。確認後に削除
+# from tkinter import filedialog, ttk
+# from PIL import Image, ImageTk
 from .notification import CompletionSound
-from .exporting import export_statistics
-from .image_display import pixel_preview
-from .label_images import ocr_image
+# [削減候補 2026-10-21] app.pyの分割で移動先（history_actions/manual_actions/sample_actions）へ。app.pyでは未使用。確認後に削除
+# from .exporting import export_statistics
+# from .image_display import pixel_preview
+# from .label_images import ocr_image
 from .reading import StableReading
 from .tracker import Store, default_near, SHADOW_MISSIONS
 from .vision import Vision
@@ -22,14 +25,24 @@ from . import settings as user_settings
 from .reward_gate import RewardGate
 from .chest_detector import ChestDetector
 from .sample_reports import SampleReports
-from .item_links import row_identity, name_key
-from .item_registration import assign
+# [削減候補 2026-10-21] app.pyの分割で移動先（history_actions/manual_actions/sample_actions）へ。app.pyでは未使用。確認後に削除
+# from .item_links import row_identity, name_key
+# from .item_registration import assign
 from . import manual_review
-STATUS = {'waiting': '未取得', 'review': '確認待ち', 'confirmed': '集計済み', 'discarded': '集計対象外'}
-KIND = {'material': '集計', 'excluded': '除外', 'review': '要確認'}
+from .history_actions import HistoryActions
+from .manual_actions import ManualActions
+from .sample_actions import SampleActions
+# [削減候補 2026-10-21] 表示名はhistory_actionsへ移動。app.pyでは未使用。確認後に削除
+# STATUS = {'waiting': '未取得', 'review': '確認待ち', 'confirmed': '集計済み', 'discarded': '集計対象外'}
+# KIND = {'material': '集計', 'excluded': '除外', 'review': '要確認'}
 
-class App:
-    """Tkの操作画面。画像処理をワーカーへ渡し、結果はTk側で反映する。"""
+class App(HistoryActions, ManualActions, SampleActions):
+    """Tkの操作画面。画像処理をワーカーへ渡し、結果はTk側で反映する。
+
+    ここには起動・設定・監視ループ・読取結果の振り分け（handle_job）を置く。
+    履歴操作はHistoryActions、手動撮影・周回内の修正はManualActions、
+    提出用サンプルはSampleActionsにある（どれもAppの属性を前提にした混ぜ込み用クラス）。
+    """
 
     # __init__を通さない検証用インスタンス（App.__new__）でも参照できる既定値。
     # どれも読むだけか、代入で差し替える値に限る。
@@ -386,42 +399,6 @@ class App:
     def show_scan(self, result):
         self.status.set(result.get('message', '宝箱を探しています。') + f" ALT継続 {result.get('elapsed', 0):.1f}/3秒")
 
-    def save_missed(self, result):
-        self.submit_sample('missed_detection', [result['frame']], {'reason': '利用者が自動で読めなかったと報告。ALT表示は不要。'})
-
-    def sample_saved(self, result):
-        manual_review.cleanup_confirmed(self.store)
-        kind = result.get('kind', '')
-        prefix = ('読み取れませんでした。手動読取に切り替えてください。' if kind.endswith('_failure')
-                  else '読取完了。履歴で確認してください。' if kind.endswith('_success') else '')
-        self.status.set(prefix + ' 提出用サンプルを保存しました：' + result['path'])
-
-    def sample_error(self, result):
-        prefix = '読み取れませんでした。手動読取に切り替えてください。' if result.get('kind', '').endswith('_failure') else ''
-        self.status.set(prefix + ' 提出用サンプルを保存できません：' + result['reason'])
-
-    def save_manual_photo(self, result):
-        try:
-            manual_review.save_photo(self.store, result['run_id'], result['frame'])
-            self.refresh()
-            self.runs.selection_set(result['run_id'])
-            self.select_run()
-            self.status.set('撮影しました。「画像で確認・読取」でこの周回の画像を確認してください。')
-        except Exception as exc:
-            messagebox.showerror('撮影を保存できません', str(exc))
-
-    def save_manual_reading(self, result):
-        if not result.get('labels'):
-            self.read_failed('manual', result, result['message'])
-            return
-        rows = self.store.persist_rows(self.active_id, result['labels'])
-        self.store.record(self.active_id, rows, require_review=True)
-        self.refresh()
-        self.status.set('撮影・読取できました。履歴タブで品名と除外対象を確認し、この周回を確定してください。')
-        self.completion_sound.play()
-        self.notify_unregistered(result)
-        self.submit_sample('manual_success', result.get('sample_frames', []), self.read_metadata(result))
-
     def apply_live(self, result):
         # 撮影中の画面切替も再確認し、別ウィンドウへ移った結果を採用しない。
         if not self.watching or not self.ready(self.hwnd):
@@ -469,402 +446,6 @@ class App:
         self.notify_unregistered(result)
         self.submit_sample('auto_success', result.get('sample_frames',[]), self.read_metadata(result))
 
-    # [削減候補 2026-10-21] 呼び出し元なし（review_captureを呼ぶだけ）。確認後に削除
-    # def test_image(self):
-    #     self.review_capture()
-
-    def countdown(self, seconds, text, mode):
-        """seconds秒数えてからsubmit(mode)。textの{left}に残り秒を入れる。
-
-        数え始めた後にepochが変われば（停止・ゲーム切替等）何もせず終える。
-        """
-        token = self.epoch
-
-        def step(left):
-            if token != self.epoch:
-                return
-            if left:
-                self.status.set(text.format(left=left))
-                self.root.after(1000, lambda: step(left - 1))
-            else:
-                self.submit(mode)
-        step(seconds)
-
-    def capture_manual(self):
-        if self.busy:
-            return
-        target = self.display_id or self.active_id
-        if not target:
-            self.status.set('先に新しい周回を作るか、履歴から撮影する周回を選んでください。')
-            return
-        if not self.hwnd:
-            self.status.set('撮影するゲームを選んでください。')
-            return
-        self.stop()
-        self.manual_target = target
-        self.countdown(3, '撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。', 'manual_photo')
-        # [削減候補 2026-10-21] self.countdownへ集約した旧実装。確認後に削除
-        # token = self.epoch
-        #
-        # def countdown(left):
-        #     if token != self.epoch:
-        #         return
-        #     if left:
-        #         self.status.set(f'撮影まで{left}秒。ゲームへ戻りALTの品名を表示してください。')
-        #         self.root.after(1000, lambda: countdown(left - 1))
-        #     else:
-        #         self.submit('manual_photo')
-        # countdown(3)
-
-    def review_capture(self):
-        if self.busy:
-            return
-        target = self.display_id or self.active_id
-        if not target:
-            self.status.set('履歴から確認する周回を選んでください。')
-            return
-        paths = manual_review.photos(self.store, target)
-        if not paths:
-            messagebox.showinfo('保存画像がありません', '確認済みの元画像は削除しています。品名がまだ画面に出ている場合は「3秒後に撮影」で撮り直してください。', parent=self.root)
-            return
-        window = tk.Toplevel(self.root)
-        window.title('この周回の撮影画像を確認・読取')
-        window.transient(self.root)
-        ttk.Label(window, text='画像を確認してから読み取ります。別の周回や共通の学習設定は変更しません。').pack(padx=10, pady=5)
-        choice = ttk.Combobox(window, state='readonly', values=[f'画像 {i+1}/{len(paths)}' for i in range(len(paths))])
-        choice.current(len(paths) // 2)
-        choice.pack()
-        preview = ttk.Label(window)
-        preview.pack(padx=8, pady=8)
-
-        def show(*_):
-            try:
-                with Image.open(paths[choice.current()]) as source:
-                    shown = source.convert('RGB')
-                shown.thumbnail((1050, 600))
-                window.photo = ImageTk.PhotoImage(shown)
-                preview.configure(image=window.photo)
-            except (OSError, ValueError) as exc:
-                messagebox.showerror('画像', str(exc), parent=window)
-
-        def read():
-            if self.busy:
-                return
-            try:
-                with Image.open(paths[choice.current()]) as source:
-                    frame = source.convert('RGB')
-                run = self.store.find(target)
-                self.saved_read_target = target
-                self.saved_read_expected = copy.deepcopy({'rows': run['rows'], 'status': run['status']})
-                self.stop()
-                window.destroy()
-                self.submit('saved_read', frame)
-            except Exception as exc:
-                messagebox.showerror('画像を読み取れません', str(exc), parent=self.root)
-        choice.bind('<<ComboboxSelected>>', show)
-        show()
-        ttk.Button(window, text='この画像を読み取る', command=read).pack(pady=8)
-
-    def apply_saved_read(self, result):
-        if not result.get('labels'):
-            messagebox.showinfo('読取できませんでした', '元の記録は保持しています。撮影画像の品名表示を確認してください。', parent=self.root)
-            return
-        if not messagebox.askyesno('この周回へ反映', f"{len(result['labels'])}行を読み取りました。選んだ周回の品名を置き換え、確認待ちに戻しますか？\n他の周回や学習設定は変更しません。", parent=self.root):
-            return
-        try:
-            manual_review.replace_reading(self.store, result['run_id'], result, result['expected'])
-            self.refresh()
-            self.runs.selection_set(result['run_id'])
-            self.select_run()
-            self.notebook.select(1)
-            self.status.set('この周回に読み取り結果を反映しました。内容を確認して確定してください。')
-        except Exception as exc:
-            messagebox.showerror('反映できません', str(exc), parent=self.root)
-
-    # [削減候補 2026-10-21] 本体からの呼び出し元なし（旧呼び出し用。手動操作はcapture_manual）。
-    # 使うのはtests/test_capture_flowの1件だけで、そちらもコメントアウト済み。確認後に削除
-    # def timed_read(self):
-    #     """旧呼び出し用の直接読取。通常の手動操作はcapture_manualから行う。"""
-    #     if not self.hwnd:
-    #         self.status.set('撮影するゲームを選んでください。')
-    #         return
-    #     if not self.active_id or self.store.find(self.active_id)['status'] != 'waiting':
-    #         self.status.set('先に「新しい周回」、または未取得の履歴を選んで「監視再開」を押してください。')
-    #         return
-    #     if self.busy:
-    #         self.status.set('読取処理中です。下の監視表示で進行状況を確認してください。')
-    #         return
-    #     self.stop()
-    #     token = self.epoch
-    #
-    #     def countdown(left):
-    #         if token != self.epoch:
-    #             return
-    #         if left:
-    #             self.status.set(f'報酬読取まで {left}秒。ゲームへ戻ってALTを押し続けてください。')
-    #             self.root.after(1000, lambda: countdown(left - 1))
-    #         else:
-    #             self.status.set('報酬を撮影・読取中です。')
-    #             self.submit('manual')
-    #     countdown(5)
-
-    def show_test(self, result):
-        text = '\n'.join((f"{KIND[r['kind']]}：{r['name']}" for r in result['labels']))
-        messagebox.showinfo('画像確認（統計には記録しません）', text or result['message'])
-
-    def refresh(self):
-        current = self.runs.selection()
-        self.runs.delete(*self.runs.get_children())
-        for r in reversed(self.store.data['runs']):
-            self.runs.insert('', 'end', iid=r['id'], values=(r['created'], f"{r['dungeon']} / {r['difficulty']} / {r['near']}", STATUS[r['status']]))
-        if current and self.runs.exists(current[0]):
-            self.runs.selection_set(current[0])
-        self.contexts = sorted({(r['dungeon'], r['difficulty'], r['near']) for r in self.store.data['runs']})
-        old = self.groups.get()
-        self.groups.configure(values=[' / '.join(c) for c in self.contexts])
-        if old in self.groups['values']:
-            self.groups.set(old)
-        elif self.contexts:
-            self.groups.current(0)
-        else:
-            self.groups.set('')
-        self.refresh_stats()
-
-    def refresh_stats(self):
-        self.stats_table.delete(*self.stats_table.get_children())
-        i = self.groups.current()
-        if i < 0:
-            self.summary.set('まだ記録がありません。入場時に新しい周回を開始してください。')
-            return
-        n, pending, rows = self.store.stats(self.contexts[i])
-        self.summary.set(f'集計済み {n}周 / 未取得・確認待ち {pending}周（分母から除外）')
-        for name, count, rate in rows:
-            self.stats_table.insert('', 'end', values=(name, count, f'{rate * 100:.2f}%'))
-
-    def select_run(self, event=None):
-        ids = self.runs.selection()
-        if not ids:
-            return
-        self.display_id = ids[0]
-        run = self.store.find(self.display_id)
-        self.rows.delete(*self.rows.get_children())
-        self.preview.configure(image='')
-        self.page.set_minimum_height(730)
-        self.correct.set('')
-        self.candidates.set('')
-        self.search_candidates()
-        for i, row in enumerate(run['rows']):
-            target, kind = row_identity(self.store.data, row)
-            shown = row['name'] if target == row['name'] else row['name'] + ' → ' + target
-            self.rows.insert('', 'end', iid=str(i), values=(shown, KIND[kind]))
-
-    def select_row(self, event=None):
-        """元の切り抜きを滑らかに拡大。白黒比較は表示だけに適用する。"""
-        selected = self.rows.selection()
-        if not selected or not self.display_id:
-            return
-        run = self.store.find(self.display_id)
-        row = run['rows'][int(selected[0])]
-        self.correct.set(row['name'])
-        self.candidates.set('')
-        self.candidates.configure(values=self.vision.catalog.search(row['name']))
-        if not row.get('image') or not (self.store.folder / row['image']).is_file():
-            self.photo = None
-            self.preview.configure(image='')
-            self.page.set_minimum_height(730)
-            if run.get('evidence_pruned'):
-                self.status.set('この行の画像は保存世代を過ぎたため削除済みです。品名と扱いはテキストで保存されています。')
-            else:
-                self.status.set('この行の画像が見つかりません。品名と扱いはテキストで保存されています。')
-            return
-        # ファイルを開いたままにすると、Windowsでは画像の整理・削除が失敗する。
-        with Image.open(self.store.folder / row['image']) as source:
-            image = source.convert('RGB')
-        shown = ocr_image(image) if self.clean_preview.get() else image
-        self.photo = ImageTk.PhotoImage(pixel_preview(shown))
-        self.preview.configure(image=self.photo)
-        self.page.set_minimum_height(730 + self.photo.height())
-
-    def search_candidates(self, *_):
-        """検索するだけでは登録しない。検索の変更で前の候補選択を解除する。"""
-        self.candidates.set('')
-        self.candidates.configure(values=self.vision.catalog.search(self.correct.get()))
-
-    def correct_row(self, kind=None, *, new=False):
-        """選択した正式名への対応付けを確認して保存する。元の観測名は残す。"""
-        if self.busy:
-            return
-        selected = self.rows.selection()
-        if not selected or not self.display_id:
-            self.status.set('先に履歴から読み取った行を選んでください。')
-            return
-        try:
-            from .item_catalog import KINDS
-            if kind is None:
-                kind = next(k for k,v in KINDS.items() if v == self.registration_kind.get())
-            run = self.store.find(self.display_id)
-            row = run['rows'][int(selected[0])]
-            target = self.correct.get().strip() if new else self.candidates.get().strip()
-            if not target:
-                raise ValueError('新規登録は検索欄に正式名を入力し、既存品は辞書候補から選択してください。')
-            if new and self.vision.catalog.find(target):
-                raise ValueError('登録済みの品名です。辞書候補から選択してください。')
-            detail = ('新しい正式名として登録' if new else '選択した辞書の品へ登録')
-            text = (f"元の読み取り名：{row['name']}\n登録先：{target}\n扱い：{KINDS[kind]}\n\n{detail}しますか？")
-            if row['name'] != '読取不明' and name_key(row['name']) != name_key(target):
-                text += '\nこの誤登録名を含む過去の確定済み周回も、登録先の扱いで集計します。元の名前・画像は残ります。'
-            text += '\n周回の確定は、登録後に内容を確認して行ってください。'
-            if not messagebox.askyesno('登録内容の確認',text,parent=self.root):
-                return
-            image = None
-            if row.get('image') and (self.store.folder / row['image']).is_file():
-                with Image.open(self.store.folder / row['image']) as source:
-                    image = source.convert('RGB')
-            assign(self.vision.catalog, row['name'], target, kind, new=new,
-                   run_id=self.display_id, row_index=int(selected[0]), image=image)
-            self.vision.reload()
-            self.refresh()
-            self.select_run()
-            self.item_views.refresh()
-            self.status.set('登録しました。元の読み取り名を残して、選んだ正式名へ対応付けます。履歴を確認して周回を確定してください。')
-        except Exception as exc:
-            messagebox.showerror('登録', str(exc))
-
-    def edit_this_run(self):
-        if self.busy:
-            return
-        selection = self.rows.selection()
-        if not selection or not self.display_id:
-            self.status.set('先に履歴から修正する行を選んでください。')
-            return
-        run_id = self.display_id
-        index = int(selection[0])
-        run = self.store.find(run_id)
-        original = copy.deepcopy(run['rows'])
-        name, kind = row_identity(self.store.data, run['rows'][index])
-        window = tk.Toplevel(self.root)
-        window.title('この周回だけ修正・分割')
-        window.transient(self.root)
-        ttk.Label(window, text='正しい品名を1行に1品入力。結合された行は改行して分割できます。\n空欄で保存すると、この行をこの周回から除きます。共通学習は変更しません。').pack(padx=12, pady=8)
-        text = tk.Text(window, width=55, height=5)
-        text.insert('1.0', name)
-        text.pack(padx=12)
-        policy = ttk.Combobox(window, state='readonly', values=list(KIND.values()))
-        policy.set(KIND[kind])
-        policy.pack(pady=6)
-
-        def save():
-            try:
-                current = self.store.find(run_id)
-                if current['rows'] != original:
-                    raise ValueError('周回の内容が変わりました。開き直してください。')
-                names = [n.strip() for n in text.get('1.0', 'end').splitlines() if n.strip()]
-                selected = next(k for k, v in KIND.items() if v == policy.get())
-                summary = '\n'.join(names) if names else 'この行を除く'
-                if not messagebox.askyesno('この周回だけ変更', summary + '\n扱い：' + policy.get() + '\n\nこの周回だけ変更して確認待ちに戻しますか？', parent=window):
-                    return
-                manual_review.edit_row(self.store, run_id, index, names, selected)
-                window.destroy()
-                self.refresh()
-                self.runs.selection_set(run_id)
-                self.select_run()
-                self.status.set('この周回だけ修正しました。共通の対応付け・学習設定は変更していません。')
-            except Exception as exc:
-                messagebox.showerror('修正できません', str(exc), parent=window)
-        ttk.Button(window, text='この周回だけ保存', command=save).pack(pady=10)
-
-    def confirm_run(self):
-        if not self.display_id:
-            return
-        try:
-            self.store.confirm(self.display_id)
-            self.refresh()
-            self.prune_evidence()
-        except Exception as exc:
-            messagebox.showerror('確定', str(exc))
-
-    def discard(self):
-        if not self.display_id:
-            return
-        if messagebox.askyesno('集計対象外', 'この周回を統計から外しますか？記録自体は残ります。'):
-            self.store.find(self.display_id)['status'] = 'discarded'
-            self.store.save()
-            self.refresh()
-
-    def delete_runs(self):
-        """記録を削除する。学習設定は残し、保存失敗時は元の周回を復元する。"""
-        ids = self.runs.selection()
-        if not ids:
-            messagebox.showinfo('周回を削除', '履歴から削除する周回を選んでください。')
-            return
-        if not messagebox.askyesno('周回を削除', f'選択した {len(ids)}周を履歴と集計から削除しますか？\n覚えたアイテム名は残ります。'):
-            return
-        try:
-            count = self.store.delete_runs(ids)
-            if self.active_id in ids:
-                self.stop()
-                self.active_id = None
-            if self.display_id in ids:
-                self.display_id = None
-                self.rows.delete(*self.rows.get_children())
-                self.preview.configure(image='')
-                self.correct.set('')
-            self.refresh()
-            self.status.set(f'{count}周を履歴と集計から削除しました。学習内容は保持しています。')
-        except Exception as exc:
-            messagebox.showerror('削除できません', str(exc))
-
-    def save_player_name(self):
-        """この記録ファイルの所有者名を保存する。周回や学習内容には触れない。"""
-        try:
-            self.store.set_player_name(self.player_name.get())
-            self.player_name.set(self.store.player_name)
-            return True
-        except (ValueError, OSError) as exc:
-            self.status.set('プレイヤー名を保存できません：' + str(exc))
-            return False
-
-    def export(self):
-        """名義を保存してから、確認済み統計をExcel向けUTF-8 CSVに出力する。"""
-        if not self.save_player_name():
-            return
-        if not self.store.player_name:
-            messagebox.showinfo('プレイヤー名', 'CSVに載せるプレイヤー名を入力してください。')
-            return
-        path = filedialog.asksaveasfilename(defaultextension='.csv', initialfile='drop-statistics.csv')
-        if not path:
-            return
-        try:
-            export_statistics(self.store, path)
-            self.status.set('プレイヤー名付きのCSVを保存しました。')
-        except (ValueError, OSError) as exc:
-            messagebox.showerror('CSVを保存できません', str(exc))
-
-    def notify_unregistered(self, result):
-        """保存済みの1周につき1回だけ、未登録名をまとめて知らせる。"""
-        names = sorted({x['name'] for x in result['labels'] if x.get('registered') is False})
-        if not names:
-            return
-        self.notebook.select(1)
-        self.runs.selection_set(self.active_id)
-        self.select_run()
-        messagebox.showinfo('未登録の品名があります',
-            f'{len(names)}種類の未登録候補があります。画像と辞書候補を確認してください。\n'
-            '名前だけ登録し、扱いを未確認のまま残すこともできます。\n\n'
-            + '\n'.join(names[:10]) + ('\n…' if len(names) > 10 else ''), parent=self.root)
-
-    def apply_item_settings(self):
-        """確認待ちの選択周回に限り、利用者の明示操作で現在の設定を適用する。"""
-        if self.busy or not self.display_id:
-            return
-        try:
-            self.vision.catalog.apply_pending(self.display_id)
-            self.select_run()
-            self.refresh()
-            self.status.set('設定を反映しました。画像と品名を確認してから周回を確定してください。')
-        except (OSError, ValueError) as exc:
-            messagebox.showerror('設定を反映', str(exc))
-
     def reset_reward(self):
         """周回・撮影対象・監視状態が変わった時は、箱の記憶と3秒待ちを消す。"""
         if self.reward_gate is not None:
@@ -878,41 +459,6 @@ class App:
             self.reset_reward()
             self.status.set('自動読取は試験機能です。手動読取はいつでも使えます。')
 
-    def read_metadata(self, result):
-        return {'reason':result.get('message',''), 'detection':result.get('detection'),
-                'capture_count':result.get('frames'), 'frame_analysis':result.get('frame_analysis',[]),
-                'rows':[{'name':r['name'],'raw':r.get('raw',''),'kind':r['kind'],
-                         'registered':r.get('registered'),'pos':r.get('pos')} for r in result.get('labels',[])]}
-
-    def sample_context(self):
-        """提出に必要な設定と判定ログだけ。records.json一式は含めない。"""
-        run = None
-        if self.active_id:
-            try:
-                source = self.store.find(self.active_id)
-                run = {key:source.get(key) for key in ('id','dungeon','difficulty','near','status')}
-            except StopIteration:
-                pass
-        return {'player_name':self.store.player_name,'run':run,
-                'settings':dict(self.settings),
-                'scan_trace':list(self.scan_trace)}
-
-    def submit_sample(self, kind, frames, metadata):
-        """PNG保存を別スレッドへ渡す。提出画像の保存失敗で周回記録を取り消さない。"""
-        reports = self.samples
-        if reports is None:  # 初期化前の検証用Appには提出機能がない。
-            return
-        context = self.sample_context()
-        context.update(metadata)
-        token = self.epoch
-        def save():
-            try:
-                path = reports.save(kind, frames, context)
-                self.jobs.put((token,'sample_saved',{'path':str(path),'kind':kind},None))
-            except Exception as exc:
-                self.jobs.put((token,'sample_error',{'reason':str(exc),'kind':kind},None))
-        threading.Thread(target=save,daemon=True).start()
-
     def read_failed(self, mode, result, reason):
         """開始した読取の失敗だけ通知。箱を未検出の間は勝手に失敗扱いにしない。"""
         self.watching = False
@@ -923,38 +469,3 @@ class App:
         metadata['reason'] = reason
         self.submit_sample(mode+'_failure', result.get('sample_frames',[]), metadata)
         self.reset_reward()
-
-    def report_missed(self):
-        """3秒後に提出用のゲーム画面とログだけ保存。OCR・周回登録をしない。"""
-        if self.busy:
-            self.status.set('読取処理が終わってから押してください。')
-            return
-        if not self.hwnd:
-            self.status.set('撮影するゲームを選んでください。')
-            return
-        trace = list(self.scan_trace)
-        self.stop()
-        self.scan_trace = trace
-        self.countdown(3, '検証用撮影まで{left}秒。ゲームへ戻り、宝箱を画面に入れてください。ALTは不要です。', 'missed')
-        # [削減候補 2026-10-21] self.countdownへ集約した旧実装。確認後に削除
-        # token = self.epoch
-        # def countdown(left):
-        #     if token != self.epoch:
-        #         return
-        #     if left:
-        #         self.status.set(f'検証用撮影まで{left}秒。ゲームへ戻り、宝箱を画面に入れてください。ALTは不要です。')
-        #         self.root.after(1000,lambda:countdown(left-1))
-        #     else:
-        #         self.submit('missed')
-        # countdown(3)
-
-    def export_samples(self):
-        """利用者が内容を確認して提出するためのZIP。ネット送信は行わない。"""
-        path = filedialog.asksaveasfilename(defaultextension='.zip',initialfile='KarenDrop-samples.zip')
-        if not path:
-            return
-        try:
-            count = self.samples.export(path)
-            self.status.set(f'{count}件の提出用サンプルをZIPにまとめました。画像とプレイヤー名を確認してから渡してください。')
-        except (ValueError,OSError) as exc:
-            messagebox.showerror('サンプルZIP',str(exc))

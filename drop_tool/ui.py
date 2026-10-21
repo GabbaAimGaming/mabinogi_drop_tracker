@@ -5,13 +5,39 @@ from .karen_banner import KarenBanner
 from .scrollable import ScrollablePane
 from .csv_views import CsvViews
 
+
 def build_widgets(self):
-    """画面の構築だけを担当する。保存やCSV生成は専用モジュールに任せる。"""
+    """画面の構築だけを担当する。保存やCSV生成は専用モジュールに任せる。
+
+    上から順に、ゲーム選択と周回の開始（_controls）、説明・状態・操作ボタン（_notes）、
+    タブ（ドロップ統計＝_stats_tab、周回履歴・確認待ち＝_review_tab、CSV、アイテム管理、設定）を作る。
+    """
     root = self.root
     self.page = ScrollablePane(root, minimum_width=980, minimum_height=730)
     self.page.pack(fill="both", expand=True)
     pane = ttk.Frame(self.page.content, padding=10)
     pane.pack(fill='both', expand=True)
+    _controls(self, pane)
+    _notes(self, pane)
+    notebook = ttk.Notebook(pane)
+    self.notebook = notebook
+    notebook.pack(fill='both', expand=True, pady=8)
+    stats = ttk.Frame(notebook, padding=8)
+    review = ttk.Frame(notebook, padding=8)
+    notebook.add(stats, text='ドロップ統計')
+    notebook.add(review, text='周回履歴・確認待ち')
+    self.csv_views = CsvViews(notebook, self.store.folder)
+    _stats_tab(self, stats)
+    _review_tab(self, review)
+    from .item_views import ItemViews
+    self.item_views = ItemViews(self)
+    # 既存タブの番号を変えないよう末尾に追加する。
+    from .settings_views import SettingsViews
+    self.settings_views = SettingsViews(self)
+
+
+def _controls(self, pane):
+    """撮影するゲーム、プレイヤー名、ダンジョン・難易度・ネアルと周回の開始・停止。"""
     bar = ttk.Frame(pane)
     bar.pack(fill='x')
     ttk.Label(bar, text='撮影するゲーム：').pack(side='left')
@@ -45,6 +71,10 @@ def build_widgets(self):
     ttk.Button(bar, text='入場：新しい周回', command=self.new_run, style='Accent.TButton').pack(side='left', padx=8)
     ttk.Button(bar, text='監視停止', command=self.stop).pack(side='left')
     ttk.Button(bar, text='監視再開', command=self.resume).pack(side='left')
+
+
+def _notes(self, pane):
+    """手順の説明・状態表示・読取音と、手動読取・提出・出力のボタン。"""
     notes_row = ttk.Frame(pane)
     notes_row.pack(fill='x', pady=(3, 0))
     self.banner = KarenBanner(notes_row, self.capture_manual)
@@ -67,14 +97,10 @@ def build_widgets(self):
     ttk.Button(actions, text='提出用撮影（3秒後）', command=self.report_missed).pack(side='left', padx=5)
     ttk.Button(actions, text='サンプルZIP出力', command=self.export_samples).pack(side='right')
     ttk.Button(actions, text='CSV出力', command=self.export).pack(side='right')
-    notebook = ttk.Notebook(pane)
-    self.notebook = notebook
-    notebook.pack(fill='both', expand=True, pady=8)
-    stats = ttk.Frame(notebook, padding=8)
-    review = ttk.Frame(notebook, padding=8)
-    notebook.add(stats, text='ドロップ統計')
-    notebook.add(review, text='周回履歴・確認待ち')
-    self.csv_views = CsvViews(notebook, self.store.folder)
+
+
+def _stats_tab(self, stats):
+    """「ドロップ統計」タブ：組み合わせの選択と出現率の表。"""
     ttk.Label(stats, textvariable=self.summary, wraplength=950).pack(anchor='w', pady=5)
     self.groups = ttk.Combobox(stats, state='readonly', width=60)
     self.groups.pack(anchor='w')
@@ -85,6 +111,10 @@ def build_widgets(self):
         self.stats_table.column(key, width=width)
     self.stats_table.pack(fill='both', expand=True, pady=8)
     ttk.Label(stats, text='数量・宝箱1個あたりの確率ではなく、1周の報酬にその品が含まれた割合です。\n未取得・確認待ちは分母に含めません。偏りを避けるため、確認待ちを解消してから比較してください。', wraplength=950).pack(anchor='w')
+
+
+def _review_tab(self, review):
+    """「周回履歴・確認待ち」タブ：周回と品名の一覧、画像の確認、辞書登録、確定・削除。"""
     # 2つの一覧の高さを、境界のつまみで利用者が調整できる。
     self.review_split = tk.PanedWindow(review, orient='vertical', sashwidth=8,
         sashrelief='raised', sashcursor='sb_v_double_arrow', showhandle=True,
@@ -135,16 +165,12 @@ def build_widgets(self):
     ttk.Button(row, text='選択した品で登録', command=self.correct_row).pack(side='left', padx=5)
     ttk.Button(row, text='入力名を新規登録', command=lambda: self.correct_row(new=True)).pack(side='left')
     ttk.Button(row, text='この周回に設定を反映', command=self.apply_item_settings).pack(side='right')
-    local_row=ttk.Frame(review);local_row.pack(fill='x',pady=(0,6))
-    ttk.Button(local_row,text='この周回だけ修正・分割',command=self.edit_this_run).pack(side='left')
-    ttk.Label(local_row,text='共通の対応付け・学習は変更しません。空欄で行を除けます。').pack(side='left',padx=8)
+    local_row = ttk.Frame(review)
+    local_row.pack(fill='x', pady=(0, 6))
+    ttk.Button(local_row, text='この周回だけ修正・分割', command=self.edit_this_run).pack(side='left')
+    ttk.Label(local_row, text='共通の対応付け・学習は変更しません。空欄で行を除けます。').pack(side='left', padx=8)
     row = ttk.Frame(review)
     row.pack(fill='x')
     ttk.Button(row, text='修正した周回を確定', command=self.confirm_run).pack(side='left')
     ttk.Button(row, text='この周回を集計対象外にする', command=self.discard).pack(side='left', padx=6)
     ttk.Button(row, text='選択した周回を削除', command=self.delete_runs).pack(side='left', padx=6)
-    from .item_views import ItemViews
-    self.item_views = ItemViews(self)
-    # 既存タブの番号を変えないよう末尾に追加する。
-    from .settings_views import SettingsViews
-    self.settings_views = SettingsViews(self)

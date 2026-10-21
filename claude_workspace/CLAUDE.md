@@ -21,7 +21,7 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 ## 1. レイヤーと依存の向き
 
 ```
-app.py(起動) → drop_tool/app.py(App) → ui.py → *_views.py
+app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋SampleActions) → ui.py → *_views.py
                       │  └ read_worker（撮影・認識ワーカー。Tk非依存）
         ┌─────────────┼───────────────────────┐
      撮影/判定        認識                     記録/集計
@@ -66,9 +66,12 @@ app.py(起動) → drop_tool/app.py(App) → ui.py → *_views.py
 | 起動 | `app.py` | `run_app/main`、`--self-test`、`--diagnose`、二重起動ガード | test_portability |
 | 起動 | `bootstrap.py` / `start.bat` / `診断.bat` | 配布用の起動準備、環境診断の起動 | — |
 | 設定 | `config.py` | `ROOT`（EXE版は実行ファイルの隣）、`configure_tk`（凍結版のTcl/Tk） | test_tk_runtime |
-| 画面 | `drop_tool/app.py` | `App`（931行）：監視・履歴操作・手動撮影・サンプル提出。`submit/poll/handle_job/tick/correct_row/edit_this_run` | test_karen_ui, test_capture_flow, test_v11_settings, test_manual_review, test_reward_scan_reuse |
+| 画面 | `drop_tool/app.py` | `App`（約470行）：起動・設定・前面撮影・監視ループ・読取結果の振り分け。`submit/poll/handle_job/tick/apply_live/read_failed`。下の3クラスを継承する | test_karen_ui, test_capture_flow, test_v11_settings, test_reward_scan_reuse |
+| 画面 | `drop_tool/history_actions.py` | `HistoryActions`：履歴・統計の表示、行の選択とプレビュー、辞書登録`correct_row`、確定・対象外・削除、CSV出力、未登録名の通知。表示名`STATUS`・`KIND` | test_item_links, test_evidence_retention, test_karen_ui |
+| 画面 | `drop_tool/manual_actions.py` | `ManualActions`：`countdown`、3秒後の撮影`capture_manual`、撮影画像の確認・読取`review_capture/apply_saved_read`、手動読取の保存、周回内の修正`edit_this_run` | test_manual_review |
+| 画面 | `drop_tool/sample_actions.py` | `SampleActions`：提出用サンプルの保存（別スレッド）、`report_missed`、ZIP出力 | test_manual_review, test_capture_flow |
 | 画面 | `drop_tool/read_worker.py` | 撮影・認識ワーカー（Tk非依存）。`run`、`_observe`（取得条件の判定）、`_burst`（連写と多数決）、`middle`（中央範囲） | test_near_dialog, test_manual_review, test_capture_flow（連写成立は非公開のtest_alt_display/test_window_share） |
-| 画面 | `ui.py` | `build_widgets`。ダンジョン選択（影ミッション5種）・難易度（`エリート`）、タブ「ドロップ統計」「周回履歴・確認待ち」＋CSV2タブ | test_karen_ui |
+| 画面 | `ui.py` | `build_widgets`（`_controls`・`_notes`・`_stats_tab`・`_review_tab`へ分割）。ダンジョン選択（影ミッション5種）・難易度（`エリート`）、タブ「ドロップ統計」「周回履歴・確認待ち」＋CSV2タブ | test_karen_ui |
 | 画面 | `item_views.py` / `settings_views.py` / `csv_views.py` / `update_view.py` | 「アイテム管理」「設定」、CSV比較の2タブ、更新・旧版への復旧UI | test_item_links, test_csv_*, test_startup_update, test_old_release_dropdown, test_rollback |
 | 画面部品 | `theme.py` `scrollable.py` `karen_banner.py` `image_display.py` | 配色・スクロール・表示補助 | — |
 | 撮影 | `windows_capture.py` | 前景ゲームウィンドウの読み取り専用撮影（読み込み時に`ctypes.WinDLL('user32')`） | test_capture_flow |
@@ -132,7 +135,9 @@ player_name?: 追加キー（旧版互換）
 | 複数フレームの多数決 | `reading.consensus` / `StableReading`、`tests/test_moving_labels.py` |
 | 取得タイミング・宝箱 | `read_worker._observe/_burst`、`reward_gate.py`、`alt_capture.py`、`chest_*.py`（検出方式を足すなら`ChestDetector`に段のメソッドを作り`detect`の並びへ1つ追加）、`assets/chests/` |
 | 読取結果の画面反映 | `App.handle_job`の対応表と各処理（`apply_live`等） |
-| 手動撮影・周回内の修正 | `manual_review.py`、`App.capture_manual/review_capture/edit_this_run` |
+| 手動撮影・周回内の修正 | `manual_review.py`、`manual_actions.py`（`capture_manual/review_capture/edit_this_run`） |
+| 履歴・統計の画面操作 | `history_actions.py` |
+| 提出用サンプル | `sample_actions.py`、`sample_reports.py` |
 | 集計・出現率 | `Store.stats/confirm`、`exporting.py` |
 | ダンジョン・難易度の追加 | `ui.py`のコンボ値、`tracker.SHADOW_MISSIONS`/`default_near`、`tests/test_v11_settings.py` |
 | 設定項目の追加 | `settings.py`（DEFAULTS+`_valid`）、`settings_views.py`、`App.save_setting` |
@@ -176,7 +181,8 @@ Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、s
 `test_tracker`（`Store`・`StableReading`の中核テスト）は公開環境ではskipされる。保存と確定のロジックを直す時は、公開テストだけだと守りが薄い。認識・宝箱系の退行は非公開画像のある作者側環境で確認してもらう。
 
 ## 8. 注意ゾーン
-- **`drop_tool/app.py`**：931行。変更は小さく、新規ロジックは別モジュールへ。
+- **`drop_tool/app.py`**：約470行（2026-10-21に履歴・手動・サンプルを分割）。変更は小さく、新規ロジックは別モジュールへ。
+- **`*_actions.py`はAppへ混ぜ込むクラス**：`__init__`を持たず、Appの属性（`store`、画面部品等）を前提にする。テストの`patch('drop_tool.app.messagebox.…')`は`tkinter.messagebox`モジュール自体の属性を差し替えるので、メソッドを別モジュールへ移しても効く（`from tkinter import messagebox`で同じモジュールを参照する限り）。
 - **認識の閾値**（0.92、0.035、`CENTER`、`MAX_FRAMES`、`consensus`の移動許容幅、各`*_labels`の高さ・幅・密度条件等）：非公開画像でしか回帰を確認できない。変更は事前に相談。
 - **Windows依存**：`winsound`、`ctypes.WinDLL`、`st_file_attributes`（`updater._is_link`で非Windowsは0扱い）。実機の動作はLinuxでは確認できない。
 - **宝箱検知は試験機能**：未収集の角度や小さい箱は見逃す。`chest_parts`はdocstring上「ローカル試作用」。

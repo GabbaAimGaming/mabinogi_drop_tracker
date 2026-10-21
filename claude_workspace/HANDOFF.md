@@ -45,6 +45,11 @@
    - **1回目（コメントアウト）済**（2026-10-21）：`App.test_image`、`App.timed_read`、`retention.EVIDENCE_KEYS/load_settings/save_settings`（`load_settings`も本体未使用と判明）、`GradientClassifier.compute`、`vision.similarity`、`Vision.learn`（と`vision`の`import copy`）。カウントダウンは`App.countdown`へ集約し、旧実装をコメントで残した。印は`[削減候補 2026-10-21]`で検索できる。依存テストはassign・settings経由へ書き換え（旧版はコメントで残す）、learn固有の`test_relearning_same_label_does_not_grow_records`と`test_timed_read_*`は停止。`report_missed`の基本テストを追加。
    - 非公開の`test_tracker`の学習2件はassign経由へ書き換え済み。skipを外して単体で回し成功を確認したが、利用者の環境でも確認する。
    - `vision.label_presence`は今回は対象外（非公開テストだけが使うため、扱いは利用者と相談）。
+   - **分割済**（2026-10-21）：`app.py`（936行→約470行）から`HistoryActions`（`history_actions.py`）・`ManualActions`（`manual_actions.py`）・`SampleActions`（`sample_actions.py`）へメソッドを移し、`App`が継承する。`ui.build_widgets`は`_controls/_notes/_stats_tab/_review_tab`へ。
+     - 確認：移した62メソッドとクラス属性が構文木で旧版と一致、各メソッドが参照するモジュール名が旧版と同じオブジェクト、`build_widgets`は部品を記録用の代役に差し替えて呼び出し列171件・Appへの代入が一致、`compare_worker.py`の出力が一致、関連テスト96件成功。
+     - テストのpatch書き換えは**不要だった**：`patch('drop_tool.app.messagebox.askyesno')`は`tkinter.messagebox`モジュールの属性を差し替えるため、移動先でも効く。テストは無変更。
+     - `app.py`で使われなくなったimportと`STATUS/KIND`は`[削減候補 2026-10-21]`でコメントアウト（移動先にある）。
+     - 実画面（Tk）の確認はLinuxではskip（test_karen_ui等）。Windowsで起動して各タブとボタンを確認する。
    - 当初の洗い出し：
    - 呼び出し元なし：`App.test_image`、`App.timed_read`（使うのは`test_capture_flow`の1件だけ）、`retention.save_settings`（テストからのみ）、`GradientClassifier.compute`、`vision.similarity`
    - 判断待ち：`Vision.learn`（v0.18.2で`correct_row`の学習が`item_registration.assign`へ置き換わってから本体未使用。`test_tracker`・`test_item_catalog`・`test_resource_limits`が使用）、`vision.label_presence`（非公開`test_window_share`だけ）
