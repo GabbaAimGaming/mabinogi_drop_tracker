@@ -4,6 +4,7 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
 
 ## 0. 前提と絶対ルール
+- **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。不要コードはまずコメントアウトし、利用者の確認後に削除する。**詳細は[HANDOFF.md](HANDOFF.md)§0。
 - Windows専用。Python 3.12、tkinter、OpenCV、ONNX Runtime（OCR）。依存は`requirements.txt`の4つ（Pillow、numpy、opencv-python、onnxruntime）。
 - ユーザーデータは`data/`（gitignore対象）に置く。**既存データを壊さない**ことが最優先。
 - `records.json`は`version=1`固定。形式が違えば上書きせず停止する。互換を崩す変更は禁止。

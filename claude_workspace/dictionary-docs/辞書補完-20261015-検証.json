@@ -1,8 +1,0 @@
-{
-  "catalog_tests": 10,
-  "all_new_names_lookup": 93,
-  "card_variants_distinct": 19,
-  "card_policy_isolation": true,
-  "existing_entries_unchanged": true,
-  "package_generated": false
-}

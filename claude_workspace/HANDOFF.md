@@ -2,6 +2,13 @@
 
 次からの作業場所は **`claude/dev-workspace`**。地図は[CLAUDE.md](CLAUDE.md)、リリース除外は[RELEASE_RULES.md](RELEASE_RULES.md)。
 
+## 0. 遵守事項（2026-10-21 利用者指示。必ず守る）
+1. **作業は`claude/dev-workspace`の上で行う。** `refactor/*`等の別ブランチを切らず、dev-workspaceへ直接コミットする。
+2. **不要コードはいきなり消さない。2段階で進める。**
+   - 1回目：コメントアウトする（何がなぜ不要かを1行コメントで添える。例：`# [削減候補 2026-10-21] 呼び出し元なし。確認後に削除`）。依存するテストも同様にコメントアウトかskipにする。
+   - 2回目：利用者が確認して問題なしと言ったら削除する。
+   - 例外：利用者が個別に「消していい」と明示したもの（例：`claude_workspace/`のv1.1ソースコピー）はそのまま削除してよい。
+
 ## 1. 何をしたか（一言で）
 `main` v1.1.7（`5ed115c`）の上で、**挙動を変えずに**構造を整理した（段階0〜5）。そのうえで`claude/dev-workspace`へマージした（`45f9be6`）。作業用の`refactor/step0-safety-net`〜`refactor/step5-updater`（6本）は、先頭コミットがすべてdev-workspaceに含まれることを確認した。ローカルからは削除済み。**リモートからの削除はセッションの権限で拒否（HTTP 403）されたため、利用者がGitHubの画面から削除する**（中身はdev-workspaceにあるので消しても失われない）。
 
@@ -34,12 +41,17 @@
    - 段階3：`test_reward_samples`、`test_4k_review`、`test_next_4k_samples`、`test_new_person_samples`、`test_closed_oct19`、`test_chest_*`
    - 段階1・4：`test_alt_display`、`test_window_share`、`test_tracker`
 3. **`'captured'`の様子見**：実機で動かして`errors.log`に「想定外のcapturedイベントを受信しました」が一度も出なければ、まとめて削除する。対象は`App.handle_job`の見張り、`App.show_progress`のコメント、`test_alt_display`のskip中テスト1件、`notification.SOUNDS['captured']`。
-4. **削減フェーズ（次の本題）**：呼ばれていない関数・定数・引数・import、送り手のない処理、同じことをする小関数を一覧にする。候補を利用者に見せて、削るものを決めてもらってから消す。例：`App.timed_read`（docstringに「旧呼び出し用」とある）、`App.test_image`（`review_capture`を呼ぶだけ）。
-5. **`claude_workspace/`内のソースコピー**：v1.1時点の軽量コピー（`drop_tool/`、`tests/`等）が残っていて、今のコードとは別物になっている。二重管理になるので、削除するか（CLAUDE.md・RELEASE_RULES.md・HANDOFF.md・verification/だけ残す）利用者に確認する。
+4. **削減フェーズ（次の本題）**：§0の2段階（コメントアウト→確認→削除）で進める。洗い出し済みの候補：
+   - 呼び出し元なし：`App.test_image`、`App.timed_read`（使うのは`test_capture_flow`の1件だけ）、`retention.save_settings`（テストからのみ）、`GradientClassifier.compute`、`vision.similarity`
+   - 判断待ち：`Vision.learn`（v0.18.2で`correct_row`の学習が`item_registration.assign`へ置き換わってから本体未使用。`test_tracker`・`test_item_catalog`・`test_resource_limits`が使用）、`vision.label_presence`（非公開`test_window_share`だけ）
+   - 重複の集約：3秒カウントダウン（`capture_manual`・`report_missed`・`timed_read`）を1本に
+   - 分割：`app.py`をMixinで`history_actions`・`manual_actions`・`sample_actions`へ。テストの`drop_tool.app.messagebox`のpatch先（9か所）を移動先へ書き換えることは利用者OK済み。`ui.build_widgets`はタブごとの関数へ
+5. **`claude_workspace/`内のソースコピー**：**済**（2026-10-21、利用者OKにより削除。残したのはCLAUDE.md・HANDOFF.md・RELEASE_RULES.md・README.md・verification/）。
 6. **リモートの`refactor/step*`ブランチ6本の削除**（利用者がGitHubのBranches画面から）。
 7. **mainへ戻す時**：混入ガード（`RELEASE_EXCLUDED_DIRS`）はdev-workspaceにしか無い。PRを作る時は`AGENTS.md`の公開前確認に従う。
 
 ## 5. 利用者との約束（作業の進め方）
+- §0の遵守事項（dev-workspaceで作業、不要コードはコメントアウト→確認→削除）。
 - コーディング前に実装方針を一度共有する。
 - ソースの提示は差分。全量は指示があった時だけ。
 - 正確性・拡張性・改修のしやすさを最重視する。挙動を変える変更は事前に相談する。
