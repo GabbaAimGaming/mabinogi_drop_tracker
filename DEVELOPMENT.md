@@ -14,7 +14,10 @@ Windows 64bit / Python 3.12。
 
 ## テスト
 
-`python tools/run_tests.py`
+`python tools/run_tests.py`（全量）
+
+一部だけ回す時はテスト名を渡します：`python tools/run_tests.py test_learning test_item_links`。
+モジュール名、`tests/test_x.py`のパス、`モジュール.クラス.メソッド`が使えます。読み込めない名前があれば実行せずに失敗します。
 
 提供者の全画面画像は公開していないため、非公開画像に依存するモジュールはスキップを明示します。
 元の配布前検証環境ではこれらを含めて試験しています。

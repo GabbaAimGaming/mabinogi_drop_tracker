@@ -17,6 +17,7 @@
   - 退行確認は、変更に関係する過去機能のテストだけ。
 - **全量テスト**（`python tools/run_tests.py`）は**リリース直前に1回だけ**回す（[RELEASE_RULES.md](RELEASE_RULES.md)の確認コマンドの1つ目）。利用者が明示的に指示した時も回す。
 - テストは`tools/run_tests.py`経由で回す（`tests/_headless.py`の代役が入るため）。個別に回す時も同じスクリプトへテスト名を渡す。
+  - 例：`python tools/run_tests.py test_learning test_item_links`（モジュール名・`tests/test_x.py`のパス・`モジュール.クラス.メソッド`が使える。引数なしは全量。読み込めない名前があれば実行せずに失敗する）
 - 回した範囲（件数・skip数・対象）は報告とコミットメッセージ、または引き継ぎメモに残す。
 
 ## ルール3：テストコード・テストファイルを消す前に、本体での利用を確かめる

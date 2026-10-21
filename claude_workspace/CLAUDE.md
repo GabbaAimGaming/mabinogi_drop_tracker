@@ -97,7 +97,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 保守 | `retention.py` `settings.py` | バックアップ・ログ・証拠画像の世代管理、`settings.json` | test_evidence_retention, test_resource_limits, test_v11_settings |
 | 保守 | `notification.py` `sample_reports.py` `preflight.py` `instance_guard.py` | 完了音、提出用サンプル、環境診断、mutex | 各`test_*` |
 | 更新 | `updater.py` `update_helper.ps1` | 更新確認・検証・適用・旧版への復旧。中は「定数 → 取得（`download`、`check`、`old_releases`等） → 検証（`validate_info`、`version_key`、`safe_path`、`digest`、`_is_link`） → 適用・復旧（`new_work`、`cleanup`、`prepare`、`stage`、`launch`、`rollback_removals`） → 配布者用（`make_info`）」の区切り。共通の値は`USER_AGENT`、`DRIVE_HOSTS`、`SHA256_PATTERN`、`ZIP_ROOT`、`ZIP_MANIFEST`。`VERSION='1.1.8'`、許可リスト`TOP_FILES/TOP_DIRS` | test_updater, test_github_update, test_rollback, test_startup_update, test_old_release_dropdown, test_ssl_runtime |
-| 開発 | `tools/*` `build_exe.py` | EXEビルド、ZIP作成（`package_release.py`、許可リスト方式＋`claude_workspace`混入ガード）、宝箱テンプレ生成、旧版フィード作成`make_legacy_feed.py`、SSL同梱`ssl_runtime.py`、ベンチ | test_release_exclusion, test_release_contents |
+| 開発 | `tools/*` `build_exe.py` | EXEビルド、ZIP作成（`package_release.py`、許可リスト方式＋`claude_workspace`混入ガード）、宝箱テンプレ生成、旧版フィード作成`make_legacy_feed.py`、SSL同梱`ssl_runtime.py`、ベンチ、テスト実行`run_tests.py`（引数なしで全量、テスト名で絞り込み） | test_release_exclusion, test_release_contents, test_run_tests |
 
 ## 4. 保存データ
 
@@ -167,6 +167,7 @@ player_name?: 追加キー（旧版互換）
 - テストがpatchする属性（`messagebox.*`、`winsound.PlaySound`）は存在するので、patch済みのロジックは検証できる。
 - `test_instance_guard`は非Windowsでモジュールごとskip。
 - `python -m unittest`で個別に回す場合は代役が入らない。`tools/run_tests.py`経由で回す。
+- 関係するテストだけ回す時は名前を渡す：`python tools/run_tests.py test_learning test_item_links`（モジュール名・`tests/test_x.py`・`モジュール.クラス.メソッド`。読み込めない名前があれば実行せずに終了コード1。2026-10-22追加、`test_run_tests`）。
 
 Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、成功、skip 55件**（段階5の統合時点。`test_release_exclusion`の5件を含む）。全量はリリース直前に1回だけ回す（[AI_RULES.md](AI_RULES.md)ルール2）。段階6・7とv1.1.8では関連テストだけ回している（v1.1.8取り込み後に101件成功）。作者側（Windows）のv1.1.8では263件実行・35件skipで成功。
 - skipの内訳：非公開の提供・提出画像が必要（chest_fragments 11、closed_oct19 3、next_4k_samples 3、new_person_samples 2、chest_parts/chest_shape/red_labels 各1、「別途検証済み」のモジュール13＝alt_display、window_share、tracker等）、実画面が必要（karen_ui 10、item_links 5、evidence_retention 4）、Windows専用（instance_guard）。
