@@ -5,17 +5,19 @@
 
 Work happens on **`claude/dev-workspace`**. The code map is [CLAUDE.md](CLAUDE.md) (Japanese) and the release-exclusion rules are in [RELEASE_RULES.md](RELEASE_RULES.md) (Japanese). The review request is [REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md).
 
-**Current status: merged into main as v1.1.8. Removal pass 2 (deletion) is on hold until the owner says so.**
+**Current status: merged into main as v1.1.8. Removal pass 2 (deletion) happens when preparing the next release: present the list of candidates, and delete only those the owner judges fine ([AI_RULES.md](AI_RULES.md) rule 4, Japanese).**
+- 2026-10-22: added [AI_RULES.md](AI_RULES.md), the working rules shared by Claude and ChatGPT (code map, test scope, checks before deleting test code, handling unneeded code). Entry points are the root `CLAUDE.md` and `AGENTS.md`.
 - 2026-10-22: the author (VerGumiSlime) added three commits to dev-workspace, merged it into main via PR #10, and published tag `v1.1.8` with a Release (§9).
 - dev-workspace has been aligned to main as a copy, at `1618462` (= `v1.1.8`). From here on, the only differences on top of it are the notes in `claude_workspace/`.
 - The PR description calls `a21135c` "the reviewed, restructured version". No individual answers to the review request's questions have been received.
 
-## 0. Working rules (set by the owner on 2026-10-21; mandatory)
+## 0. Working rules (set by the owner on 2026-10-21 and 10-22; mandatory)
+**[AI_RULES.md](AI_RULES.md) is the authority for the rules shared by all AI assistants** (code map, test scope, checks before deleting test code, handling unneeded code). Item 2 below summarises it.
 1. **Work on `claude/dev-workspace`.** Do not create separate branches such as `refactor/*`; commit to dev-workspace directly.
    - **dev-workspace holds a copy of `main`** (owner's instruction, 2026-10-22). When main moves ahead, bring it in before starting work.
 2. **Never delete unneeded code in one go. Use two passes.**
    - Pass 1: comment it out, with a one-line comment saying what is unneeded and why (e.g. `# [削減候補 2026-10-21] 呼び出し元なし。確認後に削除` ["removal candidate: no callers; delete after confirmation"]). Comment out or skip the tests that depend on it in the same way.
-   - Pass 2: delete it once the owner has checked and said it is fine.
+   - Pass 2: when preparing the next release, search for `[削減候補` and present the list of candidates to the owner; delete only those the owner judges fine. Anything not yet judged stays (owner's instruction, 2026-10-22).
    - Exception: things the owner has explicitly said may be deleted (e.g. the v1.1 source copy that used to live in `claude_workspace/`) may be deleted directly.
 
 ## 1. The original request and the overall flow
@@ -25,7 +27,7 @@ Work happens on **`claude/dev-workspace`**. The code map is [CLAUDE.md](CLAUDE.m
   2. **Removal, pass 1 (step 6)**: found unused code and commented it out (not deleted yet).
   3. **Split (step 7)**: split the 936-line `app.py` into four files by responsibility.
   4. **Review and merge**: the reviewer went through dev-workspace. The author merged it into main via PR #10 and published it as v1.1.8 (§9).
-  5. **Removal, pass 2 (we are here, on hold)**: once the owner says so, actually delete the places marked `[削減候補 2026-10-21]`.
+  5. **Removal, pass 2 (we are here; at the next release prep)**: present the candidates and delete the places marked `[削減候補 2026-10-21]` that the owner judges fine.
 - **Promise shared by every step**: behaviour does not change. Each step was checked by feeding the same inputs to the old and new versions and comparing the results (right-hand column in §2).
 
 ## 2. Summary by step
@@ -83,13 +85,13 @@ Search for `[削減候補 2026-10-21]` to find every place.
 - **Tests depending on `Vision.learn` were rewritten, not removed**: the properties they protected (a template still matches after restart; the user's exclusion beats the bundled material; a failed save rolls everything back) should still be protected on the current code path.
 
 ## 6. What is left (by priority)
-1. **Removal pass 2 is on hold**: do not delete anything marked `[削減候補 2026-10-21]` until the owner says so (owner's instruction, 2026-10-22). When they do, see item 4.
+1. **Removal pass 2 happens at the next release prep**: until then, do not delete anything marked `[削減候補 2026-10-21]`. When release prep starts, present the candidate list in [AI_RULES.md](AI_RULES.md) and go to item 4 for those the owner approves (owner's instruction, 2026-10-22, replacing the earlier "wait for instruction").
 2. **Check on Windows**: the author reports that for v1.1.8 the full source suite (263 run, 35 skipped), 11 tests inside the built EXE, and the EXE self-check all passed (PR #10). Results of going through each tab, the buttons and automatic/manual reading on real hardware have not been received.
 3. **Private image tests (in the owner's environment)**:
    - Step 2: `test_red_labels`, `test_purple_labels`, `test_cyan_labels`, `test_label_*`
    - Step 3: `test_reward_samples`, `test_4k_review`, `test_next_4k_samples`, `test_new_person_samples`, `test_closed_oct19`, `test_chest_*`
    - Steps 1, 4, 6: `test_alt_display`, `test_window_share`, `test_tracker` (step 6 rewrote its two learning tests to use `assign`; here they were run on their own with the skip removed and passed)
-4. **Removal, pass 2**: once the owner says so, delete everything marked `[削減候補 2026-10-21]` (app and tests). The v1.1.8 release contains them still commented out (no effect on behaviour).
+4. **Removal, pass 2**: delete the places marked `[削減候補 2026-10-21]` (app and tests) that the owner has judged fine, and update their status in the AI_RULES.md list. The v1.1.8 release contains them still commented out (no effect on behaviour).
    - `Vision.learn`: its only unique behaviour (dropping near-identical templates) is now carried by v1.1.8's `learning.add`, so nothing stands in the way of deleting it.
    - `test_item_catalog.test_image_learning_and_row_change_rollback_together`: rewritten in step 6 to go through `assign`, but it uses kind `review`, which v1.1.8 never learns, so it no longer checks that the image is rolled back. The same property is checked by `test_learning.test_failed_save_restores_old_sample_and_removes_new_file`. Decide which one to keep when deleting.
 5. **Watching `'captured'`**: if `errors.log` never shows "想定外のcapturedイベントを受信しました" ["received an unexpected captured event"] on real hardware, delete it all together: the guard in `App.handle_job`, the commented lines in `App.show_progress`, the one skipped test in `test_alt_display`, and `notification.SOUNDS['captured']`.
@@ -103,7 +105,7 @@ Search for `[削減候補 2026-10-21]` to find every place.
 - Share the implementation approach once before coding.
 - Present source changes as diffs. Full files only when asked.
 - Put correctness, extensibility and ease of change first. Discuss any behaviour change beforehand.
-- Tests: basic tests for anything new; regression tests only for past features related to the change. Run the full suite only when asked.
+- Tests: basic tests for anything new; regression tests only for past features related to the change. Run the full suite once, just before a release (otherwise only when asked). [AI_RULES.md](AI_RULES.md) rule 2.
   - Steps 0–5 ran `tools/run_tests.py` (about 10 seconds) every time. Steps 6 and 7 ran only the related tests (89 and 96). The full suite has not been run since.
 - Run the `AGENTS.md` checks before publishing anything (push, PR, Release).
 

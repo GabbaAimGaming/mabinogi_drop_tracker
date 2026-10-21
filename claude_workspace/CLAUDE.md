@@ -4,7 +4,8 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
 
 ## 0. 前提と絶対ルール
-- **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。dev-workspaceは`main`のコピーとして保ち、mainが進んだら取り込む。不要コードはまずコメントアウトし、利用者の確認後に削除する。**詳細は[HANDOFF.md](HANDOFF.md)§0。
+- **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。dev-workspaceは`main`のコピーとして保ち、mainが進んだら取り込む。**詳細は[HANDOFF.md](HANDOFF.md)§0。
+- **AI共通の作業ルール（Claude・ChatGPT）は[AI_RULES.md](AI_RULES.md)**：①このコードマップを構成変更と同じコミットで更新する、②普段は関係する機能だけテストし、全量はリリース直前に1回、③テスト用の物を消す前に本体での利用を確かめ、使っていれば本体として正式に配布する、④不要箇所はコメントアウト → 次回リリース準備で候補一覧を提示 → 利用者が問題ないと判断した物から削除。
 - Windows専用。Python 3.12、tkinter、OpenCV、ONNX Runtime（OCR）。依存は`requirements.txt`の4つ（Pillow、numpy、opencv-python、onnxruntime）。
 - ユーザーデータは`data/`（gitignore対象）に置く。**既存データを壊さない**ことが最優先。
 - `records.json`は`version=1`固定。形式が違えば上書きせず停止する。互換を崩す変更は禁止。
@@ -167,7 +168,7 @@ player_name?: 追加キー（旧版互換）
 - `test_instance_guard`は非Windowsでモジュールごとskip。
 - `python -m unittest`で個別に回す場合は代役が入らない。`tools/run_tests.py`経由で回す。
 
-Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、成功、skip 55件**（段階5の統合時点。`test_release_exclusion`の5件を含む）。段階6・7とv1.1.8では関連テストだけ回している（v1.1.8取り込み後に101件成功）。作者側（Windows）のv1.1.8では263件実行・35件skipで成功。
+Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、成功、skip 55件**（段階5の統合時点。`test_release_exclusion`の5件を含む）。全量はリリース直前に1回だけ回す（[AI_RULES.md](AI_RULES.md)ルール2）。段階6・7とv1.1.8では関連テストだけ回している（v1.1.8取り込み後に101件成功）。作者側（Windows）のv1.1.8では263件実行・35件skipで成功。
 - skipの内訳：非公開の提供・提出画像が必要（chest_fragments 11、closed_oct19 3、next_4k_samples 3、new_person_samples 2、chest_parts/chest_shape/red_labels 各1、「別途検証済み」のモジュール13＝alt_display、window_share、tracker等）、実画面が必要（karen_ui 10、item_links 5、evidence_retention 4）、Windows専用（instance_guard）。
 - 段階0以前はimportできなかった`manual_review`、`rollback`、`updater`、`github_update`、`startup_update`、`old_release_dropdown`、`v11_settings`、`reward_scan_reuse`、`capture_flow`、`notification`、`resource_limits`がLinuxでも回る。
 
@@ -208,7 +209,7 @@ Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、�
 6. **済（削減1回目）**：未使用コードを`[削減候補 2026-10-21]`でコメントアウト、カウントダウンを`App.countdown`へ集約（`1a7b565`）。削除はレビューと利用者確認の後。詳細は[HANDOFF.md](HANDOFF.md)§3
 7. **済**：`app.py`を`HistoryActions`・`ManualActions`・`SampleActions`へ分割、`ui.build_widgets`を領域ごとの関数へ（`a24cb34`）。詳細は[HANDOFF.md](HANDOFF.md)§4
 8. **済**：レビュー依頼（[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)）。作者側がPR #10でmainへ統合し、v1.1.8として公開した（PR本文で`a21135c`を「レビュー済み整理版」と記載。依頼票の質問への個別回答は未受領）。
-9. **待機中**：削減2回目（`[削減候補 2026-10-21]`の削除）。**利用者の指示があるまで行わない。**
+9. **次回リリース準備で**：削減2回目（`[削減候補 2026-10-21]`の削除）。[AI_RULES.md](AI_RULES.md)ルール4に従い、候補一覧を利用者に提示し、問題ないと判断された物から削除する（2026-10-22 利用者指示）。
 
 **様子見中（影響が無ければ削除）**：
 - `'captured'`イベント：本体のどこからも送られない。`App.show_progress`の表示処理はコメントアウト済み。`App.handle_job`の見張りが、届いた場合だけ`errors.log`へ「想定外のcapturedイベントを受信しました」と残して無視する。`test_alt_display.test_capture_event_plays_short_sound_without_ending_work`はskip。実機で一度も記録されなければ、見張り・コメント・テスト・`notification.SOUNDS['captured']`をまとめて削除する。

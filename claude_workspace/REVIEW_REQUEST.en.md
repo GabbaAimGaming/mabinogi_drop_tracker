@@ -1,6 +1,6 @@
 # Code Review Request: KarenDrop refactoring on `claude/dev-workspace`
 
-> **Status (2026-10-22): closed.** The branch was merged into main via PR #10 and released as v1.1.8. The PR description refers to `a21135c` as the reviewed version. Individual answers to the questions below were not received. Question 5 was resolved in practice by `drop_tool/learning.py` in v1.1.8. Removal pass 2 is on hold until the owner says so. This document is kept as a record.
+> **Status (2026-10-22): closed.** The branch was merged into main via PR #10 and released as v1.1.8. The PR description refers to `a21135c` as the reviewed version. Individual answers to the questions below were not received. Question 5 was resolved in practice by `drop_tool/learning.py` in v1.1.8. Removal pass 2 now follows [AI_RULES.md](AI_RULES.md) rule 4: at the next release prep, the candidates are listed and only those the owner judges fine are deleted. This document is kept as a record.
 
 | | |
 |---|---|
