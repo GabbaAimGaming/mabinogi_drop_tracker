@@ -1,14 +1,18 @@
-# Handoff Notes: Refactoring (updated 2026-10-21)
+# Handoff Notes: Refactoring (updated 2026-10-22 / v1.1.8)
 
 > English translation of [HANDOFF.md](HANDOFF.md). The Japanese version is the source of truth; if the two disagree, follow the Japanese one.
 > UI strings, log messages and code comments in the repository are in Japanese. Where this document quotes them, an English gloss is given in brackets.
 
 Work happens on **`claude/dev-workspace`**. The code map is [CLAUDE.md](CLAUDE.md) (Japanese) and the release-exclusion rules are in [RELEASE_RULES.md](RELEASE_RULES.md) (Japanese). The review request is [REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md).
 
-**Current status: waiting for review.** New work is paused until the reviewer has gone through dev-workspace and come back with a judgement on whether it is appropriate for the original request.
+**Current status: merged into main as v1.1.8. Removal pass 2 (deletion) is on hold until the owner says so.**
+- 2026-10-22: the author (VerGumiSlime) added three commits to dev-workspace, merged it into main via PR #10, and published tag `v1.1.8` with a Release (§9).
+- dev-workspace has been aligned to main as a copy, at `1618462` (= `v1.1.8`). From here on, the only differences on top of it are the notes in `claude_workspace/`.
+- The PR description calls `a21135c` "the reviewed, restructured version". No individual answers to the review request's questions have been received.
 
 ## 0. Working rules (set by the owner on 2026-10-21; mandatory)
 1. **Work on `claude/dev-workspace`.** Do not create separate branches such as `refactor/*`; commit to dev-workspace directly.
+   - **dev-workspace holds a copy of `main`** (owner's instruction, 2026-10-22). When main moves ahead, bring it in before starting work.
 2. **Never delete unneeded code in one go. Use two passes.**
    - Pass 1: comment it out, with a one-line comment saying what is unneeded and why (e.g. `# [削減候補 2026-10-21] 呼び出し元なし。確認後に削除` ["removal candidate: no callers; delete after confirmation"]). Comment out or skip the tests that depend on it in the same way.
    - Pass 2: delete it once the owner has checked and said it is fine.
@@ -20,8 +24,8 @@ Work happens on **`claude/dev-workspace`**. The code map is [CLAUDE.md](CLAUDE.m
   1. **Restructuring (steps 0–5)**: built a base on which the tests can run, split up large routines, and merged duplicates. The line count actually went up (reformatting and added docstrings).
   2. **Removal, pass 1 (step 6)**: found unused code and commented it out (not deleted yet).
   3. **Split (step 7)**: split the 936-line `app.py` into four files by responsibility.
-  4. **Review (we are here)**: the reviewer reads all of dev-workspace.
-  5. **Removal, pass 2**: after the review and the owner's confirmation, actually delete the places marked `[削減候補 2026-10-21]`.
+  4. **Review and merge**: the reviewer went through dev-workspace. The author merged it into main via PR #10 and published it as v1.1.8 (§9).
+  5. **Removal, pass 2 (we are here, on hold)**: once the owner says so, actually delete the places marked `[削減候補 2026-10-21]`.
 - **Promise shared by every step**: behaviour does not change. Each step was checked by feeding the same inputs to the old and new versions and comparing the results (right-hand column in §2).
 
 ## 2. Summary by step
@@ -39,6 +43,8 @@ Work happens on **`claude/dev-workspace`**. The code map is [CLAUDE.md](CLAUDE.m
 | Housekeeping | `415d48f` | Added the working rules (§0). Deleted the v1.1 source copy in `claude_workspace/` (owner approved) | 251 passing |
 | 6 | `1a7b565` | **Removal, pass 1**: commented out unused code. Merged the 3-second countdown into `App.countdown` (§3) | 89 related tests passing. Confirmed the new `report_missed` test also passes on the old code |
 | 7 | `a24cb34` | **Split**: moved methods out of `app.py` into `HistoryActions`, `ManualActions` and `SampleActions`. `ui.build_widgets` split into per-area functions (§4) | 63 methods identical by syntax tree, and the names they reference resolve to the same objects (`compare_split.py`). 171 widget calls identical (`compare_ui.py`). `compare_worker.py` identical. 96 related tests passing |
+| Docs | `a21135c` | Updated notes, English handoff and review request, step-7 verification scripts | — |
+| v1.1.8 | `e4ac676`–`1618462` | By the author: bounded local learning (`learning.py`); merged into main via PR #10 and published (§9) | Author: 263 run / 35 skipped, passing. Here: 101 related tests passing |
 
 ## 3. Removal, pass 1 (step 6) in detail
 Search for `[削減候補 2026-10-21]` to find every place.
@@ -77,17 +83,20 @@ Search for `[削減候補 2026-10-21]` to find every place.
 - **Tests depending on `Vision.learn` were rewritten, not removed**: the properties they protected (a template still matches after restart; the user's exclusion beats the bundled material; a failed save rolls everything back) should still be protected on the current code path.
 
 ## 6. What is left (by priority)
-1. **Review** ([REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)): wait for the reply.
-2. **Check on Windows (not done yet)**: `python tools/run_tests.py`, then launch the app on real hardware and go through each tab, the buttons, and automatic/manual reading. Screens, sound and the mutex could not be checked on Linux. Step 7 moved App's screen actions across files, so pay particular attention to the history tab (register, confirm, delete), manual capture and the submission capture.
+1. **Removal pass 2 is on hold**: do not delete anything marked `[削減候補 2026-10-21]` until the owner says so (owner's instruction, 2026-10-22). When they do, see item 4.
+2. **Check on Windows**: the author reports that for v1.1.8 the full source suite (263 run, 35 skipped), 11 tests inside the built EXE, and the EXE self-check all passed (PR #10). Results of going through each tab, the buttons and automatic/manual reading on real hardware have not been received.
 3. **Private image tests (in the owner's environment)**:
    - Step 2: `test_red_labels`, `test_purple_labels`, `test_cyan_labels`, `test_label_*`
    - Step 3: `test_reward_samples`, `test_4k_review`, `test_next_4k_samples`, `test_new_person_samples`, `test_closed_oct19`, `test_chest_*`
    - Steps 1, 4, 6: `test_alt_display`, `test_window_share`, `test_tracker` (step 6 rewrote its two learning tests to use `assign`; here they were run on their own with the skip removed and passed)
-4. **Removal, pass 2**: after the review and the owner's confirmation, delete everything marked `[削減候補 2026-10-21]` (app and tests).
+4. **Removal, pass 2**: once the owner says so, delete everything marked `[削減候補 2026-10-21]` (app and tests). The v1.1.8 release contains them still commented out (no effect on behaviour).
+   - `Vision.learn`: its only unique behaviour (dropping near-identical templates) is now carried by v1.1.8's `learning.add`, so nothing stands in the way of deleting it.
+   - `test_item_catalog.test_image_learning_and_row_change_rollback_together`: rewritten in step 6 to go through `assign`, but it uses kind `review`, which v1.1.8 never learns, so it no longer checks that the image is rolled back. The same property is checked by `test_learning.test_failed_save_restores_old_sample_and_removes_new_file`. Decide which one to keep when deleting.
 5. **Watching `'captured'`**: if `errors.log` never shows "想定外のcapturedイベントを受信しました" ["received an unexpected captured event"] on real hardware, delete it all together: the guard in `App.handle_job`, the commented lines in `App.show_progress`, the one skipped test in `test_alt_display`, and `notification.SOUNDS['captured']`.
 6. **What to do with `vision.label_presence`**: decide with the owner.
-7. **Delete the six remote `refactor/step*` branches** (the owner, from GitHub's Branches page; the session was refused with HTTP 403).
-8. **When bringing this back to main**: the contamination guard (`RELEASE_EXCLUDED_DIRS`) exists only on dev-workspace. Follow the pre-publication checks in `AGENTS.md` when opening the PR.
+7. **Unify line endings** (under discussion): in v1.1.8, eight files became CRLF throughout (§9). Decide with the owner whether to add `.gitattributes` or convert back to LF. Do not convert until then. When editing, keep each file's existing line endings.
+8. **Delete the six remote `refactor/step*` branches** (the owner, from GitHub's Branches page; the session was refused with HTTP 403).
+9. **When bringing work back to main**: follow the pre-publication checks in `AGENTS.md` when opening the PR (the contamination guard `RELEASE_EXCLUDED_DIRS` is in main too since v1.1.8).
 
 ## 7. Agreements with the owner (how to work)
 - The working rules in §0 (work on dev-workspace; comment out → confirm → delete).
@@ -107,3 +116,19 @@ Prepare the old version with `git worktree add <path> <old commit>`, run the scr
 - `compare_ui.py`: step 7. Arguments: old repository (`1a7b565`), new repository. Compares `build_widgets`' widget-call sequence and App attributes
 
 Run tests through `python tools/run_tests.py`, which installs the stand-ins from `tests/_headless.py` (plain `python -m unittest` does not).
+
+## 9. v1.1.8 (2026-10-22, merged by the author)
+The author (VerGumiSlime) added three commits on top of `a21135c`, merged them into main via PR #10, and published tag `v1.1.8` with a Release (attachments: `KarenDrop-v1.1.8-windows.zip`, `recovery-guide.txt`, `update-info.json`).
+
+| Commit | What changed |
+|---|---|
+| `e4ac676` | v1.1.8 documents (README, README_EXE, release notes, update instructions) |
+| `e007bb3` | Added bounded local learning `drop_tool/learning.py`. `assign` uses `learning.add`. `Vision.reload` skips missing or corrupt templates. `App.prune_evidence` calls `learning.maintain` at start-up. Version 1.1.8 |
+| `daa425b` | Added `tests/test_learning.py` (11 tests). Updated one test in `test_item_links` for the new behaviour (old templates whose file is missing are dropped) |
+| `1618462` | Merge of PR #10 (main only) |
+
+- **The real change is +351/−35 lines.** GitHub shows about 4,200 changed lines because eight files (`drop_tool/app.py`, `vision.py`, `updater.py`, `item_registration.py`, `preflight.py`, `tests/test_item_links.py`, `README.md`, `README_EXE.txt`) had their line endings converted to CRLF throughout. There is no `.gitattributes`.
+- **Learning rules**: 3 per item, 1,000 in total, 16 MB in total, 128 KB per image. Similar templates (≥ 0.98) and older ones are pruned automatically. Only `material`/`excluded` are learned; merged images, multi-line images and icon-like images are not. New templates are named `labels/auto-<24hex>.png`.
+- **Effect on user data (by design, documented in the README)**: at start-up, existing templates beyond 3 per item, and auto-generated images that nothing refers to (including old-version hash-named ones), are deleted. `references/` and evidence images are untouched.
+- **Relation to step 6**: the behaviour that step 6 described as unique to `learn` (dropping near-identical templates) is now carried, more strictly, by `learning.add` (question 5 of the review request is resolved in practice).
+- **Checks here** (Linux): after bringing it in, 101 related tests passed (`test_learning`, `test_item_links`, `test_item_catalog`, `test_resource_limits`, `test_evidence_retention`, `test_manual_review`, `test_capture_flow`, `test_v11_settings`, `test_karen_ui`, and the two learning tests in the private `test_tracker`).

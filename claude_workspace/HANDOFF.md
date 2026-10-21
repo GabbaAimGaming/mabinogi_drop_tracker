@@ -1,11 +1,15 @@
-# 引き継ぎメモ：リファクタリング（2026-10-21 更新）
+# 引き継ぎメモ：リファクタリング（2026-10-22 更新／v1.1.8）
 
 作業場所は **`claude/dev-workspace`**。地図は[CLAUDE.md](CLAUDE.md)、リリース除外は[RELEASE_RULES.md](RELEASE_RULES.md)。英語版は[HANDOFF.en.md](HANDOFF.en.md)、レビュー依頼票は[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)。
 
-**現在の状態：レビュー待ち。** dev-workspaceの内容を担当者に通して見てもらい、元の依頼に対して妥当かの判断が返るまで、新しい作業は止めている。
+**現在の状態：v1.1.8としてmainへ統合済み。削減2回目（削除）は利用者の指示待ち。**
+- 2026-10-22：作者側（VerGumiSlime）がdev-workspaceへ3コミットを追加し、PR #10でmainへマージ、タグ`v1.1.8`とReleaseを公開した（§9）。
+- dev-workspaceはmainのコピーとして`1618462`（＝`v1.1.8`）へ揃えた。以後、この上の差分は`claude_workspace/`の文書だけ。
+- PR本文では`a21135c`を「レビュー済み整理版」としている。依頼票の質問への個別の回答は受け取っていない。
 
 ## 0. 遵守事項（2026-10-21 利用者指示。必ず守る）
 1. **作業は`claude/dev-workspace`の上で行う。** `refactor/*`等の別ブランチを切らず、dev-workspaceへ直接コミットする。
+   - **dev-workspaceは`main`のコピーを持つ**（2026-10-22 利用者指示）。mainが進んだら取り込んでから作業を始める。
 2. **不要コードはいきなり消さない。2段階で進める。**
    - 1回目：コメントアウトする（何がなぜ不要かを1行コメントで添える。例：`# [削減候補 2026-10-21] 呼び出し元なし。確認後に削除`）。依存するテストも同様にコメントアウトかskipにする。
    - 2回目：利用者が確認して問題なしと言ったら削除する。
@@ -17,8 +21,8 @@
   1. **整理（段階0〜5）**：テストを回せる土台を作り、大きい処理を分け、重複をまとめた。行数はむしろ増えた（整形とdocstringのため）。
   2. **削減1回目（段階6）**：使われていないコードを洗い出し、コメントアウトした（削除はまだ）。
   3. **分割（段階7）**：936行の`app.py`を役割ごとに4ファイルへ分けた。
-  4. **レビュー（今ここ）**：担当者にdev-workspace全体を見てもらう。
-  5. **削減2回目**：レビューと利用者の確認後、`[削減候補 2026-10-21]`の箇所を実際に削除する。
+  4. **レビューと統合**：担当者にdev-workspace全体を見てもらった。作者側がPR #10でmainへ統合し、v1.1.8として公開（§9）。
+  5. **削減2回目（今ここ・待機）**：利用者の指示後、`[削減候補 2026-10-21]`の箇所を実際に削除する。
 - **全段階で共通の約束**：挙動は変えない。変わっていないことを、段階ごとに旧版と新版へ同じ入力を流して比べる方法で確認した（§2の右列）。
 
 ## 2. 段階ごとの要約
@@ -36,6 +40,8 @@
 | 整備 | `415d48f` | 遵守事項（§0）を追記。`claude_workspace/`のv1.1ソースコピーを削除（利用者OK） | 251件成功 |
 | 6 | `1a7b565` | **削減1回目**：未使用コードをコメントアウト。3秒カウントダウンを`App.countdown`へ集約（§3） | 関連テスト89件成功。新しい`report_missed`のテストが旧コードでも通ることを確認 |
 | 7 | `a24cb34` | **分割**：`app.py`から`HistoryActions`・`ManualActions`・`SampleActions`へメソッドを移動。`ui.build_widgets`を領域ごとの関数へ（§4） | 63メソッドが構文木で同一、参照先も同一（`compare_split.py`）。画面部品の呼び出し171件が一致（`compare_ui.py`）。`compare_worker.py`一致。関連テスト96件成功 |
+| 文書 | `a21135c` | 引き継ぎメモ更新、英語版・レビュー依頼票、段階7の検証スクリプト | — |
+| v1.1.8 | `e4ac676`〜`1618462` | 作者側：容量制限付きローカル学習（`learning.py`）、PR #10でmainへ統合・公開（§9） | 作者側で263件（35件skip）成功。こちらで関連101件成功 |
 
 ## 3. 削減1回目（段階6）の中身
 印は`[削減候補 2026-10-21]`で検索できる。
@@ -74,17 +80,20 @@
 - **`Vision.learn`の依存テストは消さず書き換えた**：テストが守っていた性質（見本が再起動後も照合できる、利用者の除外指定が同梱素材より優先、保存失敗で全体が戻る）は今の経路でも守るべきため。
 
 ## 6. 残っていること（優先順）
-1. **レビュー**（[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)）：返答が来るまで待つ。
-2. **Windowsでの確認（未実施）**：`python tools/run_tests.py`と、実機での起動・各タブ・ボタン・自動/手動読取。Linuxでは画面・音・mutexを確認できていない。段階7で`App`の画面操作がファイルをまたいだので、特に履歴タブの操作（登録・確定・削除）、手動撮影、提出用撮影を確認する。
+1. **削減2回目は待機**：利用者の指示があるまで`[削減候補 2026-10-21]`を消さない（2026-10-22 利用者指示）。指示が出たら下の4へ。
+2. **Windowsでの確認**：作者側でv1.1.8のソース全体263件（35件skip）・配布EXE内11件・自己診断が成功と報告あり（PR #10）。実機での各タブ・ボタン・自動/手動読取の確認結果は未受領。
 3. **非公開画像テスト（利用者の環境で）**：
    - 段階2：`test_red_labels`、`test_purple_labels`、`test_cyan_labels`、`test_label_*`
    - 段階3：`test_reward_samples`、`test_4k_review`、`test_next_4k_samples`、`test_new_person_samples`、`test_closed_oct19`、`test_chest_*`
    - 段階1・4・6：`test_alt_display`、`test_window_share`、`test_tracker`（段階6で学習2件を`assign`経由へ書き換えた。こちらではskipを外して単体で成功を確認済み）
-4. **削減2回目**：レビューと利用者の確認後、`[削減候補 2026-10-21]`の箇所（本体・テスト）を削除する。
+4. **削減2回目**：利用者の指示後、`[削減候補 2026-10-21]`の箇所（本体・テスト）を削除する。v1.1.8の配布物にはコメントアウトのまま入っている（動作への影響なし）。
+   - `Vision.learn`：唯一の固有動作（ほぼ同じ見本を外す）はv1.1.8の`learning.add`が引き継いだので、削除の支障はない。
+   - `test_item_catalog.test_image_learning_and_row_change_rollback_together`：段階6で`assign`経由へ書き換えたが、扱いが`review`のためv1.1.8では画像を学習せず、画像の巻き戻しまでは確かめていない。同じ性質は`test_learning.test_failed_save_restores_old_sample_and_removes_new_file`が確かめている。削除時にどちらへ寄せるか整理する。
 5. **`'captured'`の様子見**：実機で`errors.log`に「想定外のcapturedイベントを受信しました」が一度も出なければ、まとめて削除する。対象は`App.handle_job`の見張り、`App.show_progress`のコメント、`test_alt_display`のskip中テスト1件、`notification.SOUNDS['captured']`。
 6. **`vision.label_presence`の扱い**：利用者と相談。
-7. **リモートの`refactor/step*`ブランチ6本の削除**（利用者がGitHubのBranches画面から。セッションの権限ではHTTP 403で拒否された）。
-8. **mainへ戻す時**：混入ガード（`RELEASE_EXCLUDED_DIRS`）はdev-workspaceにしか無い。PRを作る時は`AGENTS.md`の公開前確認に従う。
+7. **改行コードの統一**（相談中）：v1.1.8で8ファイルがまるごとCRLFになった（§9）。`.gitattributes`を足すかLFへ戻すかを利用者と決める。決まるまで変換しない。編集時はそのファイルの改行コードを保つ。
+8. **リモートの`refactor/step*`ブランチ6本の削除**（利用者がGitHubのBranches画面から。セッションの権限ではHTTP 403で拒否された）。
+9. **mainへ戻す時**：PRを作る時は`AGENTS.md`の公開前確認に従う（混入ガード`RELEASE_EXCLUDED_DIRS`はv1.1.8でmainにも入った）。
 
 ## 7. 利用者との約束（作業の進め方）
 - §0の遵守事項（dev-workspaceで作業、不要コードはコメントアウト→確認→削除）。
@@ -104,3 +113,19 @@
 - `compare_ui.py`：段階7。引数：旧リポジトリ（`1a7b565`）、新リポジトリ。`build_widgets`の部品呼び出し列とAppの属性を比較
 
 テストを回す時は`tests/_headless.py`の代役を使うため、`python tools/run_tests.py`経由で実行する（`python -m unittest`単体だと代役が入らない）。
+
+## 9. v1.1.8（2026-10-22、作者側の統合）
+作者側（VerGumiSlime）が`a21135c`の上に3コミットを足し、PR #10でmainへマージ、タグ`v1.1.8`とReleaseを公開した（添付：`KarenDrop-v1.1.8-windows.zip`、`recovery-guide.txt`、`update-info.json`）。
+
+| コミット | 内容 |
+|---|---|
+| `e4ac676` | v1.1.8の文書（README、README_EXE、更新内容、更新方法） |
+| `e007bb3` | 容量制限付きのローカル学習`drop_tool/learning.py`を追加。`assign`が`learning.add`を使う。`Vision.reload`は見本が無い・壊れていても読み飛ばす。`App.prune_evidence`が起動時に`learning.maintain`を呼ぶ。版数1.1.8 |
+| `daa425b` | `tests/test_learning.py`（11件）を追加。`test_item_links`の1件を「参照先の無い旧見本は外す」挙動へ修正 |
+| `1618462` | PR #10のマージ（mainのみ） |
+
+- **中身の変更は+351/−35行**。GitHubの差分表示が約4,200行に見えるのは、8ファイル（`drop_tool/app.py`・`vision.py`・`updater.py`・`item_registration.py`・`preflight.py`、`tests/test_item_links.py`、`README.md`、`README_EXE.txt`）の改行コードがまるごとCRLFになったため。`.gitattributes`は無い。
+- **学習の仕様**：1品3枚・全体1000枚・合計16MB・1枚128KB。似た見本（0.98以上）と古い見本を自動で整理する。学習するのは`material`/`excluded`だけで、結合画像・複数行・アイコン状の画像は覚えない。新しい見本は`labels/auto-<24hex>.png`。
+- **データへの影響（仕様どおり、READMEに記載）**：起動時の整理で1品3枚を超える既存見本と、参照されない自動生成画像（旧版のハッシュ名を含む）を消す。`references/`や証拠画像には触れない。
+- **段階6との関係**：段階6で「`learn`だけが持つ」とした「ほぼ同じ見本を外す」動きは、`learning.add`がより厳しい形で持つようになった（依頼票の質問5は実質解決）。
+- **こちらでの確認**（Linux）：取り込み後に関連テスト101件が成功（`test_learning`、`test_item_links`、`test_item_catalog`、`test_resource_limits`、`test_evidence_retention`、`test_manual_review`、`test_capture_flow`、`test_v11_settings`、`test_karen_ui`、非公開`test_tracker`の学習2件）。

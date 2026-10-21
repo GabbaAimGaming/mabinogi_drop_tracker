@@ -1,10 +1,10 @@
-# KarenDrop コードマップ（v1.1.7 ＋ リファクタ作業中）
+# KarenDrop コードマップ（v1.1.8）
 
-Claudeが編集する際の地図。実コードとテスト実行結果に基づく。**作業ブランチ：`claude/dev-workspace`**（`main` `5ed115c`＝タグ`v1.1.7`に、リファクタ段階0〜5を統合済み。段階は§9、経緯は[HANDOFF.md](HANDOFF.md)）。
+Claudeが編集する際の地図。実コードとテスト実行結果に基づく。**作業ブランチ：`claude/dev-workspace`**。**方針：dev-workspaceは`main`のコピーを持つ**（2026-10-22時点で`main` `1618462`＝タグ`v1.1.8`と同じ内容。リファクタ段階0〜7はPR #10でmainへ統合済み。段階は§9、経緯は[HANDOFF.md](HANDOFF.md)）。
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
 
 ## 0. 前提と絶対ルール
-- **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。不要コードはまずコメントアウトし、利用者の確認後に削除する。**詳細は[HANDOFF.md](HANDOFF.md)§0。
+- **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。dev-workspaceは`main`のコピーとして保ち、mainが進んだら取り込む。不要コードはまずコメントアウトし、利用者の確認後に削除する。**詳細は[HANDOFF.md](HANDOFF.md)§0。
 - Windows専用。Python 3.12、tkinter、OpenCV、ONNX Runtime（OCR）。依存は`requirements.txt`の4つ（Pillow、numpy、opencv-python、onnxruntime）。
 - ユーザーデータは`data/`（gitignore対象）に置く。**既存データを壊さない**ことが最優先。
 - `records.json`は`version=1`固定。形式が違えば上書きせず停止する。互換を崩す変更は禁止。
@@ -14,7 +14,7 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 - 新機能の置き場所は`*_views.py`や専用モジュール。`App`には委譲だけ書く（各docstringの方針）。
 - 公開前は`AGENTS.md`に従い、リモートのソース・ブランチ・タグ・Release添付を前回確認時と比較する。既存タグや公開済み配布物は置き換えない。
 - `claude_workspace/`や`tests/`をリリースへ入れない。配布物は`updater.TOP_FILES/TOP_DIRS`の**許可リスト方式**で絞っている（`tools/package_release.py`はこの一覧と`release-manifest.json`・`exclusions.json`・`update-source.json`だけをZIPへ入れる）ので、許可リストへ追加しない。
-  - `claude/dev-workspace`ではさらに`tools/package_release.py`の`RELEASE_EXCLUDED_DIRS`/`forbidden_paths`が、配布フォルダー・ZIPに`claude_workspace`が混ざると停止する（`tests/test_release_exclusion.py`）。これを消さない。詳細は[RELEASE_RULES.md](RELEASE_RULES.md)。この仕組みは`main`にはまだ無い（dev-workspaceだけ）。
+  - さらに`tools/package_release.py`の`RELEASE_EXCLUDED_DIRS`/`forbidden_paths`が、配布フォルダー・ZIPに`claude_workspace`が混ざると停止する（`tests/test_release_exclusion.py`）。これを消さない。詳細は[RELEASE_RULES.md](RELEASE_RULES.md)。v1.1.8からmainにも入っている（`claude_workspace/`自体もmainにあるが、許可リストとこのガードで配布物には入らない）。
 - テストはモジュール属性をpatchする（例：`drop_tool.app.messagebox.showerror`、`drop_tool.app.capture.active`、`drop_tool.update_view.messagebox.askyesno`、`drop_tool.notification.winsound.PlaySound`）。**本体のimportを関数内へ移すとテストが壊れる**ので、モジュール先頭のimportは維持する。
 - テストは`App.__new__(App)`で属性を一部だけ入れた`App`を作り、`app.jobs`へ**素のタプル**`(epoch, mode, result, error)`を入れて`poll`を検証する。キューの型は変えない。`__init__`を通らなくても参照される値は`App`の**クラス属性**に既定値を置く（`settings`、`settings_views`、`samples`、`reward_gate`、`chest_detector`、`near_detector`、`scan_trace`、`manual_target`、`saved_read_target`、`saved_read_expected`）。どれも読むだけか代入で差し替える値に限る。
 
@@ -31,6 +31,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
   ├ chest_shape      plate_recovery           manual_review
   ├ chest_parts      bright_plates            exporting / csv_collection
   └ chest_gradients  color_labels(赤・紫)     retention / settings
+                                              learning（学習見本の上限管理）
  near_dialog        label_detection
  reward_gate        alt_capture ── reading(StableReading/consensus)
                      （全員の土台：config.ROOT、names.normalize。どちらも依存なし）
@@ -79,7 +80,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 判定 | `chest_fragments.py` `chest_shape.py` `chest_parts.py` `chest_gradients.py` | 箱の補助判定（表面マスク、蓋の形、蓋と本体の部品照合、勾配セル分類器） | test_chest_fragments, test_chest_shape, test_chest_parts, test_closed_oct19 |
 | 判定 | `reward_gate.py` `near_dialog.py` | 3秒ゲート、ネアル確認画面の除外 | test_near_dialog, test_reward_scan_reuse |
 | 判定 | `alt_display.py` `alt_capture.py` | ALT品名板の判定と連写 | test_alt_display, test_alt_hold_simulation |
-| 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR（`learn`は段階6でコメントアウト。学習は`item_registration.assign`）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
+| 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR（`learn`は段階6でコメントアウト。学習は`item_registration.assign`→`learning.add`）。`reload`は見本が無い・壊れている時に読み飛ばす（v1.1.8）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
 | 認識 | `label_images.py` `label_scale.py` `label_detection.py` `plate_recovery.py` `hud_filter.py` | マスク生成（`text_pixels/red_pixels/purple_pixels`等）、倍率補正、発光時の補助検出、HUD除外 | test_label_*, test_glow_recovery, test_hud_filter, test_cyan_labels |
 | 認識 | `color_labels.py` | 赤・紫文字の補助候補。`red/purple`が共通の`_candidates`へ色ごとの条件（密度範囲・色画素の比・紫の字形条件）を渡す。`vision.boxes`、`alt_display`、`label_scale`（`max_height=44`）が使う | test_red_labels, test_purple_labels |
 | 認識 | `bright_plates.py` `hud_text.py` | 色光の上の半透明板の復元、百分率・時刻の除外 | test_bright_plates, test_hud_text |
@@ -89,11 +90,12 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 認識 | `reading.py` | `StableReading`（3回一致・8フレームで多数決・離した時の採用）、`consensus`（位置ごとの多数決、同名板の小移動許容） | test_moving_labels, test_alt_display |
 | 記録 | `manual_review.py` | 手動撮影の保存（`evidence/<run_id>/manual-*.png`）、周回の読み直し・行編集、確定後の撮影画像整理 | test_manual_review |
 | 辞書 | `item_catalog.py` | `item-master.json`の読込、`classify/candidates/search/set_policy` | test_item_catalog, test_dictionary_supplement |
-| 辞書 | `item_links.py` `item_registration.py` | 名前の対応付け（誤読名→正式名）と登録。`name_key`は`normalize`＋数量括弧除去＋スクロール表記の統一 | test_item_links |
+| 辞書 | `item_links.py` `item_registration.py` | 名前の対応付け（誤読名→正式名）と登録。`assign`は画像があれば`learning.add`で見本を追加し、保存失敗時は新しい画像も消して戻す。分割行が同じ結合画像を共有する場合は学習しない。`name_key`は`normalize`＋数量括弧除去＋スクロール表記の統一 | test_item_links |
 | 出力 | `exporting.py` `csv_collection.py` | CSV出力と、他の人のCSVの読込・集計 | test_exporting, test_csv_* |
+| 学習 | `learning.py` | v1.1.8。修正時の品名画像を上限付きで保持。`PER_ITEM=3`・`MAX_SAMPLES=1000`・`MAX_BYTES=16MB`・1枚`128KB`。`eligible`（単一行の品名だけ）、`add`（0.98以上の類似見本を置き換え、`labels/auto-<hash>.png`を作る）、`bounded`（新しい順に上限内）、`cleanup`（保存成功後、参照されない自動生成画像を削除。旧版のハッシュ名画像も対象）、`maintain`（起動時に`App.prune_evidence`から）。`owned_path`で`labels/`直下の自動生成名だけを扱う。学習は`material`/`excluded`だけ | test_learning, test_item_links |
 | 保守 | `retention.py` `settings.py` | バックアップ・ログ・証拠画像の世代管理、`settings.json` | test_evidence_retention, test_resource_limits, test_v11_settings |
 | 保守 | `notification.py` `sample_reports.py` `preflight.py` `instance_guard.py` | 完了音、提出用サンプル、環境診断、mutex | 各`test_*` |
-| 更新 | `updater.py` `update_helper.ps1` | 更新確認・検証・適用・旧版への復旧。中は「定数 → 取得（`download`、`check`、`old_releases`等） → 検証（`validate_info`、`version_key`、`safe_path`、`digest`、`_is_link`） → 適用・復旧（`new_work`、`cleanup`、`prepare`、`stage`、`launch`、`rollback_removals`） → 配布者用（`make_info`）」の区切り。共通の値は`USER_AGENT`、`DRIVE_HOSTS`、`SHA256_PATTERN`、`ZIP_ROOT`、`ZIP_MANIFEST`。`VERSION='1.1.7'`、許可リスト`TOP_FILES/TOP_DIRS` | test_updater, test_github_update, test_rollback, test_startup_update, test_old_release_dropdown, test_ssl_runtime |
+| 更新 | `updater.py` `update_helper.ps1` | 更新確認・検証・適用・旧版への復旧。中は「定数 → 取得（`download`、`check`、`old_releases`等） → 検証（`validate_info`、`version_key`、`safe_path`、`digest`、`_is_link`） → 適用・復旧（`new_work`、`cleanup`、`prepare`、`stage`、`launch`、`rollback_removals`） → 配布者用（`make_info`）」の区切り。共通の値は`USER_AGENT`、`DRIVE_HOSTS`、`SHA256_PATTERN`、`ZIP_ROOT`、`ZIP_MANIFEST`。`VERSION='1.1.8'`、許可リスト`TOP_FILES/TOP_DIRS` | test_updater, test_github_update, test_rollback, test_startup_update, test_old_release_dropdown, test_ssl_runtime |
 | 開発 | `tools/*` `build_exe.py` | EXEビルド、ZIP作成（`package_release.py`、許可リスト方式＋`claude_workspace`混入ガード）、宝箱テンプレ生成、旧版フィード作成`make_legacy_feed.py`、SSL同梱`ssl_runtime.py`、ベンチ | test_release_exclusion, test_release_contents |
 
 ## 4. 保存データ
@@ -106,7 +108,8 @@ runs[]: {id, dungeon, difficulty, near('使用'|'不使用'), created, status, r
   status: waiting / review / confirmed / discarded
   row: {name, raw, kind(material|excluded|review), image(相対パス),
         reviewed_kind?, resolved_name?}
-templates[]: {name, kind, path}      # 学習した見本画像 (data/labels/)
+templates[]: {name, kind, path}      # 学習した見本画像 (data/labels/)。v1.1.8から上限付き（learning.py）。
+                                     #   新規はlabels/auto-<24hex>.png。起動時に上限超過分と未参照の自動生成画像を整理
 overrides{}: 正規化名 -> kind        # 手動指定が最優先
 item_links{}: 誤読名 -> 正式名       # 集計時に解決。元の行は書き換えない
 item_names[]: 登録名
@@ -129,6 +132,7 @@ player_name?: 追加キー（旧版互換）
 | 素材/除外の判定ルール | `exclusions.json`、`Rules.classify`、`ItemCatalog.classify` |
 | 辞書に品を追加 | `item-master.json`、`item_catalog.py`、`dictionary-docs/` |
 | 誤読名の対応付け | `item_links.py`、`item_registration.py` |
+| 学習見本の上限・整理 | `learning.py`（`PER_ITEM`等の定数、`eligible`の条件）、`tests/test_learning.py` |
 | OCR・照合の精度 | `vision.py`（閾値）、`ocr_engine.py`、`label_images.py` |
 | 色付き品名の検出 | `color_labels.py`（色を足すなら関数を1つ追加）、`label_images.py`の`*_pixels`、`vision.boxes` |
 | ALT品名板の検出 | `alt_display.py`、`label_detection.py`、`plate_recovery.py`、`bright_plates.py` |
@@ -145,13 +149,14 @@ player_name?: 追加キー（旧版互換）
 | バージョン更新 | `updater.VERSION`、`App`のタイトル、`DEVELOPMENT.md`、README類、`更新内容.txt`、`update-source.json` |
 | リリースの組み立て | `tools/build_exe.py`、`tools/package_release.py`、`tools/ssl_runtime.py`、`RELEASE_RULES.md` |
 
-## 6. v1.1 → v1.1.7 の変更点（コミットとコードで確認したもの）
+## 6. v1.1 → v1.1.8 の変更点（コミットとコードで確認したもの）
 - **v1.1.1〜1.1.3**：4Kと夢幻ラビの宝箱検知を改善（`chest_fragments/shape/parts/gradients`、細部探索）。赤・紫・水色の品名と発光した品名板の認識（当時の`red_labels`・`purple_labels`→段階2で`color_labels`へ統合、`bright_plates`、`label_images`の色マスク）。起動時の更新案内。
 - **v1.1.4**：手動撮影を周回に結び付ける（`manual_review`）、周回内の修正、画像整理、旧版への復旧（`updater.old_releases/rollback_removals`、`update_view`のドロップダウン）。
 - **v1.1.5**：復旧候補をドロップダウンを開いた時に読む。紫の品名文字の保持。
 - **v1.1.6**：現在の除外設定を過去の統計へ反映（`Store.stats`）。配布物の整理。
 - **v1.1.7**：配布EXEのHTTPS通信に必要なファイル不足を修正（`tools/ssl_runtime.py`、`test_ssl_runtime`）。
-- `App`は829行 → 946行（v1.1.7時点）。
+- **v1.1.8**（2026-10-22、PR #10、`1618462`）：リファクタ段階0〜7を統合。容量制限付きのローカル学習（`learning.py`）、`data/labels`が無い・壊れていても続行（`Vision.reload`）。作者側で`test_learning`（11件）を追加し、`test_item_links`の1件を新しい挙動へ修正。PR本文の検証：ソース全体263件実行・35件skipで成功、配布EXE内11件、EXE自己診断成功。
+- `App`は829行 → 946行（v1.1.7時点） → 476行（v1.1.8、段階7で分割）。
 
 ## 7. テストの実態
 `python tools/run_tests.py`で実行する。
@@ -162,7 +167,7 @@ player_name?: 追加キー（旧版互換）
 - `test_instance_guard`は非Windowsでモジュールごとskip。
 - `python -m unittest`で個別に回す場合は代役が入らない。`tools/run_tests.py`経由で回す。
 
-Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、skip 55件**（`claude/dev-workspace`。`test_release_exclusion`の5件を含む）。
+Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、成功、skip 55件**（段階5の統合時点。`test_release_exclusion`の5件を含む）。段階6・7とv1.1.8では関連テストだけ回している（v1.1.8取り込み後に101件成功）。作者側（Windows）のv1.1.8では263件実行・35件skipで成功。
 - skipの内訳：非公開の提供・提出画像が必要（chest_fragments 11、closed_oct19 3、next_4k_samples 3、new_person_samples 2、chest_parts/chest_shape/red_labels 各1、「別途検証済み」のモジュール13＝alt_display、window_share、tracker等）、実画面が必要（karen_ui 10、item_links 5、evidence_retention 4）、Windows専用（instance_guard）。
 - 段階0以前はimportできなかった`manual_review`、`rollback`、`updater`、`github_update`、`startup_update`、`old_release_dropdown`、`v11_settings`、`reward_scan_reuse`、`capture_flow`、`notification`、`resource_limits`がLinuxでも回る。
 
@@ -187,6 +192,7 @@ Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、s
 - **認識の閾値**（0.92、0.035、`CENTER`、`MAX_FRAMES`、`consensus`の移動許容幅、各`*_labels`の高さ・幅・密度条件等）：非公開画像でしか回帰を確認できない。変更は事前に相談。
 - **Windows依存**：`winsound`、`ctypes.WinDLL`、`st_file_attributes`（`updater._is_link`で非Windowsは0扱い）。実機の動作はLinuxでは確認できない。
 - **宝箱検知は試験機能**：未収集の角度や小さい箱は見逃す。`chest_parts`はdocstring上「ローカル試作用」。
+- **改行コードの混在**（v1.1.8で発生）：`drop_tool/app.py`・`vision.py`・`updater.py`・`item_registration.py`・`preflight.py`、`tests/test_item_links.py`、`README.md`、`README_EXE.txt`がファイルまるごとCRLFになった。他はLF。`.gitattributes`は無い。揃え方は利用者と相談中なので、勝手に変換しない。編集時はそのファイルの改行コードを保つ（差分が全行にならないように）。
 - **書き方の混在**：新しめのモジュール（`chest_*`、`manual_review`等）は`;`で1行に詰めた書き方が多い。方針：段階ごとに**触ったファイルだけ**整形する（`app.py`は段階1、`vision.py`・`color_labels.py`は段階2で整形済み。`alt_display.py`・`label_scale.py`は触った行だけ）。
 
 ## 9. リファクタリング計画（2026-10、挙動は変えない／最終目標は無駄を削った軽量化）
@@ -201,7 +207,8 @@ Linux（Python 3.13、tkinterなし）での結果：**251件実行、成功、s
 
 6. **済（削減1回目）**：未使用コードを`[削減候補 2026-10-21]`でコメントアウト、カウントダウンを`App.countdown`へ集約（`1a7b565`）。削除はレビューと利用者確認の後。詳細は[HANDOFF.md](HANDOFF.md)§3
 7. **済**：`app.py`を`HistoryActions`・`ManualActions`・`SampleActions`へ分割、`ui.build_widgets`を領域ごとの関数へ（`a24cb34`）。詳細は[HANDOFF.md](HANDOFF.md)§4
-8. **レビュー待ち**（[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)）→ 削減2回目（削除）
+8. **済**：レビュー依頼（[REVIEW_REQUEST.en.md](REVIEW_REQUEST.en.md)）。作者側がPR #10でmainへ統合し、v1.1.8として公開した（PR本文で`a21135c`を「レビュー済み整理版」と記載。依頼票の質問への個別回答は未受領）。
+9. **待機中**：削減2回目（`[削減候補 2026-10-21]`の削除）。**利用者の指示があるまで行わない。**
 
 **様子見中（影響が無ければ削除）**：
 - `'captured'`イベント：本体のどこからも送られない。`App.show_progress`の表示処理はコメントアウト済み。`App.handle_job`の見張りが、届いた場合だけ`errors.log`へ「想定外のcapturedイベントを受信しました」と残して無視する。`test_alt_display.test_capture_event_plays_short_sound_without_ending_work`はskip。実機で一度も記録されなければ、見張り・コメント・テスト・`notification.SOUNDS['captured']`をまとめて削除する。

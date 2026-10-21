@@ -1,5 +1,7 @@
 # Code Review Request: KarenDrop refactoring on `claude/dev-workspace`
 
+> **Status (2026-10-22): closed.** The branch was merged into main via PR #10 and released as v1.1.8. The PR description refers to `a21135c` as the reviewed version. Individual answers to the questions below were not received. Question 5 was resolved in practice by `drop_tool/learning.py` in v1.1.8. Removal pass 2 is on hold until the owner says so. This document is kept as a record.
+
 | | |
 |---|---|
 | Date | 2026-10-21 |
@@ -10,7 +12,7 @@
 | Baseline | `main` at `5ed115c` (tag `v1.1.7`) |
 | Diff to read | `git diff 5ed115c origin/claude/dev-workspace` |
 | Background reading | [HANDOFF.en.md](HANDOFF.en.md) (history, decisions, verification). The Japanese originals are [HANDOFF.md](HANDOFF.md) and [CLAUDE.md](CLAUDE.md) |
-| Status of the work | Paused until your reply |
+| Status of the work | Merged as v1.1.8 (see status note above) |
 
 > Language note: UI strings, log messages and code comments in the repository are in Japanese. Comments marking removal candidates read `[削減候補 2026-10-21]` ("removal candidate, 2026-10-21").
 
