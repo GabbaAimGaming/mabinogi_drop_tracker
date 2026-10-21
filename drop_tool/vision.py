@@ -1,15 +1,18 @@
 """画面の品名切り抜き、見本照合、日本語OCRの候補生成。"""
-import copy
+# [削減候補 2026-10-21] Vision.learnのコメントアウトで未使用。確認後に削除
+# import copy
 import hashlib
 import json
 import cv2
 import numpy as np
 from PIL import Image
-from .tracker import ROOT, Rules, normalize
+from .config import ROOT
+from .names import normalize
+from .tracker import Rules
 from .label_images import split_labels, text_pixels
 from .label_detection import recover_rows, merge_fragments
 from .hud_filter import remove_gauge_candidates
-from . import alt_display
+from . import alt_display, color_labels
 from .ocr_engine import suggestions
 from .item_catalog import ItemCatalog
 from .hud_text import is_hud_text,is_system_notice
@@ -20,9 +23,10 @@ def ink(image):
     ys, xs = np.where(m)
     return m[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype('uint8') if len(xs) else None
 
-def similarity(a, b):
-    """文字の縦横比が近い見本だけ、重なる画素の割合で比較する。"""
-    return mask_similarity(ink(a), ink(b))
+# [削減候補 2026-10-21] 呼び出し元なし（照合はmask_similarityで作成済みマスク同士を比べる）。確認後に削除
+# def similarity(a, b):
+#     """文字の縦横比が近い見本だけ、重なる画素の割合で比較する。"""
+#     return mask_similarity(ink(a), ink(b))
 
 
 def mask_similarity(a, b):
@@ -45,6 +49,12 @@ def load_mask(path):
 # 品が多いとALTの品名板が縦に長く積み上がるため、下側を0.82→0.88へ広げた。
 # 上端は画面上部のタイマー等（黒地の白文字が縦に並ぶ）を拾うため0.12のまま。
 CENTER = (0.22, 0.12, 0.8, 0.88)
+
+
+def _overlaps(boxes, y, x, width, tolerance):
+    """(y, x, 画像)の一覧に、縦の差がtolerance以内で横に重なる枠があるか。"""
+    return any(abs(y - oy) <= tolerance and x < ox + old.width and x + width > ox
+               for oy, ox, old in boxes)
 
 
 def label_presence(region):
@@ -82,10 +92,15 @@ class Vision:
         live = set()
         for record in self.store.data['templates']:
             path = self.store.folder / record['path']
-            if not path.exists():
+            if not path.is_file():
+                continue
+            try:
+                learned = self._mask(path)
+            except (OSError, ValueError):
+                continue  # 学習フォルダーの削除中や破損画像でもOCRを使って続行する。
+            if learned is None:
                 continue
             live.add(str(path))
-            learned = self._mask(path)
             # 後から学習したほぼ同一の見本を優先する（従来どおり）。
             self.templates = [t for t in self.templates if mask_similarity(learned, t[2]) < 0.98]
             self.templates.append((record['name'], overrides.get(record['name'], record['kind']), learned))
@@ -123,25 +138,17 @@ class Vision:
             boxes.append((y, x, region.crop((x - 2, y - 2, x + w + 2, y + h + 2))))
         # 従来の確実な枠を優先し、周囲の発光で落ちた行を補う。
         for x, y, w, h in recover_rows(region):
-            if any(abs(y - old_y) <= 3 and x < old_x + old_im.width and x + w > old_x
-                   for old_y, old_x, old_im in boxes):
+            if not _overlaps(boxes, y, x, w, 3):
+                boxes.append((y, x, region.crop((max(0,x-2), max(0,y-2),
+                                                 min(region.width,x+w+2), min(region.height,y+h+2)))))
+        # 赤・紫の文字はHPバーと白文字を横結合しない独立経路で拾う。
+        # 白・緑の品名がある時は、その列の近くにある行だけを追加する。
+        ordinary_boxes = list(boxes)
+        for y, x, crop in color_labels.red(region) + color_labels.purple(region):
+            if ordinary_boxes and not _overlaps(ordinary_boxes, y, x, crop.width, max(64, crop.height*4)):
                 continue
-            boxes.append((y, x, region.crop((max(0,x-2), max(0,y-2),
-                                             min(region.width,x+w+2), min(region.height,y+h+2)))))
-        # 赤い文字はHPバーと白文字を横結合しない独立経路で拾う。
-        from .red_labels import candidates as red_candidates
-        ordinary_boxes=list(boxes)
-        for y,x,crop in red_candidates(region):
-            if ordinary_boxes and not any(abs(y-oy)<=max(64,crop.height*4) and x<ox+old.width and x+crop.width>ox for oy,ox,old in ordinary_boxes):
-                continue
-            if not any(abs(y-oy)<=3 and x<ox+old.width and x+crop.width>ox for oy,ox,old in boxes):
-                boxes.append((y,x,crop))
-        from .purple_labels import candidates as purple_candidates
-        for y,x,crop in purple_candidates(region):
-            if ordinary_boxes and not any(abs(y-oy)<=max(64,crop.height*4)
-                    and x<ox+old.width and x+crop.width>ox for oy,ox,old in ordinary_boxes):continue
-            if not any(abs(y-oy)<=3 and x<ox+old.width and x+crop.width>ox for oy,ox,old in boxes):
-                boxes.append((y,x,crop))
+            if not _overlaps(boxes, y, x, crop.width, 3):
+                boxes.append((y, x, crop))
         # 先に同じ板の断片を戻し、最後に別の板の境目で分ける。
         # 順番を逆にすると、スクロール名の内部空白を別アイテムにしてしまう。
         boxes = merge_fragments(region, boxes)
@@ -152,7 +159,7 @@ class Vision:
         if len(boxes) < 2:
             from .plate_recovery import recover
             for y,x,im in recover(region):
-                if any(abs(y-oy)<=3 and x<ox+old.width and x+im.width>ox for oy,ox,old in boxes):
+                if _overlaps(boxes, y, x, im.width, 3):
                     continue
                 im.info['recovered_plate'] = True
                 boxes.append((y,x,im))
@@ -160,10 +167,8 @@ class Vision:
         # brightened by a red or blue flare. Keep the original color for OCR.
         from .bright_plates import recover as recover_bright
         for y,x,im in (recover_bright(region) if len(boxes)<2 else []):
-            if any(abs(y-oy)<=5 and x<ox+old.width and x+im.width>ox
-                   for oy,ox,old in boxes):
-                continue
-            boxes.append((y,x,im))
+            if not _overlaps(boxes, y, x, im.width, 5):
+                boxes.append((y,x,im))
         pieces = []
         for y, x, im in sorted(boxes):
             left = x
@@ -259,44 +264,47 @@ class Vision:
             message += ' / OCRエラー：' + ocr_error
         return {'labels': labels, 'message': message}
 
-    def learn(self, name, kind, image, *, run_id=None, row_index=None):
-        """品名画像・扱い・選択行の修正を一度に保存。失敗時は全設定を戻す。"""
-        name = normalize(name)
-        if not name or kind not in ('material', 'excluded', 'review'):
-            raise ValueError('品名と集計/除外/未確認を指定してください。')
-        folder = self.store.folder / 'labels'
-        folder.mkdir(exist_ok=True)
-        digest = hashlib.sha256(image.tobytes() + name.encode('utf-8')).hexdigest()[:20]
-        path = folder / (digest + '.png')
-        image.save(path)
-        rel = path.relative_to(self.store.folder).as_posix()
-        previous = copy.deepcopy(self.store.data)
-        # ほぼ同一の旧見本は読込時に新しい見本で置き換わるため、記録からも外す。
-        # 残すと修正の度に見本一覧が伸び、照合と再読込が遅くなり続ける。
-        new_mask = ink(image)
-        def superseded(record):
-            if record['path'] == rel:
-                return True
-            path = self.store.folder / record['path']
-            if not path.exists():
-                return False
-            try:
-                return mask_similarity(new_mask, self._mask(path)) >= 0.98
-            except OSError:
-                return False
-        self.store.data['templates'] = [r for r in self.store.data['templates'] if not superseded(r)]
-        self.store.data['templates'].append({'name': name, 'kind': kind, 'path': rel})
-        self.store.data['overrides'][name] = kind
-        if run_id is not None:
-            run = self.store.find(run_id)
-            run['rows'][row_index].pop('reviewed_kind', None)
-            run['rows'][row_index].pop('resolved_name', None)
-            run['rows'][row_index].update(name=name, kind=kind)
-            run['status'] = 'review'
-        try:
-            self.store.save()
-        except Exception:
-            self.store.data = previous
-            raise
-        self.reload()
+    # [削減候補 2026-10-21] 本体からの呼び出し元なし。v0.18.2で履歴の修正（App.correct_row）が
+    # item_registration.assign（元の読み取り名を残し、誤読名→正式名を対応付ける方式）へ置き換わってから未使用。
+    # 公開テストはassign経由へ書き換え済み。非公開のtests/test_tracker.pyも同様に書き換え済み（要・手元確認）。確認後に削除
+    # def learn(self, name, kind, image, *, run_id=None, row_index=None):
+    #     """品名画像・扱い・選択行の修正を一度に保存。失敗時は全設定を戻す。"""
+    #     name = normalize(name)
+    #     if not name or kind not in ('material', 'excluded', 'review'):
+    #         raise ValueError('品名と集計/除外/未確認を指定してください。')
+    #     folder = self.store.folder / 'labels'
+    #     folder.mkdir(exist_ok=True)
+    #     digest = hashlib.sha256(image.tobytes() + name.encode('utf-8')).hexdigest()[:20]
+    #     path = folder / (digest + '.png')
+    #     image.save(path)
+    #     rel = path.relative_to(self.store.folder).as_posix()
+    #     previous = copy.deepcopy(self.store.data)
+    #     # ほぼ同一の旧見本は読込時に新しい見本で置き換わるため、記録からも外す。
+    #     # 残すと修正の度に見本一覧が伸び、照合と再読込が遅くなり続ける。
+    #     new_mask = ink(image)
+    #     def superseded(record):
+    #         if record['path'] == rel:
+    #             return True
+    #         path = self.store.folder / record['path']
+    #         if not path.exists():
+    #             return False
+    #         try:
+    #             return mask_similarity(new_mask, self._mask(path)) >= 0.98
+    #         except OSError:
+    #             return False
+    #     self.store.data['templates'] = [r for r in self.store.data['templates'] if not superseded(r)]
+    #     self.store.data['templates'].append({'name': name, 'kind': kind, 'path': rel})
+    #     self.store.data['overrides'][name] = kind
+    #     if run_id is not None:
+    #         run = self.store.find(run_id)
+    #         run['rows'][row_index].pop('reviewed_kind', None)
+    #         run['rows'][row_index].pop('resolved_name', None)
+    #         run['rows'][row_index].update(name=name, kind=kind)
+    #         run['status'] = 'review'
+    #     try:
+    #         self.store.save()
+    #     except Exception:
+    #         self.store.data = previous
+    #         raise
+    #     self.reload()
 

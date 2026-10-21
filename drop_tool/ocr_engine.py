@@ -99,7 +99,7 @@ def suggestions(images):
     """画像ごとに候補名を返す。正式名への一致・未確認扱いはVision側で判断。"""
     if not images:
         return []
-    from .tracker import normalize
+    from .names import normalize
     return [normalize(text) for text, _ in engine().recognize(images)]
 
 

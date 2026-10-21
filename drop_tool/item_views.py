@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from .item_catalog import KINDS
-from .tracker import normalize
+from .names import normalize
 from .item_links import resolve_name, name_key
 from .item_registration import assign, unlink
 

@@ -9,6 +9,7 @@ import unittest
 from PIL import Image,ImageDraw
 from tracker import Store,StableReading,default_near,ROOT,Rules
 from vision import Vision
+from drop_tool.item_registration import assign
 
 class Tests(unittest.TestCase):
     def setUp(self):
@@ -77,11 +78,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(v.analyze(im)['labels']),13)
     def test_manual_label_learning_survives_restart(self):
         v=Vision(self.store);im=Image.new('RGB',(120,20),'black');ImageDraw.Draw(im).text((3,3),'NEW MATERIAL',fill='white')
-        v.learn('追加素材','material',im)
+        # [削減候補 2026-10-21] Vision.learnのコメントアウトに合わせassign経由へ。旧行はコメントで残す。確認後に旧行を削除
+        # v.learn('追加素材','material',im)
+        assign(v.catalog,'追加素材','追加素材','material',new=v.catalog.find('追加素材') is None,image=im);v.reload()
         other=Vision(Store(self.tmp.name));self.assertEqual(other.recognize_template(im),('追加素材','material'))
     def test_user_exclusion_overrides_bundled_material(self):
         v=Vision(self.store);im=Image.open(ROOT/'references/labels/00.png').convert('RGB')
-        v.learn('マナハーブ','excluded',im)
+        # [削減候補 2026-10-21] Vision.learnのコメントアウトに合わせassign経由へ。旧行はコメントで残す。確認後に旧行を削除
+        # v.learn('マナハーブ','excluded',im)
+        assign(v.catalog,'マナハーブ','マナハーブ','excluded',new=v.catalog.find('マナハーブ') is None,image=im);v.reload()
         self.assertEqual(v.recognize_template(im),('マナハーブ','excluded'))
         self.assertEqual(Vision(Store(self.tmp.name)).recognize_template(im),('マナハーブ','excluded'))
 

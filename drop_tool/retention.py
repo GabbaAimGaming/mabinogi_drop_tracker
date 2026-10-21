@@ -77,19 +77,22 @@ def append_log(path, text, limit=LOG_LIMIT):
 from . import settings as _settings
 
 KEEP_RANGE = _settings.KEEP_RANGE
-EVIDENCE_KEYS = ('evidence_auto_delete', 'evidence_keep_runs')
-
-
-def load_settings(folder):
-    """証拠画像に関する設定だけを返す（全設定は drop_tool.settings）。"""
-    loaded = _settings.load(folder)
-    return {key: loaded[key] for key in EVIDENCE_KEYS}
-
-
-def save_settings(folder, *, evidence_auto_delete, evidence_keep_runs):
-    _settings.save(folder, evidence_auto_delete=bool(evidence_auto_delete),
-                   evidence_keep_runs=evidence_keep_runs)
-    return load_settings(folder)
+# [削減候補 2026-10-21] EVIDENCE_KEYS・load_settings・save_settingsは本体からの呼び出し元なし
+# （読込はsettings.load、保存はApp.save_setting → settings.save）。
+# 使うのはtests/test_evidence_retentionだけで、そちらはsettings.load/save経由に置き換え済み。確認後に削除
+# EVIDENCE_KEYS = ('evidence_auto_delete', 'evidence_keep_runs')
+#
+#
+# def load_settings(folder):
+#     """証拠画像に関する設定だけを返す（全設定は drop_tool.settings）。"""
+#     loaded = _settings.load(folder)
+#     return {key: loaded[key] for key in EVIDENCE_KEYS}
+#
+#
+# def save_settings(folder, *, evidence_auto_delete, evidence_keep_runs):
+#     _settings.save(folder, evidence_auto_delete=bool(evidence_auto_delete),
+#                    evidence_keep_runs=evidence_keep_runs)
+#     return load_settings(folder)
 
 
 def _text_rows(rows):

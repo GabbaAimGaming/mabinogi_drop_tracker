@@ -7,6 +7,7 @@ from PIL import Image
 from drop_tool.tracker import Store
 from drop_tool.item_catalog import ItemCatalog, lookup_key
 from drop_tool.vision import Vision
+from drop_tool.item_registration import assign
 
 
 class CatalogTests(unittest.TestCase):
@@ -99,10 +100,18 @@ class CatalogTests(unittest.TestCase):
     def test_image_learning_and_row_change_rollback_together(self):
         run = self.store.new_run('アルビ', 'HD', '使用')
         self.store.record(run['id'], [{'name': '誤読', 'kind': 'review'}])
-        vision = Vision(self.store)
+        # [削減候補 2026-10-21] Vision.learnのコメントアウトに合わせ、本体の経路（item_registration.assign）で
+        # 「画像の学習と行の変更が保存失敗時にまとめて戻る」ことを確認する。旧版は下にコメントで残す。確認後に旧版を削除
         old = copy.deepcopy(self.store.data)
         with patch.object(self.store, 'save', side_effect=OSError('full')):
             with self.assertRaises(OSError):
-                vision.learn('魔力の黄金の糸', 'review', Image.new('RGB',(20,10)),
-                             run_id=run['id'], row_index=0)
+                assign(self.catalog, '誤読', '魔力の黄金の糸', 'review', image=Image.new('RGB',(20,10)),
+                       run_id=run['id'], row_index=0)
         self.assertEqual(self.store.data, old)
+        # vision = Vision(self.store)
+        # old = copy.deepcopy(self.store.data)
+        # with patch.object(self.store, 'save', side_effect=OSError('full')):
+        #     with self.assertRaises(OSError):
+        #         vision.learn('魔力の黄金の糸', 'review', Image.new('RGB',(20,10)),
+        #                      run_id=run['id'], row_index=0)
+        # self.assertEqual(self.store.data, old)

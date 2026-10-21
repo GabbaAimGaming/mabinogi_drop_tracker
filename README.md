@@ -1,10 +1,18 @@
-# KarenDrop v1.1.7
+# KarenDrop v1.1.8
 
 マビノギの画面に表示されたドロップ品名を読み取り、周回ごとの記録・確認・集計を行うWindowsツールです。
 
+## 修正画像のローカル学習
+
+通常の品名修正・登録で、確認した正式名と画像を結び付けます。学習専用の操作は不要です。
+1品3枚・全体1000枚・画像合計16MBを上限に、似た見本や古い見本を自動整理します。
+未確認の扱い・結合画像などは見本にしません。OCRモデルの再訓練や画像の外部送信は行いません。
+個人用見本の `data/labels` を削除しても起動・OCR・履歴・集計を維持し、次の修正で再作成します。
+`data` 全体や `records.json` を削除する操作とは異なります。同梱の `references` は保持します。
+
 ## ダウンロード
 
-[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.7-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
+[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.8-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
 Pythonの導入は不要です。Source code ZIPは開発者向けです。
 
 操作は [README_EXE.txt](README_EXE.txt)、更新・復旧は [更新方法.txt](更新方法.txt)、制限と回避方法は [現在の問題点と対処方法.txt](現在の問題点と対処方法.txt) を参照してください。

@@ -40,3 +40,5 @@ Windows 64bit / Python 3.12。
 ## SSL実装固有の配布データ
 
 ビルド元のssl.pyがcodex-rejected-cas.pemを要求する環境では、tools/ssl_runtime.pyが同じ証明書データを凍結版sslの隣へ同梱します。信頼設定を除去せず保持し、必要ファイルが欠けたビルドは停止します。配布EXEの --self-test ではHTTPSコンテキストの生成も確認します。
+
+`claude_workspace/`（Claude用の開発場所）はリリースに含めません。混入していると`tools/package_release.py`が停止します。詳細は`claude_workspace/RELEASE_RULES.md`を参照してください。
