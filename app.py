@@ -56,6 +56,14 @@ def run_app(guard=None):
                               character=app.banner.photo.width(),
                               registered_items=len(app.vision.catalog.entries),
                               item_tab=app.notebook.tab(app.item_views.frame, "text"))
+                if '--check-update-network' in sys.argv:
+                    # 公開前の明示的な検証時だけ実通信を行う。通常の自己診断はオフライン。
+                    from drop_tool import updater
+                    with tempfile.TemporaryDirectory() as update_folder:
+                        info = updater.check(updater.DEFAULT_SOURCE, update_folder)
+                    older = updater.old_releases()
+                    report['update_network'] = dict(ok=True, latest=info['version'],
+                                                    old_versions=[r['version'] for r in older])
                 index = sys.argv.index('--self-test')
                 Path(sys.argv[index + 1]).write_text(json.dumps(report, ensure_ascii=False), 'utf-8')
             root.destroy()
