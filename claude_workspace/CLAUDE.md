@@ -1,4 +1,4 @@
-# KarenDrop コードマップ（v1.1.8）
+# KarenDrop コードマップ（v1.1.9）
 
 Claudeが編集する際の地図。実コードとテスト実行結果に基づく。**作業ブランチ：`claude/dev-workspace`**。**方針：dev-workspaceは`main`のコピーを持つ**（2026-10-22時点で`main` `1618462`＝タグ`v1.1.8`と同じ内容。リファクタ段階0〜7はPR #10でmainへ統合済み。段階は§9、経緯は[HANDOFF.md](HANDOFF.md)）。
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
@@ -45,7 +45,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 ## 2. データフロー（自動読取）
 1. `App.tick`が350ms（中央スキャン）または700msで回り、`submit('live')`を呼ぶ。前面のゲーム画面だけを撮影する（`App.ready`が前面でなければ読まない）。
 2. `App.submit`は開始時点のepoch・対象ゲーム・対象周回・中央スキャン設定を固定し、`read_worker.run`を別スレッドで起動する。ワーカーは`app.grab`で撮影し、`_observe`で`near_dialog`（確認画面の除外）、`App.reward_detection`（`chest_detector`）、`alt_display.quick_check`を見る。
-3. `RewardGate`が宝箱 + ALT表示の3秒継続を判定する。未成立なら`scan`イベントで待機メッセージを返す。
+3. `App.reward_detection`内の`ChestConfirmation`が、特徴点または表面見本で検出した同じ位置の箱を別フレームで2回確認する。その後だけ`RewardGate`へ渡し、箱 + ALT表示の3秒継続を判定する。未成立なら`scan`イベントで待機メッセージを返す。
 4. 成立したら`start`イベントを返し、`_burst`が`alt_capture.collect`で連写、`alt_capture.read`で`Vision.analyze`に通す。
 5. `Vision.analyze`は画像から品名を作る。
    - `boxes`で切り抜く。白・緑の通常経路 → `label_detection.recover_rows`（発光） → `color_labels.red` → `color_labels.purple`（白・緑の品名があれば、その近くの行だけ） → 断片の結合・ゲージ除外・`alt_display.select` → 2枚未満なら`plate_recovery`と`bright_plates`で補う → `split_labels`。
@@ -77,9 +77,9 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 画面 | `item_views.py` / `settings_views.py` / `csv_views.py` / `update_view.py` | 「アイテム管理」「設定」、CSV比較の2タブ、更新・旧版への復旧UI | test_item_links, test_csv_*, test_startup_update, test_old_release_dropdown, test_rollback |
 | 画面部品 | `theme.py` `scrollable.py` `karen_banner.py` `image_display.py` | 配色・スクロール・表示補助 | — |
 | 撮影 | `windows_capture.py` | 前景ゲームウィンドウの読み取り専用撮影（読み込み時に`ctypes.WinDLL('user32')`） | test_capture_flow |
-| 判定 | `chest_detector.py` | 宝箱検出（`assets/chests/*.npz`のSIFT）と段の並び`detect`（`_near_plates/_detail/_parts`） | test_reward_samples, test_4k_review, test_next_4k_samples |
-| 判定 | `chest_fragments.py` `chest_shape.py` `chest_parts.py` `chest_gradients.py` | 箱の補助判定（表面マスク、蓋の形、蓋と本体の部品照合、勾配セル分類器） | test_chest_fragments, test_chest_shape, test_chest_parts, test_closed_oct19 |
-| 判定 | `reward_gate.py` `near_dialog.py` | 3秒ゲート、ネアル確認画面の除外 | test_near_dialog, test_reward_scan_reuse |
+| 判定 | `chest_detector.py` | 宝箱表面のSIFT（画面点の重複・支持面積を検査）。形状は局所SIFTの探索ヒントに限る。段の並び`detect`（`_near_plates/_detail/_parts`） | test_reward_samples, test_4k_review, test_next_4k_samples |
+| 判定 | `chest_fragments.py` `chest_shape.py` `chest_parts.py` `chest_gradients.py` | 箱の補助判定（表面マスク、左右の縁の同位置・個別照合、蓋の形を探索ヒントに限定、蓋と本体の部品照合、勾配セル分類器） | test_chest_rims, test_chest_fragments, test_chest_shape, test_chest_parts, test_closed_oct19 |
+| 判定 | `reward_gate.py` `near_dialog.py` | ChestConfirmation（別フレームの位置・面積・時間の再確認）、3秒ゲート、ネアル確認画面の除外 | test_chest_confirmation, test_near_dialog, test_reward_scan_reuse |
 | 判定 | `alt_display.py` `alt_capture.py` | ALT品名板の判定と連写 | test_alt_display, test_alt_hold_simulation |
 | 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR（`learn`は段階6でコメントアウト。学習は`item_registration.assign`→`learning.add`）。`reload`は見本が無い・壊れている時に読み飛ばす（v1.1.8）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
 | 認識 | `label_images.py` `label_scale.py` `label_detection.py` `plate_recovery.py` `hud_filter.py` | マスク生成（`text_pixels/red_pixels/purple_pixels`等）、倍率補正、発光時の補助検出、HUD除外 | test_label_*, test_glow_recovery, test_hud_filter, test_cyan_labels |
@@ -138,11 +138,11 @@ player_name?: 追加キー（旧版互換）
 | 色付き品名の検出 | `color_labels.py`（色を足すなら関数を1つ追加）、`label_images.py`の`*_pixels`、`vision.boxes` |
 | ALT品名板の検出 | `alt_display.py`、`label_detection.py`、`plate_recovery.py`、`bright_plates.py` |
 | 複数フレームの多数決 | `reading.consensus` / `StableReading`、`tests/test_moving_labels.py` |
-| 取得タイミング・宝箱 | `read_worker._observe/_burst`、`reward_gate.py`、`alt_capture.py`、`chest_*.py`（検出方式を足すなら`ChestDetector`に段のメソッドを作り`detect`の並びへ1つ追加）、`assets/chests/` |
+| 取得タイミング・宝箱 | `App.reward_detection`、`read_worker._observe/_burst`、`reward_gate.ChestConfirmation/RewardGate`、`alt_capture.py`、`chest_*.py`（検出方式を足すなら`ChestDetector`に段のメソッドを作り`detect`の並びへ1つ追加）、`assets/chests/`、`assets/chest-fragments/`（任意のgroupsは左右2枚の二値マスク。両方のスコアが同じ位置で閾値を超える必要がある） |
 | 読取結果の画面反映 | `App.handle_job`の対応表と各処理（`apply_live`等） |
 | 手動撮影・周回内の修正 | `manual_review.py`、`manual_actions.py`（`capture_manual/review_capture/edit_this_run`） |
 | 履歴・統計の画面操作 | `history_actions.py` |
-| 提出用サンプル | `sample_actions.py`、`sample_reports.py` |
+| 提出用サンプル | `read_worker._observe/_burst`（箱を確認した原画を1枚保持し先頭へ）、`sample_actions.py`（chest_evidence・先頭画像の意味）、`sample_reports.py`（従来の最大3枚を維持） |
 | 集計・出現率 | `Store.stats/confirm`、`exporting.py` |
 | ダンジョン・難易度の追加 | `ui.py`のコンボ値、`tracker.SHADOW_MISSIONS`/`default_near`、`tests/test_v11_settings.py` |
 | 設定項目の追加 | `settings.py`（DEFAULTS+`_valid`）、`settings_views.py`、`App.save_setting` |
@@ -214,3 +214,20 @@ Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、�
 
 **様子見中（影響が無ければ削除）**：
 - `'captured'`イベント：本体のどこからも送られない。`App.show_progress`の表示処理はコメントアウト済み。`App.handle_job`の見張りが、届いた場合だけ`errors.log`へ「想定外のcapturedイベントを受信しました」と残して無視する。`test_alt_display.test_capture_event_plays_short_sound_without_ending_work`はskip。実機で一度も記録されなければ、見張り・コメント・テスト・`notification.SOUNDS['captured']`をまとめて削除する。
+
+## v1.1.9 道中の誤検知対策（2026-10-22）
+
+基準はリモート整理版 `39f6b61`。既存の整理・テスト絞り込み・AIルールを保持して追加。
+形状だけの確定を停止し、形状候補内で宝箱のSIFTを再照合する。SIFTは同じ画面点の重複と狭い支持面を除外。`ChestConfirmation`は2観測の位置重複・面積比・時間を検査する。周回変更・停止・ネアル確認で候補を破棄し、停止した旧ワーカーからの候補更新も無視。
+`read_worker`は再確認時の原画1枚だけをメモリー保持し、提出用サンプルの先頭へ置く。`chest_evidence`と`first_frame_is_chest_evidence`を任意キーとして追加。records.json形式・辞書・設定項目は不変。
+9件の公開テストをtest_chest_confirmationへ追加（形だけ、一点重複、支持面、単発、位置違い、時刻と中断、連写画像との区別）。従来の読取3秒テストは最初の再確認分を明示。
+画像・ログの開発比較と制限は更新内容.txt。発光箱は中央の光ではなく左右の縁の模様で裏付ける（下記）。既存の削減候補は未判断のまま保持し、今回の不具合修正に便乗した削除はしない。
+
+### 発光箱の維持（2026-10-23）
+`chest_fragments`は既存の表面マスクに加え、`groups`を持つ見本だけ左右2群を別々に正規化相関で照合する。2群の同じ位置での最小スコアが従来の.90以上の場合だけ採用。一方だけの一致や別々の位置の一致では不成立。発光中心・文字・床はマスク外。新規の左右見本は従来の単独マスク経路へ流さない。
+`assets/chest-fragments/glow-rim-01..03.npz`と`assets/chests/open-glow-purple-01..02.npz`を追加（計27341バイト）。後者の特徴点は紫箱の蓋と前面だけで抽出し、品名・人物・床・発光中心を外す。モデル・依存ライブラリ・許可リストは追加しない。記録形式は不変。
+変更箇所：発光箱の検出は`chest_fragments._prepare/_scores/detect`と上記の参照資産。検出順序は従来どおり。再確認とALT3秒の開始条件は`ChestConfirmation/RewardGate`を維持する。
+検証：関連31件（skip 13件）成功。既存4K25/25、別の箱26/26。道中等と床の23枚で誤検出0。新参照の元画像以外である紫箱のframe-02も検出し、別フレームでの再確認成立。明るさ・解像度変更12/12、箱を消し品名を残した3/3で非検出（品名行8/4/6を維持）。見本作成に使った画像を含む開発比較であり独立した実機精度ではない。
+試作段階の22/25という退行は上記の左右照合で解消。旧試作ZIPは未公開。元の作業ルールとテスト絞り込み機能、未判断の削除候補を保持する。
+
+配布前検証：全量280件（skip 35件）成功。配布EXEから読み込んだ処理と実際の同梱資産で31件成功。実EXE自己診断（起動・OCR・104個のSIFT参照と左右見本を含む資産・HTTPS初期化）成功。確認待ち・集計形式・自動読取の再確認条件は維持。

@@ -7,16 +7,17 @@ from drop_tool.reward_gate import RewardGate
 class RewardScanReuseTests(unittest.TestCase):
     def app(self):
         app=App.__new__(App);app.reward_gate=RewardGate()
-        app.chest_detector=Mock();app.chest_detector.detect.return_value={'found':True}
+        app.chest_detector=Mock();app.chest_detector.detect.return_value={
+            'found':True,'match':{'template':'chest','box':[30,30,70,70]}}
         return app
 
     def test_remembered_chest_keeps_alt_checks_light_and_still_waits_three_seconds(self):
         app=self.app();frame=Image.new('RGB',(100,100));trigger=[]
-        for t in (10.,10.5,11.,11.5,12.,12.5,13.):
+        for t in (10.,10.5,11.,11.5,12.,12.5,13.,13.5):
             r=app.reward_detection(frame,False,t)
             trigger.append(app.reward_gate.observe(r['found'],True,t))
-        self.assertEqual(app.chest_detector.detect.call_count,1)
-        self.assertEqual(trigger,[False]*6+[True])
+        self.assertEqual(app.chest_detector.detect.call_count,2)
+        self.assertEqual(trigger,[False]*7+[True])
 
     def test_observation_gap_or_expired_memory_requires_new_chest_evidence(self):
         app=self.app();gate=app.reward_gate;frame=Image.new('RGB',(100,100))

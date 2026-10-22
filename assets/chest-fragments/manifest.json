@@ -44,6 +44,18 @@
     {
       "id": "new4k-07",
       "file": "new4k-07.npz"
+    },
+    {
+      "id": "glow-rim-01",
+      "file": "glow-rim-01.npz"
+    },
+    {
+      "id": "glow-rim-02",
+      "file": "glow-rim-02.npz"
+    },
+    {
+      "id": "glow-rim-03",
+      "file": "glow-rim-03.npz"
     }
   ]
 }

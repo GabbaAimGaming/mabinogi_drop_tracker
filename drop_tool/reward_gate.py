@@ -3,6 +3,34 @@ from dataclasses import dataclass
 
 
 @dataclass
+class ChestConfirmation:
+    """別フレームの同じ場所で箱を再確認してから、8秒の記憶へ渡す。"""
+    box: tuple | None = None
+    previous: float | None = None
+    max_gap: float = 4.0
+
+    def observe(self, detection, now):
+        match = detection.get('match') or {}
+        box = match.get('box')
+        if not detection.get('found') or box is None or len(box) != 4:
+            self.box = self.previous = None
+            return False
+        old, previous = self.box, self.previous
+        self.box, self.previous = tuple(box), now
+        if old is None or previous is None or not 0 < now - previous <= self.max_gap:
+            return False
+        # 離れた床・キャラ・UIを順番に拾っても、同じ宝箱の再確認にはしない。
+        x0, y0 = max(old[0], box[0]), max(old[1], box[1])
+        x1, y1 = min(old[2], box[2]), min(old[3], box[3])
+        intersection = max(0, x1 - x0) * max(0, y1 - y0)
+        old_area = max(0, old[2] - old[0]) * max(0, old[3] - old[1])
+        new_area = max(0, box[2] - box[0]) * max(0, box[3] - box[1])
+        area = min(old_area, new_area)
+        return (area > 0 and .25 <= old_area / new_area <= 4
+                and intersection / area >= .5)
+
+
+@dataclass
 class RewardGate:
     seconds: float = 3.0
     chest_memory: float = 8.0

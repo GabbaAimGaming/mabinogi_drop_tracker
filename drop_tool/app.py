@@ -22,7 +22,7 @@ from .vision import Vision
 from . import read_worker
 from . import windows_capture as capture
 from . import settings as user_settings
-from .reward_gate import RewardGate
+from .reward_gate import RewardGate, ChestConfirmation
 from .chest_detector import ChestDetector
 from .sample_reports import SampleReports
 # [削減候補 2026-10-21] app.pyの分割で移動先（history_actions/manual_actions/sample_actions）へ。app.pyでは未使用。確認後に削除
@@ -50,6 +50,9 @@ class App(HistoryActions, ManualActions, SampleActions):
     settings_views = None
     samples = None
     reward_gate = None
+    chest_confirmation = None
+    chest_evidence_frame = None
+    chest_evidence_scan = None
     chest_detector = None
     near_detector = None
     scan_trace = ()
@@ -65,7 +68,7 @@ class App(HistoryActions, ManualActions, SampleActions):
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1.8')
+        root.title('カレンとドロップ記録 v1.1.9')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -226,7 +229,7 @@ class App(HistoryActions, ManualActions, SampleActions):
             self.epoch += 1
             self.stable.reset()
             self.reset_reward()
-    
+
     def new_run(self):
         """利用者の入場操作で周回を作る。報酬が同じでも別の周回として扱う。"""
         try:
@@ -307,10 +310,11 @@ class App(HistoryActions, ManualActions, SampleActions):
         append_log(self.store.folder / 'monitor.log', time.strftime('%H:%M:%S ') + text + '\n', limit=200000)
 
     def reward_detection(self, frame, near_dialog, now):
-        """Keep checking ALT while the already-confirmed chest memory is valid."""
+        """箱を別フレームで再確認した後だけ、探索を省略してALTを待つ。"""
         gate=self.reward_gate
         # 確認ダイアログ中は取得できない。探索で観測を遅らせず、記憶も更新しない。
         if near_dialog:
+            self.chest_confirmation = ChestConfirmation()
             return {'found':False,'match':None,'seconds':0.,'search':'blocked'}
         if (gate.previous is not None
                 and 0<=now-gate.previous<=gate.max_gap
@@ -318,7 +322,19 @@ class App(HistoryActions, ManualActions, SampleActions):
             return {'found':False,'match':None,'seconds':0.,'search':'recent'}
         if self.chest_detector is None:
             self.chest_detector=ChestDetector()
-        return self.chest_detector.detect(frame)
+        epoch = getattr(self, 'epoch', None)
+        detection = self.chest_detector.detect(frame)
+        if getattr(self, 'epoch', None) != epoch:
+            return {'found':False,'match':None,'seconds':0.,'search':'cancelled'}
+        confirmation = getattr(self, 'chest_confirmation', None)
+        if confirmation is None:
+            confirmation = self.chest_confirmation = ChestConfirmation()
+        if detection['found'] and not confirmation.observe(detection, now):
+            return dict(detection, found=False, candidate=detection['match'],
+                        search='confirming')
+        if not detection['found']:
+            confirmation.observe(detection, now)
+        return detection
 
     def submit(self, mode, image=None):
         """撮影と認識をワーカーで実行し、結果はpollで受け取る（read_worker）。
@@ -455,6 +471,9 @@ class App(HistoryActions, ManualActions, SampleActions):
         """周回・撮影対象・監視状態が変わった時は、箱の記憶と3秒待ちを消す。"""
         if self.reward_gate is not None:
             self.reward_gate.reset()
+        self.chest_confirmation = ChestConfirmation()
+        self.chest_evidence_frame = None
+        self.chest_evidence_scan = None
         self.scan_trace = []
 
     def change_auto_reward(self, enabled):

@@ -58,7 +58,28 @@ class ChestDetector:
         from .chest_shape import plate_rows
         rows = plate_rows(image)
         trial = self.fragments.detect(image, rows)
-        return trial if trial['found'] else self.shape.detect(image, rows)
+        if trial['found']:
+            return trial
+        candidate = self.shape.detect(image, rows)
+        if not candidate['found']:
+            return candidate
+        # 暗い四角形・縁・周辺文字は探索位置のヒントに限る。
+        # 床やUIにも同じ形があるため、宝箱表面の特徴点が確認できるまで確定しない。
+        x0, y0, x1, y1 = candidate['match']['box']
+        width, height = x1 - x0, y1 - y0
+        left, top = max(0, int(x0 - width * .6)), max(0, int(y0 - height * .6))
+        right = min(image.width, int(x1 + width * .6))
+        bottom = min(image.height, int(y1 + height * .6))
+        verified = self._detect(image.crop((left, top, right, bottom)))
+        if verified['found']:
+            for key in ('box', 'evidence_box'):
+                if key in verified['match']:
+                    a, b, c, d = verified['match'][key]
+                    verified['match'][key] = [a + left, b + top, c + left, d + top]
+            verified['search'] = 'shape-detail'
+            return verified
+        return {'found': False, 'match': None, 'search': 'shape-unconfirmed',
+                'candidate': candidate['match']}
 
     def _detail(self, image):
         """大画面の縮小で箱の特徴が消えた場合だけ、中央と蓋の候補を原寸で再探索。
@@ -124,6 +145,8 @@ class ChestDetector:
             for name, points, reference, size in self.templates:
                 pairs = self.matcher.knnMatch(reference, descriptors, k=2)
                 good = [a for pair in pairs if len(pair)==2 for a,b in [pair] if a.distance < .70*b.distance]
+                # 参照側の複数点が同じ画面上の一点へ一致しても、面の根拠にはならない。
+                good = list({m.trainIdx: m for m in sorted(good, key=lambda m: -m.distance)}.values())
                 if len(good) < 6:
                     continue
                 source = np.float32([points[m.queryIdx] for m in good]).reshape(-1,1,2)
@@ -134,6 +157,9 @@ class ChestDetector:
                 count = int(mask.sum())
                 if count < 6 or count/len(good) < .6:
                     continue
+                support = source.reshape(-1, 2)[mask.ravel().astype(bool)]
+                if cv2.contourArea(cv2.convexHull(support)) < max(20., float(np.prod(size)) * .035):
+                    continue  # 狭い一部分・ほぼ一直線だけの一致で箱全体を推定しない。
                 w,h = size
                 corners = np.float32([[0,0],[w,0],[w,h],[0,h]]).reshape(-1,1,2)
                 polygon = cv2.perspectiveTransform(corners,matrix).reshape(-1,2)/scale
