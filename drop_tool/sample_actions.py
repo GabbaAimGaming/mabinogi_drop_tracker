@@ -27,6 +27,8 @@ class SampleActions:
 
     def read_metadata(self, result):
         return {'reason':result.get('message',''), 'detection':result.get('detection'),
+                'chest_evidence':result.get('chest_evidence'),
+                'first_frame_is_chest_evidence':result.get('chest_evidence') is not None,
                 'capture_count':result.get('frames'), 'frame_analysis':result.get('frame_analysis',[]),
                 'rows':[{'name':r['name'],'raw':r.get('raw',''),'kind':r['kind'],
                          'registered':r.get('registered'),'pos':r.get('pos')} for r in result.get('labels',[])]}

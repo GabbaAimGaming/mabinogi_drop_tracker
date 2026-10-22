@@ -88,6 +88,10 @@ def _observe(app, put, frame, epoch):
     gate = app.reward_gate
     triggered = gate.observe(detection['found'], alt, now, blocked=near_dialog)
     scan = dict(detection, alt=bool(alt), near_dialog=near_dialog, elapsed=gate.elapsed(now))
+    if detection['found'] or detection.get('search') == 'confirming':
+        # 通常の連写は3秒後。誤検知を調べられるよう、根拠を拾った瞬間を1枚保持する。
+        app.chest_evidence_frame = frame
+        app.chest_evidence_scan = dict(scan)
     app.scan_trace = [*app.scan_trace, dict(scan, time=now)][-30:]
     if triggered:
         return scan
@@ -95,6 +99,8 @@ def _observe(app, put, frame, epoch):
         message = 'ネアル確認画面のため待機中。閉じてからALT表示を3秒確認します。'
     elif gate.has_chest_evidence(now):
         message = '宝箱を確認。ALT表示を3秒待っています。'
+    elif detection.get('search') == 'confirming':
+        message = '宝箱候補を再確認しています。'
     else:
         message = '宝箱を探しています。未検出の場合は手動読取を使ってください。'
     put('scan', dict(scan, message=message))
@@ -119,6 +125,9 @@ def _burst(app, put, frame, frames, scan, *, epoch, hwnd, center):
         analyze = ((lambda f: app.vision.analyze(middle(f), cropped=True)) if center
                    else app.vision.analyze)
         result = alt_capture.read(analyze, frames)
-    result.update(final=True, attempted=True, sample_frames=frames,
+    evidence = getattr(app, 'chest_evidence_frame', None)
+    sample_frames = ([evidence] if evidence is not None else []) + frames
+    result.update(final=True, attempted=True, sample_frames=sample_frames,
+                  chest_evidence=getattr(app, 'chest_evidence_scan', None),
                   detection=scan, frame=frames[len(frames) // 2])
     put('live', result)
