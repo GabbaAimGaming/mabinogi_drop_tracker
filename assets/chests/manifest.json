@@ -511,6 +511,16 @@
       "id": "closed-oct19-13",
       "file": "closed-oct19-13.npz",
       "features": 64
+    },
+    {
+      "id": "open-glow-purple-01",
+      "file": "open-glow-purple-01.npz",
+      "features": 28
+    },
+    {
+      "id": "open-glow-purple-02",
+      "file": "open-glow-purple-02.npz",
+      "features": 30
     }
   ]
 }
