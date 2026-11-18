@@ -38,6 +38,9 @@ class KarenUITests(unittest.TestCase):
             self.root.after_cancel(job)
         self.root.destroy()
 
+    def test_new_run_controls_do_not_have_near_dropdown(self):
+        self.assertFalse(hasattr(self.app, 'near'))
+
     def test_character_is_embedded_without_overlay(self):
         def descendants(widget):
             for child in widget.winfo_children():

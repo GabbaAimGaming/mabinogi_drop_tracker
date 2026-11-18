@@ -14,6 +14,7 @@ from .reading import StableReading, consensus  # noqa: F401
 SHADOW_MISSIONS = ('全面戦争', '以夷制夷', 'スナイパー参戦', '影の世界のチャンピオン', '遭遇戦')
 
 def default_near(dungeon, difficulty):
+    """旧版importの互換用。現行画面の新規周回には使用しない。"""
     if dungeon in SHADOW_MISSIONS:
         return '不使用'
     return '使用' if dungeon == 'アルビ' and difficulty == 'HD' else '未指定'
@@ -69,10 +70,13 @@ class Store:
         tmp.write_text(json.dumps(self.data, ensure_ascii=False, indent=2), 'utf-8')
         tmp.replace(self.path)
 
-    def new_run(self, dungeon, difficulty, near):
+    def new_run(self, dungeon, difficulty, near='不使用'):
         """利用者の入場操作で周回を作る。報酬が同じでも別の周回として扱う。"""
-        if not dungeon.strip() or not difficulty.strip() or near not in ('使用', '不使用'):
-            raise ValueError('ダンジョン・難易度・ネアル使用/不使用を指定してください。')
+        # ネアル廃止後は不使用で保存。旧呼び出し・履歴・CSVの条件は保持する。
+        if not dungeon.strip() or not difficulty.strip():
+            raise ValueError('ダンジョン・難易度を指定してください。')
+        if near not in ('使用', '不使用'):
+            raise ValueError('ネアルの互換用保存値が不正です。')
         run = {'id': uuid.uuid4().hex, 'dungeon': dungeon.strip(), 'difficulty': difficulty.strip(), 'near': near, 'created': datetime.now().astimezone().isoformat(timespec='seconds'), 'status': 'waiting', 'rows': []}
         self.data['runs'].append(run)
         try:

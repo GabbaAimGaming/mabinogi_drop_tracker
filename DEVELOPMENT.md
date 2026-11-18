@@ -1,4 +1,4 @@
-# 開発案内 v1.1.7
+# 開発案内 v1.1.10
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`

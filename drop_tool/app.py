@@ -17,7 +17,7 @@ from .notification import CompletionSound
 # from .image_display import pixel_preview
 # from .label_images import ocr_image
 from .reading import StableReading
-from .tracker import Store, default_near, SHADOW_MISSIONS
+from .tracker import Store, SHADOW_MISSIONS
 from .vision import Vision
 from . import read_worker
 from . import windows_capture as capture
@@ -54,7 +54,6 @@ class App(HistoryActions, ManualActions, SampleActions):
     chest_evidence_frame = None
     chest_evidence_scan = None
     chest_detector = None
-    near_detector = None
     scan_trace = ()
     manual_target = None
     saved_read_target = None
@@ -68,7 +67,7 @@ class App(HistoryActions, ManualActions, SampleActions):
     def __init__(self, root, store=None):
         """記録・認識器と監視状態を初期化し、画面構築後にTkの定期処理を開始する。"""
         self.root = root
-        root.title('カレンとドロップ記録 v1.1.9')
+        root.title('カレンとドロップ記録 v1.1.10')
         root.geometry('1020x760')
         root.minsize(780, 600)
         from .theme import apply_theme
@@ -192,7 +191,6 @@ class App(HistoryActions, ManualActions, SampleActions):
             self.difficulty.set('エリート')
         context = (self.dungeon.get(), self.difficulty.get())
         if context != self.last_context:
-            self.near.set(default_near(*context))
             self.last_context = context
 
     def callback_error(self, kind, error, tb):
@@ -238,7 +236,7 @@ class App(HistoryActions, ManualActions, SampleActions):
                     return
             if not self.hwnd:
                 raise ValueError('撮影するゲームを選んでください。')
-            run = self.store.new_run(self.dungeon.get(), self.difficulty.get(), self.near.get())
+            run = self.store.new_run(self.dungeon.get(), self.difficulty.get())
             self.active_id = run['id']
             self.epoch += 1
             self.stable.reset()
@@ -309,11 +307,11 @@ class App(HistoryActions, ManualActions, SampleActions):
         from .retention import append_log
         append_log(self.store.folder / 'monitor.log', time.strftime('%H:%M:%S ') + text + '\n', limit=200000)
 
-    def reward_detection(self, frame, near_dialog, now):
+    def reward_detection(self, frame, blocked, now):
         """箱を別フレームで再確認した後だけ、探索を省略してALTを待つ。"""
         gate=self.reward_gate
-        # 確認ダイアログ中は取得できない。探索で観測を遅らせず、記憶も更新しない。
-        if near_dialog:
+        # 明示的な中断時は箱候補を破棄する。廃止されたネアル画面は検査しない。
+        if blocked:
             self.chest_confirmation = ChestConfirmation()
             return {'found':False,'match':None,'seconds':0.,'search':'blocked'}
         if (gate.previous is not None
