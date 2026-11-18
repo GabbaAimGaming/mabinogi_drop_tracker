@@ -1,4 +1,4 @@
-# 開発案内 v1.1.10
+# 開発案内 v1.1.11
 
 Windows 64bit / Python 3.12。
 `python -m pip install -r requirements.txt -r requirements-build.txt`
@@ -45,3 +45,5 @@ Windows 64bit / Python 3.12。
 ビルド元のssl.pyがcodex-rejected-cas.pemを要求する環境では、tools/ssl_runtime.pyが同じ証明書データを凍結版sslの隣へ同梱します。信頼設定を除去せず保持し、必要ファイルが欠けたビルドは停止します。配布EXEの --self-test ではHTTPSコンテキストの生成も確認します。
 
 `claude_workspace/`（Claude用の開発場所）はリリースに含めません。混入していると`tools/package_release.py`が停止します。詳細は`claude_workspace/RELEASE_RULES.md`を参照してください。
+
+更新通信はdrop_tool/update_tls.pyで既定コンテキストにcertifiの公開CAを補完します。tools/build_exe.pyはcertifiのデータとメタデータを同梱します。検証無効化・SSL全体の置換はしません。

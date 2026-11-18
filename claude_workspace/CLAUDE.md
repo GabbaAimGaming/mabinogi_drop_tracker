@@ -1,4 +1,4 @@
-# KarenDrop コードマップ（v1.1.10）
+# KarenDrop コードマップ（v1.1.11）
 
 Claudeが編集する際の地図。実コードとテスト実行結果に基づく。**作業ブランチ：`claude/dev-workspace`**。**方針：dev-workspaceは`main`のコピーを持つ**（2026-10-22時点で`main` `1618462`＝タグ`v1.1.8`と同じ内容。リファクタ段階0〜7はPR #10でmainへ統合済み。段階は§9、経緯は[HANDOFF.md](HANDOFF.md)）。
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
@@ -6,7 +6,7 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 ## 0. 前提と絶対ルール
 - **作業は`claude/dev-workspace`へ直接コミットする（別ブランチを切らない）。dev-workspaceは`main`のコピーとして保ち、mainが進んだら取り込む。**詳細は[HANDOFF.md](HANDOFF.md)§0。
 - **AI共通の作業ルール（Claude・ChatGPT）は[AI_RULES.md](AI_RULES.md)**：①このコードマップを構成変更と同じコミットで更新する、②普段は関係する機能だけテストし、全量はリリース直前に1回、③テスト用の物を消す前に本体での利用を確かめ、使っていれば本体として正式に配布する、④不要箇所はコメントアウト → 次回リリース準備で候補一覧を提示 → 利用者が問題ないと判断した物から削除。
-- Windows専用。Python 3.12、tkinter、OpenCV、ONNX Runtime（OCR）。依存は`requirements.txt`の4つ（Pillow、numpy、opencv-python、onnxruntime）。
+- Windows専用。Python 3.12、tkinter、OpenCV、ONNX Runtime（OCR）。依存は`requirements.txt`の5つ（Pillow、numpy、opencv-python、onnxruntime、certifi）。
 - ユーザーデータは`data/`（gitignore対象）に置く。**既存データを壊さない**ことが最優先。
 - `records.json`は`version=1`固定。形式が違えば上書きせず停止する。互換を崩す変更は禁止。
 - 変更パターンは統一してある。`deepcopy`で退避 → 変更 → `save()` → 失敗したら復元。新しい書き込み処理もこの形に揃える。
@@ -97,6 +97,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 保守 | `retention.py` `settings.py` | バックアップ・ログ・証拠画像の世代管理、`settings.json` | test_evidence_retention, test_resource_limits, test_v11_settings |
 | 保守 | `notification.py` `sample_reports.py` `preflight.py` `instance_guard.py` | 完了音、提出用サンプル、環境診断、mutex | 各`test_*` |
 | 更新 | `updater.py` `update_helper.ps1` | 更新確認・検証・適用・旧版への復旧。中は「定数 → 取得（`download`、`check`、`old_releases`等） → 検証（`validate_info`、`version_key`、`safe_path`、`digest`、`_is_link`） → 適用・復旧（`new_work`、`cleanup`、`prepare`、`stage`、`launch`、`rollback_removals`） → 配布者用（`make_info`）」の区切り。共通の値は`USER_AGENT`、`DRIVE_HOSTS`、`SHA256_PATTERN`、`ZIP_ROOT`、`ZIP_MANIFEST`。`VERSION='1.1.8'`、許可リスト`TOP_FILES/TOP_DIRS` | test_updater, test_github_update, test_rollback, test_startup_update, test_old_release_dropdown, test_ssl_runtime |
+| 通信 | `update_tls.py` | OSの既定信頼設定にcertifiの公開CAを補完。ホスト名・証明書検証は必須 | test_update_tls |
 | 開発 | `tools/*` `build_exe.py` | EXEビルド、ZIP作成（`package_release.py`、許可リスト方式＋`claude_workspace`混入ガード）、宝箱テンプレ生成、旧版フィード作成`make_legacy_feed.py`、SSL同梱`ssl_runtime.py`、ベンチ、テスト実行`run_tests.py`（引数なしで全量、テスト名で絞り込み） | test_release_exclusion, test_release_contents, test_run_tests |
 
 ## 4. 保存データ
@@ -148,6 +149,7 @@ player_name?: 追加キー（旧版互換）
 | 設定項目の追加 | `settings.py`（DEFAULTS+`_valid`）、`settings_views.py`、`App.save_setting` |
 | タブ・画面の追加 | 新規`*_views.py`を作り、`ui.py`から組み込む |
 | バージョン更新 | `updater.VERSION`、`App`のタイトル、`DEVELOPMENT.md`、README類、`更新内容.txt`、`update-source.json` |
+| 更新HTTPSの証明書 | `update_tls.py`、`updater.download/old_releases`、`tools/build_exe.py`のcertifi同梱 |
 | リリースの組み立て | `tools/build_exe.py`、`tools/package_release.py`、`tools/ssl_runtime.py`、`RELEASE_RULES.md` |
 
 ## 6. v1.1 → v1.1.8 の変更点（コミットとコードで確認したもの）
@@ -242,3 +244,14 @@ Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、�
 
 検証：関連61テスト成功。リリース前の全体285テスト成功（35スキップ）。テスト実行はtools/run_tests.py経由。
 配布EXE内35テスト成功。実EXEの起動・OCR・HTTPS・更新確認と、near_dropdown=falseを確認。配布案内もネアル廃止後の手順へ更新。
+
+## v1.1.11 更新HTTPSの証明書不足（2026-11-18）
+
+- §1：`updater` → `update_tls` → 標準ssl + certifi。全体へのSSL置換はしない。
+- §3：`update_tls.py`はOSの既定検証コンテキストにMozilla公開CAを補完。証明書・ホスト名の検証とランタイム拒否設定は維持。`updater.download`と`old_releases`は同じHTTPSHandlerを明示して使用する。
+- §3：`tools/build_exe.py`はcertifiのデータとメタデータを同梱。既存の配布許可リストは拡張しない。`licenses/certifi-LICENSE.txt`にMPL-2.0表記を同梱。
+- §4：利用者データ・設定・CSVの保存形式は変更なし。CAは読み取り専用の`_internal/certifi/cacert.pem`。OSの証明書ストアや環境変数は変更しない。
+- §5：HTTPSの変更は`update_tls`、取得・転送先制限は`updater`、同梱漏れは`tools/build_exe.py`、自己診断はルート`app.py`。テストは`test_update_tls`、`test_github_update`、`test_updater`、`test_rollback`、`test_ssl_runtime`。
+- 旧版のSSLエラーは今回の更新を自動取得できないため、一度だけZIPでの手動更新が必要。旧版のタグ・配布物は差し替えない。未判断の削減候補は保持。
+
+検証：関連48テスト、全体291テスト（35スキップ）、追加TLS7テスト、配布EXE内49テスト成功。OS証明書ストアを読み込まない条件でも公開CAで実通信成功。EXEの処理と同梱CAで更新情報・旧版一覧を3回取得し、配布ZIP全体とmanifest全ファイルのSHA256を検証。
