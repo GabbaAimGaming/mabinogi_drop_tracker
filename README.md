@@ -1,4 +1,6 @@
-# KarenDrop v1.1.10
+# KarenDrop v1.1.11
+
+更新通信の証明書不足を修正しました。旧版でSSLエラーが出る場合は、今回だけ配布ZIPを手動で展開して更新してください。dataフォルダーは保持してください。
 
 2026年11月18日のネアル廃止に対応し、新規周回の選択欄を撤去しました。新規分は内部では不使用で保存し、過去の使用／不使用と旧CSVは保持します。既存の条件別集計は維持し、自動合算はしません。
 
@@ -21,7 +23,7 @@
 
 ## ダウンロード
 
-[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.10-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
+[公開リリース](https://github.com/GabbaAimGaming/mabinogi_drop_tracker/releases)のAssetsから `KarenDrop-v1.1.11-windows.zip` を取得し、すべて展開して `KarenDrop.exe` を起動してください。
 Pythonの導入は不要です。Source code ZIPは開発者向けです。
 
 操作は [README_EXE.txt](README_EXE.txt)、更新・復旧は [更新方法.txt](更新方法.txt)、制限と回避方法は [現在の問題点と対処方法.txt](現在の問題点と対処方法.txt) を参照してください。

@@ -12,10 +12,12 @@ import sys
 import time
 import uuid
 from urllib.parse import urlsplit, parse_qs, urlencode
-from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
+from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, HTTPSHandler, Request
 from zipfile import ZipFile
 
-VERSION = '1.1.10'
+from .update_tls import create_context
+
+VERSION = '1.1.11'
 APP_ID = 'KarenDrop'
 REPOSITORY = 'GabbaAimGaming/mabinogi_drop_tracker'
 RELEASES_URL = 'https://github.com/' + REPOSITORY + '/releases'
@@ -116,7 +118,7 @@ class ConfirmForm(HTMLParser):
 
 def download(url, target, limit, progress=lambda done, total: None):
     url = download_url(url)
-    opener = build_opener(DriveRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    opener = build_opener(HTTPSHandler(context=create_context()), DriveRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
     target = Path(target)
     started = time.monotonic()
     try:
@@ -175,7 +177,7 @@ def check(url, work):
 
 def old_releases():
     """公開済みの通常Releaseから、検証情報が付いた旧版を列挙する。"""
-    opener = build_opener(DriveRedirect())
+    opener = build_opener(HTTPSHandler(context=create_context()), DriveRedirect())
     request = Request(RELEASES_API, headers={'User-Agent': USER_AGENT,
                                             'Accept': 'application/vnd.github+json'})
     with opener.open(request, timeout=30) as response:

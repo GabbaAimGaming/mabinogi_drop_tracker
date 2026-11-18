@@ -16,7 +16,8 @@ def main():
     command = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--windowed', '--onedir',
                '--name', 'KarenDrop', '--distpath', str(output), '--workpath', str(work),
                '--specpath', str(work), '--copy-metadata', 'Pillow', '--copy-metadata', 'numpy',
-               '--copy-metadata', 'opencv-python', '--copy-metadata', 'onnxruntime']
+               '--copy-metadata', 'opencv-python', '--copy-metadata', 'onnxruntime', '--copy-metadata', 'certifi',
+               '--collect-data', 'certifi']
     for excluded in ('rapidocr_onnxruntime', 'matplotlib', 'pandas', 'scipy', 'windows_capture'):
         command.extend(['--exclude-module', excluded])
     for source, destination in runtime_data():
