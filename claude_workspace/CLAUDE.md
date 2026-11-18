@@ -1,4 +1,4 @@
-# KarenDrop コードマップ（v1.1.9）
+# KarenDrop コードマップ（v1.1.10）
 
 Claudeが編集する際の地図。実コードとテスト実行結果に基づく。**作業ブランチ：`claude/dev-workspace`**。**方針：dev-workspaceは`main`のコピーを持つ**（2026-10-22時点で`main` `1618462`＝タグ`v1.1.8`と同じ内容。リファクタ段階0〜7はPR #10でmainへ統合済み。段階は§9、経緯は[HANDOFF.md](HANDOFF.md)）。
 パスはすべてリポジトリ直下からの相対。このフォルダー（`claude_workspace/`）はリリースに含めない（[RELEASE_RULES.md](RELEASE_RULES.md)）。
@@ -17,7 +17,7 @@ Claudeが編集する際の地図。実コードとテスト実行結果に基�
 - `claude_workspace/`や`tests/`をリリースへ入れない。配布物は`updater.TOP_FILES/TOP_DIRS`の**許可リスト方式**で絞っている（`tools/package_release.py`はこの一覧と`release-manifest.json`・`exclusions.json`・`update-source.json`だけをZIPへ入れる）ので、許可リストへ追加しない。
   - さらに`tools/package_release.py`の`RELEASE_EXCLUDED_DIRS`/`forbidden_paths`が、配布フォルダー・ZIPに`claude_workspace`が混ざると停止する（`tests/test_release_exclusion.py`）。これを消さない。詳細は[RELEASE_RULES.md](RELEASE_RULES.md)。v1.1.8からmainにも入っている（`claude_workspace/`自体もmainにあるが、許可リストとこのガードで配布物には入らない）。
 - テストはモジュール属性をpatchする（例：`drop_tool.app.messagebox.showerror`、`drop_tool.app.capture.active`、`drop_tool.update_view.messagebox.askyesno`、`drop_tool.notification.winsound.PlaySound`）。**本体のimportを関数内へ移すとテストが壊れる**ので、モジュール先頭のimportは維持する。
-- テストは`App.__new__(App)`で属性を一部だけ入れた`App`を作り、`app.jobs`へ**素のタプル**`(epoch, mode, result, error)`を入れて`poll`を検証する。キューの型は変えない。`__init__`を通らなくても参照される値は`App`の**クラス属性**に既定値を置く（`settings`、`settings_views`、`samples`、`reward_gate`、`chest_detector`、`near_detector`、`scan_trace`、`manual_target`、`saved_read_target`、`saved_read_expected`）。どれも読むだけか代入で差し替える値に限る。
+- テストは`App.__new__(App)`で属性を一部だけ入れた`App`を作り、`app.jobs`へ**素のタプル**`(epoch, mode, result, error)`を入れて`poll`を検証する。キューの型は変えない。`__init__`を通らなくても参照される値は`App`の**クラス属性**に既定値を置く（`settings`、`settings_views`、`samples`、`reward_gate`、`chest_detector`、`scan_trace`、`manual_target`、`saved_read_target`、`saved_read_expected`）。どれも読むだけか代入で差し替える値に限る。
 
 ## 1. レイヤーと依存の向き
 
@@ -33,18 +33,18 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
   ├ chest_parts      bright_plates            exporting / csv_collection
   └ chest_gradients  color_labels(赤・紫)     retention / settings
                                               learning（学習見本の上限管理）
- near_dialog        label_detection
+                    label_detection
  reward_gate        alt_capture ── reading(StableReading/consensus)
                      （全員の土台：config.ROOT、names.normalize。どちらも依存なし）
 ```
 
-段階4で`tracker`を分割した。`normalize`は`names.py`（依存なし）、複数フレームの多数決は`reading.py`。`tracker`に直接依存するのは`Store`・`Rules`・`default_near`・`SHADOW_MISSIONS`を使うモジュール（`app`、`exporting`、`item_catalog`、`vision`）だけになった。`Store`の変更は今も影響範囲が最大。
+段階4で`tracker`を分割した。`normalize`は`names.py`（依存なし）、複数フレームの多数決は`reading.py`。`tracker`に直接依存するのは`Store`・`Rules`・`SHADOW_MISSIONS`を使うモジュール（`app`、`exporting`、`item_catalog`、`vision`）だけになった。`Store`の変更は今も影響範囲が最大。
 `Store.stats`は関数内で`ItemCatalog`をimportする（`item_catalog`が`tracker`をimportするため、循環を避けている）。
 注意：自前の`drop_tool/windows_capture.py`（前景ウィンドウの撮影）と、廃止したpipパッケージ`windows-capture`は別物。
 
 ## 2. データフロー（自動読取）
 1. `App.tick`が350ms（中央スキャン）または700msで回り、`submit('live')`を呼ぶ。前面のゲーム画面だけを撮影する（`App.ready`が前面でなければ読まない）。
-2. `App.submit`は開始時点のepoch・対象ゲーム・対象周回・中央スキャン設定を固定し、`read_worker.run`を別スレッドで起動する。ワーカーは`app.grab`で撮影し、`_observe`で`near_dialog`（確認画面の除外）、`App.reward_detection`（`chest_detector`）、`alt_display.quick_check`を見る。
+2. `App.submit`は開始時点のepoch・対象ゲーム・対象周回・中央スキャン設定を固定し、`read_worker.run`を別スレッドで起動する。ワーカーは`app.grab`で撮影し、`_observe`で`App.reward_detection`（`chest_detector`）、`alt_display.quick_check`を見る。
 3. `App.reward_detection`内の`ChestConfirmation`が、特徴点または表面見本で検出した同じ位置の箱を別フレームで2回確認する。その後だけ`RewardGate`へ渡し、箱 + ALT表示の3秒継続を判定する。未成立なら`scan`イベントで待機メッセージを返す。
 4. 成立したら`start`イベントを返し、`_burst`が`alt_capture.collect`で連写、`alt_capture.read`で`Vision.analyze`に通す。
 5. `Vision.analyze`は画像から品名を作る。
@@ -79,7 +79,7 @@ app.py(起動) → drop_tool/app.py(App ＝ HistoryActions＋ManualActions＋Sam
 | 撮影 | `windows_capture.py` | 前景ゲームウィンドウの読み取り専用撮影（読み込み時に`ctypes.WinDLL('user32')`） | test_capture_flow |
 | 判定 | `chest_detector.py` | 宝箱表面のSIFT（画面点の重複・支持面積を検査）。形状は局所SIFTの探索ヒントに限る。段の並び`detect`（`_near_plates/_detail/_parts`） | test_reward_samples, test_4k_review, test_next_4k_samples |
 | 判定 | `chest_fragments.py` `chest_shape.py` `chest_parts.py` `chest_gradients.py` | 箱の補助判定（表面マスク、左右の縁の同位置・個別照合、蓋の形を探索ヒントに限定、蓋と本体の部品照合、勾配セル分類器） | test_chest_rims, test_chest_fragments, test_chest_shape, test_chest_parts, test_closed_oct19 |
-| 判定 | `reward_gate.py` `near_dialog.py` | ChestConfirmation（別フレームの位置・面積・時間の再確認）、3秒ゲート、ネアル確認画面の除外 | test_chest_confirmation, test_near_dialog, test_reward_scan_reuse |
+| 判定 | `reward_gate.py` | ChestConfirmation（別フレームの位置・面積・時間の再確認）、3秒ゲート。ネアル画面の検出は現行ワーカーでは行わない | test_chest_confirmation, test_near_dialog, test_reward_scan_reuse |
 | 判定 | `alt_display.py` `alt_capture.py` | ALT品名板の判定と連写 | test_alt_display, test_alt_hold_simulation |
 | 認識 | `vision.py` | `Vision`：切り抜き`boxes`・見本照合・OCR（`learn`は段階6でコメントアウト。学習は`item_registration.assign`→`learning.add`）。`reload`は見本が無い・壊れている時に読み飛ばす（v1.1.8）。枠の重なり判定は`_overlaps(boxes, y, x, width, tolerance)` | test_tracker ほか |
 | 認識 | `label_images.py` `label_scale.py` `label_detection.py` `plate_recovery.py` `hud_filter.py` | マスク生成（`text_pixels/red_pixels/purple_pixels`等）、倍率補正、発光時の補助検出、HUD除外 | test_label_*, test_glow_recovery, test_hud_filter, test_cyan_labels |
@@ -116,7 +116,7 @@ item_links{}: 誤読名 -> 正式名       # 集計時に解決。元の行は�
 item_names[]: 登録名
 player_name?: 追加キー（旧版互換）
 ```
-`default_near(dungeon, difficulty)`：影ミッション5種は`不使用`、アルビHDは`使用`、それ以外は`未指定`（`new_run`は`未指定`を受け付けないので画面で選ばせる）。
+`Store.new_run(dungeon, difficulty, near='不使用')`：ネアル廃止後の画面は2引数で作成。旧記録・CSVの`near`形式と条件別集計を維持し、旧使用の記録を自動書換え・合算しない。`default_near`は旧import互換専用で、現行画面は使わない。
 `Rules`は読み込み時に`フィニージェム/フィニージエム`を除外接頭辞へ補う（旧版の個別JSON対策。`overrides`が最優先なのは従来通り）。
 
 **`data/settings.json`**（`settings.py`の`DEFAULTS`と`_valid`が正）
@@ -144,7 +144,7 @@ player_name?: 追加キー（旧版互換）
 | 履歴・統計の画面操作 | `history_actions.py` |
 | 提出用サンプル | `read_worker._observe/_burst`（箱を確認した原画を1枚保持し先頭へ）、`sample_actions.py`（chest_evidence・先頭画像の意味）、`sample_reports.py`（従来の最大3枚を維持） |
 | 集計・出現率 | `Store.stats/confirm`、`exporting.py` |
-| ダンジョン・難易度の追加 | `ui.py`のコンボ値、`tracker.SHADOW_MISSIONS`/`default_near`、`tests/test_v11_settings.py` |
+| ダンジョン・難易度の追加 | `ui.py`のコンボ値、`tracker.SHADOW_MISSIONS`、`tests/test_v11_settings.py` |
 | 設定項目の追加 | `settings.py`（DEFAULTS+`_valid`）、`settings_views.py`、`App.save_setting` |
 | タブ・画面の追加 | 新規`*_views.py`を作り、`ui.py`から組み込む |
 | バージョン更新 | `updater.VERSION`、`App`のタイトル、`DEVELOPMENT.md`、README類、`更新内容.txt`、`update-source.json` |
@@ -218,7 +218,7 @@ Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、�
 ## v1.1.9 道中の誤検知対策（2026-10-22）
 
 基準はリモート整理版 `39f6b61`。既存の整理・テスト絞り込み・AIルールを保持して追加。
-形状だけの確定を停止し、形状候補内で宝箱のSIFTを再照合する。SIFTは同じ画面点の重複と狭い支持面を除外。`ChestConfirmation`は2観測の位置重複・面積比・時間を検査する。周回変更・停止・ネアル確認で候補を破棄し、停止した旧ワーカーからの候補更新も無視。
+形状だけの確定を停止し、形状候補内で宝箱のSIFTを再照合する。SIFTは同じ画面点の重複と狭い支持面を除外。`ChestConfirmation`は2観測の位置重複・面積比・時間を検査する。周回変更・停止・明示的な中断で候補を破棄し、停止した旧ワーカーからの候補更新も無視。
 `read_worker`は再確認時の原画1枚だけをメモリー保持し、提出用サンプルの先頭へ置く。`chest_evidence`と`first_frame_is_chest_evidence`を任意キーとして追加。records.json形式・辞書・設定項目は不変。
 9件の公開テストをtest_chest_confirmationへ追加（形だけ、一点重複、支持面、単発、位置違い、時刻と中断、連写画像との区別）。従来の読取3秒テストは最初の再確認分を明示。
 画像・ログの開発比較と制限は更新内容.txt。発光箱は中央の光ではなく左右の縁の模様で裏付ける（下記）。既存の削減候補は未判断のまま保持し、今回の不具合修正に便乗した削除はしない。
@@ -231,3 +231,14 @@ Linux（Python 3.13、tkinterなし）での全量の結果：**251件実行、�
 試作段階の22/25という退行は上記の左右照合で解消。旧試作ZIPは未公開。元の作業ルールとテスト絞り込み機能、未判断の削除候補を保持する。
 
 配布前検証：全量280件（skip 35件）成功。配布EXEから読み込んだ処理と実際の同梱資産で31件成功。実EXE自己診断（起動・OCR・104個のSIFT参照と左右見本を含む資産・HTTPS初期化）成功。確認待ち・集計形式・自動読取の再確認条件は維持。
+
+## v1.1.10 ネアル廃止対応（2026-11-18）
+
+- §3：`ui`は新規周回のネアル選択欄を持たない。`app.context_changed`は影の難易度だけ補正し、`new_run`は`Store.new_run`の不使用の既定値を使う。入力検証はダンジョン・難易度と互換用保存値を分離。
+- §3：`read_worker`の観測・連写は廃止されたネアル画面を照合しない。`preflight`も専用画像を必須にしない。箱の再確認・3秒ゲート・OCR・撮影位置は維持。
+- §4：records version=1、nearの使用／不使用、CSV列、条件別集計は変更しない。旧記録は保持し、新規分は不使用。改編時期による区分・自動合算は追加しない。
+- §5：ネアル廃止後の入力・記録変更は`ui`、`app`、`tracker`、判定変更は`read_worker`、起動必須資産は`preflight`。互換・判定テストは`test_near_retirement`、画面は`test_karen_ui`、旧検出器の参照テストは`test_near_dialog`。
+- `near_dialog.py`と専用画像は現行から未参照。旧検出器の検証用として残す（不用意に削除して動作を壊さない）。従来の未判断の削減候補は削除しない。
+
+検証：関連61テスト成功。リリース前の全体285テスト成功（35スキップ）。テスト実行はtools/run_tests.py経由。
+配布EXE内35テスト成功。実EXEの起動・OCR・HTTPS・更新確認と、near_dropdown=falseを確認。配布案内もネアル廃止後の手順へ更新。

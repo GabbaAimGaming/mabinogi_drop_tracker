@@ -2,7 +2,7 @@ import json
 import tempfile
 import unittest
 import queue
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from PIL import Image
 from drop_tool.config import ROOT
 from drop_tool.near_dialog import NearDialogDetector
@@ -45,7 +45,7 @@ class NearGateTests(unittest.TestCase):
             im.paste(b, (205, 255))
         self.assertTrue(detector.detect(im))
 
-    def test_app_suppresses_dialog_even_when_chest_visible(self):
+    def test_retired_dialog_does_not_block_current_chest_scan(self):
         from drop_tool.app import App
         im = Image.new('RGB', (800, 600), (35, 35, 35))
         for name, pos in (('question', (184,177)), ('buttons', (205,255))):
@@ -54,14 +54,16 @@ class NearGateTests(unittest.TestCase):
         app = App.__new__(App)
         app.busy=False; app.epoch=0; app.hwnd=1; app.read_attempts=0
         app.settings={}; app.jobs=queue.Queue(); app.scan_trace=[]
-        app.chest_detector=Mock(); app.chest_detector.detect.return_value={'found':True}
+        app.chest_detector=Mock(); app.chest_detector.detect.return_value={'found':True,'match':{'box':[100,100,200,200]}}
         app.reward_gate=RewardGate(seconds=0)
         app.vision=Mock(); app.grab=Mock(return_value=im)
-        app.submit('live')
-        event = app.jobs.get(timeout=10)
-        self.assertEqual(event[1], 'scan')
-        self.assertTrue(event[2]['near_dialog'])
-        self.assertFalse(event[2]['alt'])
+        from drop_tool import read_worker
+        put = Mock()
+        with patch('drop_tool.read_worker.quick_check', return_value=False):
+            read_worker._observe(app, put, im, 0)
+        self.assertFalse(put.call_args.args[1]['near_dialog'])
+        self.assertEqual(app.chest_detector.detect.call_count, 1)
+        self.assertFalse(hasattr(app, 'near_detector'))
         self.assertIsNone(app.reward_gate.since)
         app.vision.analyze.assert_not_called()
 

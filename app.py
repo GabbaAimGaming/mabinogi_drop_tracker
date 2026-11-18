@@ -32,21 +32,14 @@ def run_app(guard=None):
                 from drop_tool.preflight import check_assets
                 check_assets(ROOT)
                 detector = ChestDetector()
-                from drop_tool.near_dialog import NearDialogDetector
                 from PIL import Image
                 if detector.detect(Image.new('RGB',(320,180)))['found']:
                     raise ValueError('無地の画像を宝箱と誤判定しました。')
-                near = NearDialogDetector()
-                dialog = Image.new('RGB', (403, 214), (35, 35, 35))
-                for name, pos in (('question', (84, 77)), ('buttons', (105, 155))):
-                    with Image.open(ROOT / 'assets/near-dialog' / (name + '.png')) as feature:
-                        dialog.paste(feature, pos)
-                if not near.detect(dialog):
-                    raise ValueError('ネアル確認画面の検出資産を確認できません。')
                 report = dict(ocr=ocr_name, ok=True, title=root.title(), root=str(ROOT),
                               update_button=app.settings_views.updates.button.cget('text'),
                               update_source=app.settings_views.updates.url.get(),
-                              near_dialog=True,
+                              near_dialog=False,
+                              near_dropdown=hasattr(app, 'near'),
                               chest_templates=len(detector.templates),
                               chest_part_templates=len(detector.parts.templates),
                               chest_shape=detector.shape is not None,

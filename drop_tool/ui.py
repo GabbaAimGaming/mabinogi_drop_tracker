@@ -37,7 +37,7 @@ def build_widgets(self):
 
 
 def _controls(self, pane):
-    """撮影するゲーム、プレイヤー名、ダンジョン・難易度・ネアルと周回の開始・停止。"""
+    """撮影するゲーム、プレイヤー名、ダンジョン・難易度と周回の開始・停止。"""
     bar = ttk.Frame(pane)
     bar.pack(fill='x')
     ttk.Label(bar, text='撮影するゲーム：').pack(side='left')
@@ -61,10 +61,6 @@ def _controls(self, pane):
     self.difficulty = ttk.Combobox(bar, values=['通常', '初級', '中級', '上級', 'HD', '誘惑', '音楽', 'エリート'], width=12, height=6)
     self.difficulty.set('HD')
     self.difficulty.pack(side='left', padx=4)
-    ttk.Label(bar, text='ネアル：').pack(side='left')
-    self.near = ttk.Combobox(bar, values=['使用', '不使用', '未指定'], state='readonly', width=8)
-    self.near.set('使用')
-    self.near.pack(side='left')
     for widget in (self.dungeon, self.difficulty):
         widget.bind('<<ComboboxSelected>>', self.context_changed)
         widget.bind('<FocusOut>', self.context_changed)

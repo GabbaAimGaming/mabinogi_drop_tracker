@@ -15,7 +15,6 @@ import time
 
 from . import alt_capture
 from .alt_display import quick_check
-from .near_dialog import NearDialogDetector
 from .vision import CENTER
 
 
@@ -76,18 +75,16 @@ def _observe(app, put, frame, epoch):
     ALTキーの状態はゲームが他アプリへ渡さないため、画面の表示で判断する。
     箱の探索には全体画像が必要。中央設定は品名の解析範囲だけを変える。
     """
-    if app.near_detector is None:
-        app.near_detector = NearDialogDetector()
-    near_dialog = app.near_detector.detect(frame)
-    detection = app.reward_detection(frame, near_dialog, time.monotonic())
-    alt = not near_dialog and quick_check(middle(frame))
+    # 2026-11-18にネアル廃止。箱の再確認とALT表示だけで判定する。
+    detection = app.reward_detection(frame, False, time.monotonic())
+    alt = quick_check(middle(frame))
     if app.epoch != epoch:
         put('scan', {})
         return None
     now = time.monotonic()
     gate = app.reward_gate
-    triggered = gate.observe(detection['found'], alt, now, blocked=near_dialog)
-    scan = dict(detection, alt=bool(alt), near_dialog=near_dialog, elapsed=gate.elapsed(now))
+    triggered = gate.observe(detection['found'], alt, now)
+    scan = dict(detection, alt=bool(alt), near_dialog=False, elapsed=gate.elapsed(now))
     if detection['found'] or detection.get('search') == 'confirming':
         # 通常の連写は3秒後。誤検知を調べられるよう、根拠を拾った瞬間を1枚保持する。
         app.chest_evidence_frame = frame
@@ -95,9 +92,7 @@ def _observe(app, put, frame, epoch):
     app.scan_trace = [*app.scan_trace, dict(scan, time=now)][-30:]
     if triggered:
         return scan
-    if near_dialog:
-        message = 'ネアル確認画面のため待機中。閉じてからALT表示を3秒確認します。'
-    elif gate.has_chest_evidence(now):
+    if gate.has_chest_evidence(now):
         message = '宝箱を確認。ALT表示を3秒待っています。'
     elif detection.get('search') == 'confirming':
         message = '宝箱候補を再確認しています。'
@@ -117,7 +112,7 @@ def _burst(app, put, frame, frames, scan, *, epoch, hwnd, center):
         return app.grab(hwnd)
 
     frames += alt_capture.collect(
-        again, lambda f: not app.near_detector.detect(f) and quick_check(middle(f)), first=frame)
+        again, lambda f: quick_check(middle(f)), first=frame)
     app.worker_phase = f'撮影済み（{len(frames)}枚）・品名を解析中'
     if len(frames) < 2:
         result = {'labels': [], 'message': '品名表示中の画像が2枚以上集まりませんでした。'}

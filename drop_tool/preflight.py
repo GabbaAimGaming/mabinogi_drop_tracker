@@ -30,9 +30,6 @@ def check_assets(root):
     from .ocr_engine import check_model
     check_model(root)
     chest_folder = root / 'assets/chests'
-    for name in ('question.png', 'buttons.png'):
-        if not (root / 'assets/near-dialog' / name).is_file():
-            raise ValueError('ネアル画面の参照データがありません：' + name)
     chest_manifest = json.loads((chest_folder / 'manifest.json').read_text('utf-8'))
     for template in chest_manifest['templates']:
         if not (chest_folder / template['file']).is_file():
@@ -91,7 +88,7 @@ def inspect():
         ('画像ライブラリ', check_libraries, True),
         ('同梱日本語OCR（CPU）', check_ocr, False),
     ]
-    lines = ['ドロップ記録 v1.1.9 環境診断', 'OS：' + platform.platform(),
+    lines = ['ドロップ記録 v1.1.10 環境診断', 'OS：' + platform.platform(),
              'Python：' + sys.version.split()[0]]
     fatal = False
     for name, action, required in checks:

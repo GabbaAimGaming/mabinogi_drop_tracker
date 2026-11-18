@@ -18,14 +18,14 @@ class UpdatedSettingsTests(unittest.TestCase):
             self.assertNotIn('window_share',saved)
             self.assertEqual(saved['future_option'],42)
 
-    def test_shadow_selection_sets_elite_and_no_near(self):
+    def test_shadow_selection_sets_elite_without_near_control(self):
         for mission in SHADOW_MISSIONS:
             app=App.__new__(App)
             app.last_context=('アルビ','HD');app.dungeon=Mock();app.dungeon.get.return_value=mission
-            app.difficulty=Mock();app.difficulty.get.return_value='エリート';app.near=Mock()
+            app.difficulty=Mock();app.difficulty.get.return_value='エリート'
             app.context_changed()
             app.difficulty.set.assert_called_with('エリート')
-            app.near.set.assert_called_with('不使用')
+            self.assertFalse(hasattr(app, 'near'))
 
     def test_background_capture_is_not_ready(self):
         app=App.__new__(App)
